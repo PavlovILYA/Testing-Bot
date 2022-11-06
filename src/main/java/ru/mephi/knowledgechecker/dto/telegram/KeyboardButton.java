@@ -6,10 +6,8 @@ import lombok.Data;
 
 @Data
 @Builder(toBuilder = true)
-public class SendMessageParams {
-    @JsonProperty("chat_id")
-    private Long chatId;
+public class KeyboardButton {
     private String text;
-    @JsonProperty("reply_markup")
-    private InlineKeyboardMarkup replyMarkup;
+    @JsonProperty("request_contact")
+    private Boolean requestContact;
 }

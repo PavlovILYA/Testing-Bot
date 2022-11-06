@@ -7,7 +7,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import ru.mephi.knowledgechecker.dto.telegram.Message;
-import ru.mephi.knowledgechecker.dto.telegram.SendMessageParams;
 
 @Slf4j
 @Service
@@ -17,7 +16,7 @@ public class TelegramApiClient {
     @Value(("${telegram.api}"))
     private String telegramApi;
 
-    public void sendMessage(SendMessageParams sendMessageParams) {
+    public void sendMessage(Object sendMessageParams) {
         ResponseEntity<Message> responseSendMessage = restTemplate
                 .postForEntity(telegramApi + "/sendMessage", sendMessageParams, Message.class);
     }
