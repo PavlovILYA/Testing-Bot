@@ -3,6 +3,7 @@ package ru.mephi.knowledgechecker.config;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
@@ -14,7 +15,7 @@ import javax.annotation.PostConstruct;
 @Configuration
 @RequiredArgsConstructor
 public class BotConfig {
-    private final RestTemplate restTemplate = new RestTemplate();
+    private final RestTemplate restTemplate;
     @Value("${telegram.api}")
     private String telegramApi;
     @Value("${webhook.url}")

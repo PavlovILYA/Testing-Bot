@@ -8,5 +8,6 @@ public class Update {
     @JsonProperty(value = "update_id")
     private Long id;
     private Message message;
-
+    @JsonProperty(value = "callback_query")
+    private CallbackQuery callbackQuery;
 }
