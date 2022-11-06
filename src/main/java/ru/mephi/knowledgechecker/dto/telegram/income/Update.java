@@ -1,4 +1,4 @@
-package ru.mephi.knowledgechecker.dto.telegram;
+package ru.mephi.knowledgechecker.dto.telegram.income;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;

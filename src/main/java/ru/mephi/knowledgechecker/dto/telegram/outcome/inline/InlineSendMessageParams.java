@@ -1,4 +1,4 @@
-package ru.mephi.knowledgechecker.dto.telegram;
+package ru.mephi.knowledgechecker.dto.telegram.outcome.inline;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -8,10 +8,10 @@ import lombok.Data;
 @Data
 @Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ReplySendMessageParams {
+public class InlineSendMessageParams {
     @JsonProperty("chat_id")
     private Long chatId;
     private String text;
     @JsonProperty("reply_markup")
-    private ReplyKeyboardMarkup replyMarkup;
+    private InlineKeyboardMarkup replyMarkup;
 }

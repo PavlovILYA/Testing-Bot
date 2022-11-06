@@ -3,7 +3,14 @@ package ru.mephi.knowledgechecker.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.mephi.knowledgechecker.dto.telegram.*;
+import ru.mephi.knowledgechecker.dto.telegram.income.CallbackQuery;
+import ru.mephi.knowledgechecker.dto.telegram.income.Message;
+import ru.mephi.knowledgechecker.dto.telegram.outcome.inline.InlineKeyboardButton;
+import ru.mephi.knowledgechecker.dto.telegram.outcome.inline.InlineKeyboardMarkup;
+import ru.mephi.knowledgechecker.dto.telegram.outcome.inline.InlineSendMessageParams;
+import ru.mephi.knowledgechecker.dto.telegram.outcome.reply.KeyboardButton;
+import ru.mephi.knowledgechecker.dto.telegram.outcome.reply.ReplyKeyboardMarkup;
+import ru.mephi.knowledgechecker.dto.telegram.outcome.reply.ReplySendMessageParams;
 import ru.mephi.knowledgechecker.httpclient.TelegramApiClient;
 
 import java.util.ArrayList;
@@ -16,25 +23,36 @@ public class UpdateService {
     private final TelegramApiClient telegramApiClient;
 
     public void processMessage(Message message) {
-        ReplySendMessageParams params = ReplySendMessageParams.builder()
-                .chatId(message.getChat().getId())
-                .text("Привет, придурок! 🐸")
-                .replyMarkup(ReplyKeyboardMarkup.builder()
-                        .keyboard(getDefaultReplyKeyboardMarkup())
-                        .resizeKeyboard(true)
-                        .oneTimeKeyboard(true)
-                        .inputFieldPlaceholder("input placeholder вот))")
+        log.info("processMessage: {}", message);
+        sendMessageWithInlineKeyboardMarkup(message.getChat().getId());
+    }
+
+    public void processCallbackQuery(CallbackQuery callbackQuery) {
+        log.info("processCallbackQuery: {}", callbackQuery);
+        sendMessageWithReplyKeyboardMarkup(callbackQuery
+                .getMessage().getChat().getId());
+    }
+
+    private void sendMessageWithInlineKeyboardMarkup(Long chatId) {
+        InlineSendMessageParams params = InlineSendMessageParams.builder()
+                .chatId(chatId)
+                .text("Сообщение с встроенной клавиатурой! 🐸")
+                .replyMarkup(InlineKeyboardMarkup.builder()
+                        .inlineKeyboard(getDefaultInlineKeyboardMarkup())
                         .build())
                 .build();
         telegramApiClient.sendMessage(params);
     }
 
-    public void processCallbackQuery(CallbackQuery callbackQuery) {
-        InlineSendMessageParams params = InlineSendMessageParams.builder()
-                .chatId(callbackQuery.getMessage().getChat().getId())
-                .text("Привет, придурок! 🐸")
-                .replyMarkup(InlineKeyboardMarkup.builder()
-                        .inlineKeyboard(getDefaultInlineKeyboardMarkup())
+    private void sendMessageWithReplyKeyboardMarkup(Long chatId) {
+        ReplySendMessageParams params = ReplySendMessageParams.builder()
+                .chatId(chatId)
+                .text("Сообщение с кастомной клавиатурой! 🦋")
+                .replyMarkup(ReplyKeyboardMarkup.builder()
+                        .keyboard(getDefaultReplyKeyboardMarkup())
+                        .resizeKeyboard(true)
+                        .oneTimeKeyboard(true)
+                        .inputFieldPlaceholder("input placeholder вот))")
                         .build())
                 .build();
         telegramApiClient.sendMessage(params);
@@ -70,20 +88,18 @@ public class UpdateService {
         List<KeyboardButton> one = new ArrayList<>();
         one.add(KeyboardButton.builder()
                 .text("Текст1.1")
-                .requestContact(true)
                 .build());
         one.add(KeyboardButton.builder()
                 .text("Текст1.2")
-                .requestContact(true)
                 .build());
         List<KeyboardButton> two = new ArrayList<>();
         two.add(KeyboardButton.builder()
-                .text("Текст2.1")
-                .requestContact(false)
+                .text("Геолокация")
+                .requestLocation(true)
                 .build());
         two.add(KeyboardButton.builder()
-                .text("Текст2.2")
-                .requestContact(false)
+                .text("Контакт")
+                .requestContact(true)
                 .build());
         markup.add(one);
         markup.add(two);
