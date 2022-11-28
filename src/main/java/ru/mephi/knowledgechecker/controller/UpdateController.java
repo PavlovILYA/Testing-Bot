@@ -7,27 +7,18 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
-import ru.mephi.knowledgechecker.service.UpdateService;
+import ru.mephi.knowledgechecker.service.BotManagerService;
 
 @Slf4j
 @RestController
 @RequestMapping("/")
 @RequiredArgsConstructor
 public class UpdateController {
-    private final UpdateService updateService;
+    private final BotManagerService botManagerService;
 
     @PostMapping
     public void giveUpdate(@RequestBody Update update) {
         log.info("Update: {}", update);
-        analyzeUpdate(update);
-    }
-
-    private void analyzeUpdate(Update update) {
-        if (update.getMessage() != null) {
-            updateService.processMessage(update.getMessage());
-        }
-        if (update.getCallbackQuery() != null) {
-            updateService.processCallbackQuery(update.getCallbackQuery());
-        }
+        botManagerService.process(update);
     }
 }

@@ -1,10 +1,16 @@
 package ru.mephi.knowledgechecker.dto.telegram.income;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
-public class User {
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder(toBuilder = true)
+public class UserDto {
     private Long id;
     @JsonProperty(value = "first_name")
     private String firstName;

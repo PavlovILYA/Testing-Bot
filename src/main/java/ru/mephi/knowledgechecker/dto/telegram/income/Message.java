@@ -9,7 +9,7 @@ import java.util.List;
 public class Message {
     @JsonProperty(value = "message_id")
     private Long id;
-    private User from;
+    private UserDto from;
     private Long date; // Instant.ofEpochMilli(date).toLocalDate();
     private String text;
     private Chat chat;
