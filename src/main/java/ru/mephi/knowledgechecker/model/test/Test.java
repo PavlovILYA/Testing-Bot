@@ -4,12 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.mephi.knowledgechecker.model.answer.variable.VariableAnswer;
 import ru.mephi.knowledgechecker.model.question.variable.VariableQuestion;
 import ru.mephi.knowledgechecker.model.user.User;
 
 import javax.persistence.*;
-import java.util.List;
+import java.util.Set;
 
 @Data
 @Entity
@@ -23,7 +22,7 @@ public class Test {
     private Long id;
     @Column(unique = true)
     private String uniqueTitle;
-    @ManyToOne // cascade
+    @ManyToOne  // todo: fetch, cascade
     @JoinColumn(table = "tests", name = "creator_id")
     private User creator;
     private String title;
@@ -31,7 +30,11 @@ public class Test {
     private Integer maxQuestionsNumber;
     @Enumerated(value = EnumType.STRING)
     private TestType testType;
-//    @OneToMany(targetEntity = VariableAnswer.class, // cascade,
-//              fetch = FetchType.LAZY, orphanRemoval = true) <- many-to-many
-//    List<VariableQuestion> variableQuestions;
+
+    @OneToMany(mappedBy = "test", // todo: fetch, cascade
+              fetch = FetchType.LAZY, orphanRemoval = true)
+    Set<VariableQuestion> variableQuestions;
+
+    @ManyToMany(mappedBy = "addedTests") // а надо оно здесь вообще?
+    Set<User> usingUsers;
 }

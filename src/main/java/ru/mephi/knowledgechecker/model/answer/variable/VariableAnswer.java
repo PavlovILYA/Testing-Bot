@@ -19,4 +19,7 @@ public class VariableAnswer {
     private Long id;
     @Column(unique = true)
     private String text;
+
+//    @ManyToMany(mappedBy = "wrongAnswers") // а надо оно здесь вообще?
+//    Set<VariableQuestion> wrongQuestions;
 }
