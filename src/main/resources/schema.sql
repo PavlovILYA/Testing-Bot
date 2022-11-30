@@ -19,13 +19,7 @@ CREATE TABLE IF NOT EXISTS tests (
     test_type VARCHAR(255), -- enum
     PRIMARY KEY (unique_title),
     FOREIGN KEY (id) REFERENCES users(id)
---     FOREIGN KEY (test_type) REFERENCES test_types(type)
 );
-
--- CREATE TABLE IF NOT EXISTS question_types (
---     type VARCHAR(255) UNIQUE,
---     PRIMARY KEY (type)
--- );
 
 CREATE TABLE IF NOT EXISTS variable_answers (
     id BIGINT GENERATED ALWAYS AS IDENTITY UNIQUE,
