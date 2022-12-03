@@ -2,8 +2,10 @@ package ru.mephi.knowledgechecker.state.impl;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.lang.NonNull;
 import ru.mephi.knowledgechecker.dto.telegram.income.CallbackQuery;
 import ru.mephi.knowledgechecker.dto.telegram.income.Message;
@@ -11,6 +13,7 @@ import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageParams;
 import ru.mephi.knowledgechecker.httpclient.TelegramApiClient;
 import ru.mephi.knowledgechecker.state.BotState;
 import ru.mephi.knowledgechecker.state.ParamsWrapper;
+import ru.mephi.knowledgechecker.state.StateContext;
 
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -20,18 +23,20 @@ public abstract class AbstractState implements BotState, ApplicationContextAware
     private static final String NOT_IMPLEMENTED_MESSAGE = "Обработка данного действия еще не реализована 🧑🏼‍💻";
     @Autowired
     protected TelegramApiClient telegramApiClient;
+    @Lazy
+    @Autowired
+    protected StateContext stateContext;
     protected ApplicationContext applicationContext;
     protected final Queue<BotState> availableStates = new ConcurrentLinkedQueue<>();
+    @Lazy
+    @Autowired
+    @Qualifier("unknownState")
     protected BotState unknownState;
 
     @Override
     @Autowired
     public void setApplicationContext(@NonNull ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
-    }
-
-    public void initializeAvailableStates() {
-        unknownState = applicationContext.getBean(UnknownState.class);
     }
 
     protected BotState getAvailableState(Class clazz) {
