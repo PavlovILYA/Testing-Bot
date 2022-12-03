@@ -4,10 +4,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-import ru.mephi.knowledgechecker.dto.telegram.income.Update;
+import ru.mephi.knowledgechecker.dto.telegram.income.CallbackQuery;
+import ru.mephi.knowledgechecker.dto.telegram.income.Message;
 
 import java.time.LocalDateTime;
-import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -23,24 +23,19 @@ public class StateContext {
         this.initialState = initialState;
     }
 
-    public void process(Update update) {
-        try {
-            BotState currentState = Objects.requireNonNull(
-                    getState(getUserId(update)));
-            currentState.process(update);
-        } catch (BadUpdateException e) {
-            log.warn("{}", e.getMessage());
-        }
+    public void processCommand(Message message) {
+        BotState currentState = getState(message.getFrom().getId());
+        currentState.processCommand(message);
     }
 
-    private Long getUserId(Update update) throws BadUpdateException {
-        if (update.getMessage() != null) {
-            return update.getMessage().getFrom().getId();
-        } else if (update.getCallbackQuery() != null) {
-            return update.getCallbackQuery().getFrom().getId();
-        } else {
-            throw new BadUpdateException(update.getId());
-        }
+    public void processMessage(Message message) {
+        BotState currentState = getState(message.getFrom().getId());
+        currentState.processMessage(message);
+    }
+
+    public void processCallbackReply(CallbackQuery callbackQuery) {
+        BotState currentState = getState(callbackQuery.getFrom().getId());
+        currentState.processCallbackQuery(callbackQuery);
     }
 
     // todo поменять мапу на БД (точнее сохранить мапу для кэширования)
