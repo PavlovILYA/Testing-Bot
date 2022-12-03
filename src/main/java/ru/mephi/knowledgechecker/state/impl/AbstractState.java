@@ -15,12 +15,14 @@ public abstract class AbstractState implements BotState, ApplicationContextAware
     protected final Queue<BotState> availableStates = new ConcurrentLinkedQueue<>();
     protected BotState unknownState;
 
-    public abstract void initializeAvailableStates();
-
     @Override
     @Autowired
     public void setApplicationContext(@NonNull ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
+    }
+
+    public void initializeAvailableStates() {
+        unknownState = applicationContext.getBean(UnknownState.class);
     }
 
     protected BotState getState(Class clazz) {

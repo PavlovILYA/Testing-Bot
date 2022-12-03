@@ -1,33 +1,54 @@
 package ru.mephi.knowledgechecker.state;
 
-import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+@Slf4j
 @Component
-@RequiredArgsConstructor
 public class StateContext {
+    private final BotState initialState;
     private final ConcurrentMap<Long, BotState> states = new ConcurrentHashMap<>();
     private final ConcurrentMap<Long, LocalDateTime> timestamps = new ConcurrentHashMap<>();
 
+    @Autowired
+    public StateContext(@Qualifier("startMenuState") BotState initialState) {
+        this.initialState = initialState;
+    }
+
     public void process(Update update) {
-//        for (UpdateStrategy strategy : updateStrategies) {
-//            if (strategy.apply(update)) {
-//                strategy.process(update);
-//                return;
-//            }
-//        }
+        try {
+            BotState currentState = Objects.requireNonNull(
+                    getState(getUserId(update)));
+            currentState.process(update);
+        } catch (BadUpdateException e) {
+            log.warn("{}", e.getMessage());
+        }
+    }
+
+    private Long getUserId(Update update) throws BadUpdateException {
+        if (update.getMessage() != null) {
+            return update.getMessage().getFrom().getId();
+        } else if (update.getCallbackQuery() != null) {
+            return update.getCallbackQuery().getFrom().getId();
+        } else {
+            throw new BadUpdateException(update.getId());
+        }
     }
 
     // todo поменять мапу на БД (точнее сохранить мапу для кэширования)
-    public BotState getState(Long userId) {
-        if (!states.containsKey(userId)) { // Потом тут еще в базу надо лезть проверять..
-//            putState(userId, initial);
-            return null; // initial
+    private BotState getState(Long userId) {
+        if (!states.containsKey(userId)) {
+            // checkDB(); // todo потом тут еще в базу надо лезть проверять..
+            putState(userId, initialState);
+            return initialState;
         }
         return states.get(userId);
     }

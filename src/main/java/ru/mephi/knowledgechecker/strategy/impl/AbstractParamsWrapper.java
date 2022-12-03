@@ -9,7 +9,7 @@ import ru.mephi.knowledgechecker.dto.telegram.outcome.reply.ReplySendMessagePara
 
 import java.util.List;
 
-public class AbstractParamsWrapper {
+public abstract class AbstractParamsWrapper {
     // Сообщение с встроенной клавиатурой! 🐸
     protected InlineSendMessageParams wrapInlineSendMessageParams(Long chatId,
                                                                   String text,

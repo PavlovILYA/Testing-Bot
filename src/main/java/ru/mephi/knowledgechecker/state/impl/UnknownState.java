@@ -1,6 +1,7 @@
 package ru.mephi.knowledgechecker.state.impl;
 
 import org.springframework.stereotype.Component;
+import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 
 import javax.annotation.PostConstruct;
 
@@ -10,5 +11,8 @@ public class UnknownState extends AbstractState {
     @PostConstruct
     public void initializeAvailableStates() {
     }
-    // todo
+
+    @Override
+    public void process(Update update) {
+    }
 }
