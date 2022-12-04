@@ -1,4 +1,4 @@
-package ru.mephi.knowledgechecker.dto.telegram;
+package ru.mephi.knowledgechecker.dto.telegram.income;
 
 public class InvalidUpdateException extends Exception {
     public InvalidUpdateException(Long id) {

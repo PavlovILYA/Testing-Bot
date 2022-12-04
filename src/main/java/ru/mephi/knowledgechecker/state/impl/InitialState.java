@@ -9,7 +9,7 @@ import ru.mephi.knowledgechecker.httpclient.TelegramApiClient;
 import ru.mephi.knowledgechecker.service.UserService;
 import ru.mephi.knowledgechecker.strategy.impl.ToMainMenuStrategy;
 
-import static ru.mephi.knowledgechecker.state.ParamsWrapper.wrapMessageParams;
+import static ru.mephi.knowledgechecker.common.ParamsWrapper.wrapMessageParams;
 
 @Slf4j
 @Component
@@ -34,7 +34,7 @@ public class InitialState extends AbstractBotState {
             userService.saveUser(userDto);
             log.info("👤 Пользователь {} ({}) зарегистрирован!", userDto.getFirstName(), userDto.getUsername());
             MessageParams params = wrapMessageParams(userDto.getId(), "👤 Пользователь " + userDto.getFirstName()
-                    + "(" + userDto.getUsername() + ") зарегистрирован!");
+                    + "(" + userDto.getUsername() + ") зарегистрирован!", null);
             telegramApiClient.sendMessage(params);
         }
         super.process(update);

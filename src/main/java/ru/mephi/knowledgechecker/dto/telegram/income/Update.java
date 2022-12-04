@@ -2,7 +2,6 @@ package ru.mephi.knowledgechecker.dto.telegram.income;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
-import ru.mephi.knowledgechecker.dto.telegram.InvalidUpdateException;
 
 @Data
 public class Update {

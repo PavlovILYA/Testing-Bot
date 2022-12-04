@@ -1,9 +1,8 @@
 package ru.mephi.knowledgechecker.state;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import ru.mephi.knowledgechecker.dto.telegram.InvalidUpdateException;
+import ru.mephi.knowledgechecker.dto.telegram.income.InvalidUpdateException;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 import ru.mephi.knowledgechecker.state.impl.InitialState;
 
@@ -18,7 +17,6 @@ public class StateContext {
     private final ConcurrentMap<Long, BotState> states = new ConcurrentHashMap<>();
     private final ConcurrentMap<Long, LocalDateTime> timestamps = new ConcurrentHashMap<>();
 
-    @Autowired
     public StateContext(InitialState initialState) {
         this.initialState = initialState;
     }

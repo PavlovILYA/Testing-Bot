@@ -1,4 +1,4 @@
-package ru.mephi.knowledgechecker.dto.telegram.outcome.reply;
+package ru.mephi.knowledgechecker.dto.telegram.outcome.keyboard.reply;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;

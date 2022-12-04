@@ -3,14 +3,14 @@ package ru.mephi.knowledgechecker.strategy.impl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+import ru.mephi.knowledgechecker.common.Command;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
-import ru.mephi.knowledgechecker.dto.telegram.outcome.reply.ReplySendMessageParams;
+import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageParams;
 import ru.mephi.knowledgechecker.state.impl.MainMenuState;
-import ru.mephi.knowledgechecker.strategy.Constants;
 
-import static ru.mephi.knowledgechecker.state.ParamsWrapper.wrapReplySendMessageParams;
-import static ru.mephi.knowledgechecker.strategy.Constants.TO_MAIN_MENU;
-import static ru.mephi.knowledgechecker.strategy.KeyboardMarkups.getStartReplyKeyboardMarkup;
+import static ru.mephi.knowledgechecker.common.ParamsWrapper.wrapMessageParams;
+import static ru.mephi.knowledgechecker.common.Constants.TO_MAIN_MENU;
+import static ru.mephi.knowledgechecker.common.KeyboardMarkups.getStartReplyKeyboardMarkup;
 import static ru.mephi.knowledgechecker.strategy.impl.AbstractBotCommandStrategy.BOT_COMMAND;
 
 @Slf4j
@@ -29,7 +29,7 @@ public class ToMainMenuStrategy extends AbstractActionStrategy {
                 && update.getMessage().getEntities() != null
                 && update.getMessage().getEntities().stream()
                 .anyMatch(e -> e.getType().equals(BOT_COMMAND))
-                && update.getMessage().getText().equals(Constants.START_COMMAND);
+                && update.getMessage().getText().equals(Command.START.getName());
     }
 
     @Override
@@ -38,12 +38,12 @@ public class ToMainMenuStrategy extends AbstractActionStrategy {
                 ? update.getCallbackQuery().getFrom().getId()
                 : update.getMessage().getFrom().getId();
         putStateToContext(userId, nextState);
-        sendStartMenu(userId, "▶️ ГЛАВНАЯ");
+        sendStartMenu(userId, "▶️ ГЛАВНАЯ ⤵️");
     }
 
     private void sendStartMenu(Long chatId, String text) {
-        ReplySendMessageParams params =
-                wrapReplySendMessageParams(chatId, text, getStartReplyKeyboardMarkup(), "Основное меню");
+        MessageParams params =
+                wrapMessageParams(chatId, text, getStartReplyKeyboardMarkup());
         telegramApiClient.sendMessage(params);
     }
 }

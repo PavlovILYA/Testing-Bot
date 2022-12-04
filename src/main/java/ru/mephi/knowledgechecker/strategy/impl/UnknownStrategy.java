@@ -1,14 +1,14 @@
 package ru.mephi.knowledgechecker.strategy.impl;
 
-import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageParams;
 
-import static ru.mephi.knowledgechecker.state.ParamsWrapper.wrapMessageParams;
+import static ru.mephi.knowledgechecker.common.ParamsWrapper.wrapMessageParams;
 
+@Slf4j
 @Component
-@RequiredArgsConstructor
 public class UnknownStrategy extends AbstractActionStrategy {
     // todo перевезти все константы в одно место
     private static final String NOT_IMPLEMENTED_MESSAGE = "Обработка данного действия еще не реализована 🧑🏼‍💻";
@@ -24,8 +24,7 @@ public class UnknownStrategy extends AbstractActionStrategy {
         Long userId = update.getCallbackQuery() != null
                 ? update.getCallbackQuery().getFrom().getId()
                 : update.getMessage().getFrom().getId();
-        MessageParams params = wrapMessageParams(userId, NOT_IMPLEMENTED_MESSAGE);
+        MessageParams params = wrapMessageParams(userId, NOT_IMPLEMENTED_MESSAGE, null);
         telegramApiClient.sendMessage(params);
-        // change state to main menu?
     }
 }

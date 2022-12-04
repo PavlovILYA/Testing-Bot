@@ -1,4 +1,4 @@
-package ru.mephi.knowledgechecker.dto.telegram.outcome.inline;
+package ru.mephi.knowledgechecker.dto.telegram.outcome.keyboard.inline;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;

@@ -1,14 +1,15 @@
-package ru.mephi.knowledgechecker.dto.telegram.outcome.reply;
+package ru.mephi.knowledgechecker.dto.telegram.outcome.keyboard.reply;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
+import ru.mephi.knowledgechecker.dto.telegram.outcome.keyboard.KeyboardMarkup;
 
 import java.util.List;
 
 @Data
-@Builder(toBuilder = true)
-public class ReplyKeyboardMarkup {
+@Builder
+public class ReplyKeyboardMarkup implements KeyboardMarkup {
     private List<List<KeyboardButton>> keyboard;
     @JsonProperty("resize_keyboard")
     private Boolean resizeKeyboard;

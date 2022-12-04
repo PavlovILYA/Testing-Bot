@@ -1,12 +1,15 @@
-package ru.mephi.knowledgechecker.strategy;
+package ru.mephi.knowledgechecker.common;
 
-import ru.mephi.knowledgechecker.dto.telegram.outcome.reply.KeyboardButton;
+import ru.mephi.knowledgechecker.dto.telegram.outcome.keyboard.KeyboardMarkup;
+import ru.mephi.knowledgechecker.dto.telegram.outcome.keyboard.reply.KeyboardButton;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static ru.mephi.knowledgechecker.common.ParamsWrapper.wrapReplyKeyboardMarkup;
+
 public class KeyboardMarkups {
-    public static List<List<KeyboardButton>> getStartReplyKeyboardMarkup() {
+    public static KeyboardMarkup getStartReplyKeyboardMarkup() {
         List<List<KeyboardButton>> markup = new ArrayList<>();
         markup.add(List.of(KeyboardButton.builder()
                 .text("Список публичных тестов")
@@ -17,6 +20,6 @@ public class KeyboardMarkups {
         markup.add(List.of(KeyboardButton.builder()
                 .text("Администраторское меню")
                 .build()));
-        return markup;
+        return wrapReplyKeyboardMarkup(markup, "Главное меню");
     }
 }
