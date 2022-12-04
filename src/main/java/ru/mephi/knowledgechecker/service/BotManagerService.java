@@ -10,21 +10,10 @@ import ru.mephi.knowledgechecker.state.StateContext;
 @Service
 @RequiredArgsConstructor
 public class BotManagerService {
-    private static final String BOT_COMMAND = "bot_command"; // todo
     private final StateContext stateContext;
 
     public void process(Update update) {
-        if (update.getMessage() != null) {
-            if (update.getMessage().getEntities() != null && update.getMessage().getEntities().stream()
-                    .anyMatch(e -> e.getType().equals(BOT_COMMAND))) {
-                stateContext.processCommand(update.getMessage());
-            } else {
-                stateContext.processMessage(update.getMessage());
-            }
-        } else if (update.getCallbackQuery() != null) {
-            stateContext.processCallbackReply(update.getCallbackQuery());
-        } else {
-            log.warn("Update {} doesn't have neither message nor callback query", update.getId());
-        }
+        stateContext.process(update);
+        // todo провалидировать здесь update на id
     }
 }

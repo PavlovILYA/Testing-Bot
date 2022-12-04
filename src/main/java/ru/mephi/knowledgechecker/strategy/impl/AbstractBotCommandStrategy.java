@@ -3,8 +3,7 @@ package ru.mephi.knowledgechecker.strategy.impl;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 
 public abstract class AbstractBotCommandStrategy extends AbstractMessageStrategy {
-    @SuppressWarnings("checkstyle:MemberName")
-    private final String BOT_COMMAND = "bot_command";
+    public static final String BOT_COMMAND = "bot_command"; // todo перенести в enum?
 
     @Override
     public boolean apply(Update update) {

@@ -1,34 +1,36 @@
 package ru.mephi.knowledgechecker.strategy.impl;
 
-import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.inline.InlineKeyboardButton;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.inline.InlineSendMessageParams;
-import ru.mephi.knowledgechecker.httpclient.TelegramApiClient;
+import ru.mephi.knowledgechecker.state.impl.CoursesListState;
+import ru.mephi.knowledgechecker.strategy.Constants;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static ru.mephi.knowledgechecker.strategy.Constants.*;
+import static ru.mephi.knowledgechecker.state.ParamsWrapper.wrapInlineSendMessageParams;
 
 @Component
-@RequiredArgsConstructor
-public class PublicTestListStrategy extends AbstractMessageStrategy {
-    private final TelegramApiClient telegramApiClient;
+public class ToCoursesListStrategy extends AbstractMessageStrategy {
+    public ToCoursesListStrategy(@Lazy CoursesListState nextState) {
+        this.nextState = nextState;
+    }
 
     @Override
     public boolean apply(Update update) {
         return super.apply(update)
-                && update.getMessage().getText().equals(PUBLIC_TEST_LIST);
+                && update.getMessage().getText().equals(Constants.COURSES_LIST);
     }
 
     @Override
     public void process(Update update) {
+        Long userId = update.getMessage().getChat().getId();
         InlineSendMessageParams params =
-                wrapInlineSendMessageParams(update.getMessage().getChat().getId(),
-                        "▶️ ГЛАВНАЯ ➡️ ПУБЛИЧНЫЕ ТЕСТЫ",
-                        getInlineKeyboardMarkup());
+                wrapInlineSendMessageParams(userId, "▶️ ГЛАВНАЯ ➡️ КУРСЫ", getInlineKeyboardMarkup());
+        putStateToContext(userId, nextState);
         telegramApiClient.sendMessage(params);
     }
 
@@ -37,15 +39,11 @@ public class PublicTestListStrategy extends AbstractMessageStrategy {
         List<InlineKeyboardButton> menu = new ArrayList<>();
         menu.add(InlineKeyboardButton.builder()
                 .text("⬅️")
-                .callbackData(TO_MAIN_MENU)
+                .callbackData(Constants.TO_MAIN_MENU)
                 .build());
         menu.add(InlineKeyboardButton.builder()
-                .text("Создать тест")
-                .callbackData(CREATE_PUBLIC_TEST)
-                .build());
-        menu.add(InlineKeyboardButton.builder()
-                .text("Найти тест")
-                .callbackData(FIND_PUBLIC_TEST)
+                .text("Поступить на курс")
+                .callbackData(Constants.ATTEND_COURSE)
                 .build());
         markup.add(menu);
 

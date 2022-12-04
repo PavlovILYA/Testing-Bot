@@ -1,34 +1,36 @@
 package ru.mephi.knowledgechecker.strategy.impl;
 
-import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.inline.InlineKeyboardButton;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.inline.InlineSendMessageParams;
-import ru.mephi.knowledgechecker.httpclient.TelegramApiClient;
+import ru.mephi.knowledgechecker.state.impl.AdminMenuState;
+import ru.mephi.knowledgechecker.strategy.Constants;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static ru.mephi.knowledgechecker.strategy.Constants.*;
+import static ru.mephi.knowledgechecker.state.ParamsWrapper.wrapInlineSendMessageParams;
 
 @Component
-@RequiredArgsConstructor
-public class AdminMenuStrategy extends AbstractMessageStrategy {
-    private final TelegramApiClient telegramApiClient;
+public class ToAdminMenuStrategy extends AbstractMessageStrategy {
+    public ToAdminMenuStrategy(@Lazy AdminMenuState nextState) {
+        this.nextState = nextState;
+    }
 
     @Override
     public boolean apply(Update update) {
         return super.apply(update)
-                && update.getMessage().getText().equals(ADMIN_MENU);
+                && update.getMessage().getText().equals(Constants.ADMIN_MENU);
     }
 
     @Override
     public void process(Update update) {
+        Long userId = update.getMessage().getChat().getId();
         InlineSendMessageParams params =
-                wrapInlineSendMessageParams(update.getMessage().getChat().getId(),
-                        "▶️ ГЛАВНАЯ ➡️ АДМИНИСТРАТОРСКОЕ МЕНЮ",
-                        getInlineKeyboardMarkup());
+                wrapInlineSendMessageParams(userId, "▶️ ГЛАВНАЯ ➡️ АДМИНИСТРАТОРСКОЕ МЕНЮ", getInlineKeyboardMarkup());
+        putStateToContext(userId, nextState);
         telegramApiClient.sendMessage(params);
     }
 
@@ -37,11 +39,11 @@ public class AdminMenuStrategy extends AbstractMessageStrategy {
         List<InlineKeyboardButton> menu = new ArrayList<>();
         menu.add(InlineKeyboardButton.builder()
                 .text("⬅️")
-                .callbackData(TO_MAIN_MENU)
+                .callbackData(Constants.TO_MAIN_MENU)
                 .build());
         menu.add(InlineKeyboardButton.builder()
                 .text("Создать курс")
-                .callbackData(CREATE_COURSE)
+                .callbackData(Constants.CREATE_COURSE)
                 .build());
         markup.add(menu);
 

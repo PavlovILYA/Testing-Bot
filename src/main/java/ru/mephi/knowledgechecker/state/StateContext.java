@@ -2,10 +2,10 @@ package ru.mephi.knowledgechecker.state;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-import ru.mephi.knowledgechecker.dto.telegram.income.CallbackQuery;
-import ru.mephi.knowledgechecker.dto.telegram.income.Message;
+import ru.mephi.knowledgechecker.dto.telegram.InvalidUpdateException;
+import ru.mephi.knowledgechecker.dto.telegram.income.Update;
+import ru.mephi.knowledgechecker.state.impl.InitialState;
 
 import java.time.LocalDateTime;
 import java.util.concurrent.ConcurrentHashMap;
@@ -14,32 +14,28 @@ import java.util.concurrent.ConcurrentMap;
 @Slf4j
 @Component
 public class StateContext {
-    private final BotState initialState;
+    private final InitialState initialState;
     private final ConcurrentMap<Long, BotState> states = new ConcurrentHashMap<>();
     private final ConcurrentMap<Long, LocalDateTime> timestamps = new ConcurrentHashMap<>();
 
     @Autowired
-    public StateContext(@Qualifier("startMenuState") BotState initialState) {
+    public StateContext(InitialState initialState) {
         this.initialState = initialState;
     }
 
-    public void processCommand(Message message) {
-        BotState currentState = getState(message.getFrom().getId());
-        currentState.processCommand(message);
-    }
-
-    public void processMessage(Message message) {
-        BotState currentState = getState(message.getFrom().getId());
-        currentState.processMessage(message);
-    }
-
-    public void processCallbackReply(CallbackQuery callbackQuery) {
-        BotState currentState = getState(callbackQuery.getFrom().getId());
-        currentState.processCallbackQuery(callbackQuery);
+    public void process(Update update) {
+        try {
+            Long userId = update.getUserId();
+            BotState currentState = getState(userId);
+            log.info("CURRENT STATE: {}", currentState.getClass().getName());
+            currentState.process(update);
+        } catch (InvalidUpdateException e) {
+            log.warn(e.getMessage());
+        }
     }
 
     // todo поменять мапу на БД (точнее сохранить мапу для кэширования)
-    private BotState getState(Long userId) {
+    public BotState getState(Long userId) {
         if (!states.containsKey(userId)) {
             // checkDB(); // todo потом тут еще в базу надо лезть проверять..
             putState(userId, initialState);
