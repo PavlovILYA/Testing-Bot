@@ -1,0 +1,51 @@
+package ru.mephi.knowledgechecker.strategy.impl.menu;
+
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Component;
+import ru.mephi.knowledgechecker.dto.telegram.income.Update;
+import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageParams;
+import ru.mephi.knowledgechecker.dto.telegram.outcome.keyboard.KeyboardMarkup;
+import ru.mephi.knowledgechecker.dto.telegram.outcome.keyboard.inline.InlineKeyboardButton;
+import ru.mephi.knowledgechecker.state.impl.test.create.TestCreatingState;
+import ru.mephi.knowledgechecker.strategy.impl.AbstractCallbackQueryStrategy;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static ru.mephi.knowledgechecker.common.Constants.CREATE_PUBLIC_TEST;
+import static ru.mephi.knowledgechecker.common.Constants.PUBLIC_TEST_LIST;
+import static ru.mephi.knowledgechecker.common.ParamsWrapper.wrapInlineKeyboardMarkup;
+import static ru.mephi.knowledgechecker.common.ParamsWrapper.wrapMessageParams;
+
+@Component
+public class ToTestCreatingStrategy extends AbstractCallbackQueryStrategy {
+    public ToTestCreatingStrategy(@Lazy TestCreatingState nextState) {
+        this.nextState = nextState;
+    }
+
+    @Override
+    public boolean apply(Update update) {
+        return super.apply(update)
+                && update.getCallbackQuery().getData().equals(CREATE_PUBLIC_TEST);
+    }
+
+    @Override
+    public void process(Update update) {
+        Long userId = update.getCallbackQuery().getFrom().getId();
+        MessageParams params =
+                wrapMessageParams(userId, "Введите уникальное название теста", getInlineKeyboardMarkup());
+        putStateToContext(userId, nextState);
+        telegramApiClient.sendMessage(params);
+    }
+
+    private KeyboardMarkup getInlineKeyboardMarkup() {
+        List<List<InlineKeyboardButton>> markup = new ArrayList<>();
+        List<InlineKeyboardButton> menu = new ArrayList<>();
+        menu.add(InlineKeyboardButton.builder()
+                .text("⬅️")
+                .callbackData(PUBLIC_TEST_LIST)
+                .build());
+        markup.add(menu);
+        return wrapInlineKeyboardMarkup(markup);
+    }
+}

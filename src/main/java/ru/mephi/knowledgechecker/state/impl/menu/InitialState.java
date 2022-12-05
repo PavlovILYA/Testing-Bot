@@ -1,4 +1,4 @@
-package ru.mephi.knowledgechecker.state.impl;
+package ru.mephi.knowledgechecker.state.impl.menu;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -7,7 +7,8 @@ import ru.mephi.knowledgechecker.dto.telegram.income.UserDto;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageParams;
 import ru.mephi.knowledgechecker.httpclient.TelegramApiClient;
 import ru.mephi.knowledgechecker.service.UserService;
-import ru.mephi.knowledgechecker.strategy.impl.ToMainMenuStrategy;
+import ru.mephi.knowledgechecker.state.impl.AbstractBotState;
+import ru.mephi.knowledgechecker.strategy.impl.menu.ToMainMenuStrategy;
 
 import static ru.mephi.knowledgechecker.common.ParamsWrapper.wrapMessageParams;
 

@@ -6,20 +6,21 @@ import ru.mephi.knowledgechecker.dto.telegram.outcome.keyboard.reply.KeyboardBut
 import java.util.ArrayList;
 import java.util.List;
 
+import static ru.mephi.knowledgechecker.common.Constants.*;
 import static ru.mephi.knowledgechecker.common.ParamsWrapper.wrapReplyKeyboardMarkup;
 
 public class KeyboardMarkups {
     public static KeyboardMarkup getStartReplyKeyboardMarkup() {
         List<List<KeyboardButton>> markup = new ArrayList<>();
         markup.add(List.of(KeyboardButton.builder()
-                .text("Список публичных тестов")
+                .text(PUBLIC_TEST_LIST)
                 .build()));
         markup.add(List.of(KeyboardButton.builder()
-                .text("Список курсов")
+                .text(COURSES_LIST)
                 .build()));
         markup.add(List.of(KeyboardButton.builder()
-                .text("Администраторское меню")
+                .text(ADMIN_MENU)
                 .build()));
-        return wrapReplyKeyboardMarkup(markup, "Главное меню");
+        return wrapReplyKeyboardMarkup(markup, MAIN_MENU);
     }
 }

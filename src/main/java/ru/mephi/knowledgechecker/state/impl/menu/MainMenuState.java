@@ -1,10 +1,11 @@
-package ru.mephi.knowledgechecker.state.impl;
+package ru.mephi.knowledgechecker.state.impl.menu;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import ru.mephi.knowledgechecker.strategy.impl.ToAdminMenuStrategy;
-import ru.mephi.knowledgechecker.strategy.impl.ToCoursesListStrategy;
-import ru.mephi.knowledgechecker.strategy.impl.ToPublicTestListStrategy;
+import ru.mephi.knowledgechecker.state.impl.AbstractBotState;
+import ru.mephi.knowledgechecker.strategy.impl.menu.ToAdminMenuStrategy;
+import ru.mephi.knowledgechecker.strategy.impl.menu.ToCoursesListStrategy;
+import ru.mephi.knowledgechecker.strategy.impl.menu.ToPublicTestListStrategy;
 
 @Slf4j
 @Component

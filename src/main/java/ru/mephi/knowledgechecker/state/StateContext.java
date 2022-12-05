@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.mephi.knowledgechecker.dto.telegram.income.InvalidUpdateException;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
-import ru.mephi.knowledgechecker.state.impl.InitialState;
+import ru.mephi.knowledgechecker.state.impl.menu.InitialState;
 
 import java.time.LocalDateTime;
 import java.util.concurrent.ConcurrentHashMap;

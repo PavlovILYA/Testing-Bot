@@ -1,4 +1,4 @@
-package ru.mephi.knowledgechecker.strategy.impl;
+package ru.mephi.knowledgechecker.strategy.impl.menu;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
@@ -6,7 +6,8 @@ import org.springframework.stereotype.Component;
 import ru.mephi.knowledgechecker.common.Command;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageParams;
-import ru.mephi.knowledgechecker.state.impl.MainMenuState;
+import ru.mephi.knowledgechecker.state.impl.menu.MainMenuState;
+import ru.mephi.knowledgechecker.strategy.impl.AbstractActionStrategy;
 
 import static ru.mephi.knowledgechecker.common.ParamsWrapper.wrapMessageParams;
 import static ru.mephi.knowledgechecker.common.Constants.TO_MAIN_MENU;

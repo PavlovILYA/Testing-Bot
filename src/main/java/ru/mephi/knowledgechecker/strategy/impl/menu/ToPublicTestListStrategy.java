@@ -1,4 +1,4 @@
-package ru.mephi.knowledgechecker.strategy.impl;
+package ru.mephi.knowledgechecker.strategy.impl.menu;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
@@ -7,30 +7,40 @@ import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.keyboard.KeyboardMarkup;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageParams;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.keyboard.inline.InlineKeyboardButton;
-import ru.mephi.knowledgechecker.state.impl.PublicTestListState;
+import ru.mephi.knowledgechecker.state.impl.menu.PublicTestListState;
 import ru.mephi.knowledgechecker.common.Constants;
+import ru.mephi.knowledgechecker.strategy.impl.AbstractActionStrategy;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static ru.mephi.knowledgechecker.common.Constants.PUBLIC_TEST_LIST;
 import static ru.mephi.knowledgechecker.common.ParamsWrapper.*;
 
 @Slf4j
 @Component
-public class ToPublicTestListStrategy extends AbstractMessageStrategy {
+public class ToPublicTestListStrategy extends AbstractActionStrategy {
     public ToPublicTestListStrategy(@Lazy PublicTestListState nextState) {
         this.nextState = nextState;
     }
 
     @Override
     public boolean apply(Update update) {
-        return super.apply(update)
-                && update.getMessage().getText().equals(Constants.PUBLIC_TEST_LIST);
+        return update.getCallbackQuery() != null
+                && update.getCallbackQuery().getData().equals(PUBLIC_TEST_LIST)
+                ||
+                update.getMessage() != null
+                && update.getMessage().getText().equals(PUBLIC_TEST_LIST);
     }
 
     @Override
     public void process(Update update) {
-        Long userId = update.getMessage().getChat().getId();
+        Long userId;
+        if (update.getCallbackQuery() != null) {
+            userId = update.getCallbackQuery().getFrom().getId();
+        } else {
+            userId = update.getMessage().getChat().getId();
+        }
         MessageParams params =
                 wrapMessageParams(userId, "▶️ ГЛАВНАЯ ➡️ ПУБЛИЧНЫЕ ТЕСТЫ", getInlineKeyboardMarkup());
         putStateToContext(userId, nextState);
