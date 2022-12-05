@@ -31,8 +31,8 @@ public class InitialState extends AbstractBotState {
         UserDto userDto = update.getCallbackQuery() != null
                 ? update.getCallbackQuery().getFrom()
                 : update.getMessage().getFrom();
-        if (userService.getUser(userDto.getId()).isEmpty()) {
-            userService.saveUser(userDto);
+        if (userService.get(userDto.getId()).isEmpty()) {
+            userService.save(userDto);
             log.info("👤 Пользователь {} ({}) зарегистрирован!", userDto.getFirstName(), userDto.getUsername());
             MessageParams params = wrapMessageParams(userDto.getId(), "👤 Пользователь " + userDto.getFirstName()
                     + "(" + userDto.getUsername() + ") зарегистрирован!", null);

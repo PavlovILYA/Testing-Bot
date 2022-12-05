@@ -16,13 +16,13 @@ import java.util.Optional;
 public class UserService {
     private final UserRepository userRepository;
 
-    public Optional<User> getUser(Long id) {
+    public Optional<User> get(Long id) {
         Optional<User> user = userRepository.findById(id);
         log.info("Get user: {}", user);
         return user;
     }
 
-    public UserDto saveUser(UserDto userDto) {
+    public UserDto save(UserDto userDto) {
         User user = userRepository.save(UserMapper.toUser(userDto));
         log.info("Saved user: {}", user);
         return UserMapper.toDto(user);
