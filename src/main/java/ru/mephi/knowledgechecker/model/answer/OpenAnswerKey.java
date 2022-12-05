@@ -1,4 +1,4 @@
-package ru.mephi.knowledgechecker.model.answer.open;
+package ru.mephi.knowledgechecker.model.answer;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;

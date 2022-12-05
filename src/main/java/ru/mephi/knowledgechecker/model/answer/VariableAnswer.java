@@ -1,4 +1,4 @@
-package ru.mephi.knowledgechecker.model.answer.variable;
+package ru.mephi.knowledgechecker.model.answer;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

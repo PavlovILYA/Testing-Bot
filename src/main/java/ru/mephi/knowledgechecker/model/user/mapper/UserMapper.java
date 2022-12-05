@@ -3,6 +3,7 @@ package ru.mephi.knowledgechecker.model.user.mapper;
 import ru.mephi.knowledgechecker.dto.telegram.income.UserDto;
 import ru.mephi.knowledgechecker.model.user.User;
 
+// todo: use mapstruct
 public class UserMapper {
     public static User toUser(UserDto userDto) {
         return User.builder()

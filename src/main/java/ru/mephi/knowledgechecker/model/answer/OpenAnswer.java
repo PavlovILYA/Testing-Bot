@@ -1,10 +1,10 @@
-package ru.mephi.knowledgechecker.model.answer.open;
+package ru.mephi.knowledgechecker.model.answer;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.mephi.knowledgechecker.model.question.open.OpenQuestion;
+import ru.mephi.knowledgechecker.model.question.OpenQuestion;
 import ru.mephi.knowledgechecker.model.user.User;
 
 import javax.persistence.*;
