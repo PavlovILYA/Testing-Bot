@@ -1,9 +1,6 @@
 package ru.mephi.knowledgechecker.model.user;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import ru.mephi.knowledgechecker.model.answer.OpenAnswer;
 import ru.mephi.knowledgechecker.model.test.Test;
 
@@ -23,6 +20,7 @@ public class User {
     private String lastName;
     private String username;
 
+    @ToString.Exclude
     @ManyToMany // todo: fetch, cascade
     @JoinTable(
             name = "users_tests",

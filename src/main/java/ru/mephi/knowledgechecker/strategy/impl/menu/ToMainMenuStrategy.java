@@ -9,6 +9,8 @@ import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageParams;
 import ru.mephi.knowledgechecker.state.impl.menu.MainMenuState;
 import ru.mephi.knowledgechecker.strategy.impl.AbstractActionStrategy;
 
+import java.util.Map;
+
 import static ru.mephi.knowledgechecker.common.ParamsWrapper.wrapMessageParams;
 import static ru.mephi.knowledgechecker.common.Constants.TO_MAIN_MENU;
 import static ru.mephi.knowledgechecker.common.KeyboardMarkups.getStartReplyKeyboardMarkup;
@@ -34,11 +36,11 @@ public class ToMainMenuStrategy extends AbstractActionStrategy {
     }
 
     @Override
-    public void process(Update update) {
+    public void process(Update update, Map<String, Object> data) {
         Long userId = update.getCallbackQuery() != null
                 ? update.getCallbackQuery().getFrom().getId()
                 : update.getMessage().getFrom().getId();
-        putStateToContext(userId, nextState);
+        putStateToContext(userId, nextState, data);
         sendStartMenu(userId, "▶️ ГЛАВНАЯ ⤵️");
     }
 

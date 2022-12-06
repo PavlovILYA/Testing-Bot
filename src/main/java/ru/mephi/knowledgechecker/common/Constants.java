@@ -10,4 +10,6 @@ public class Constants {
     public static final String ATTEND_COURSE = "Поступить на курс";
     public static final String ADMIN_MENU = "Администраторское меню";
     public static final String CREATE_COURSE = "Создать курс";
+    public static final String ADD_VARIABLE_QUESTION = "Добавить вопрос с вариантами";
+    public static final String ADD_OPEN_QUESTION = "Добавить открытый вопрос";
 }

@@ -10,6 +10,8 @@ import ru.mephi.knowledgechecker.service.UserService;
 import ru.mephi.knowledgechecker.state.impl.AbstractBotState;
 import ru.mephi.knowledgechecker.strategy.impl.menu.ToMainMenuStrategy;
 
+import java.util.Map;
+
 import static ru.mephi.knowledgechecker.common.ParamsWrapper.wrapMessageParams;
 
 @Slf4j
@@ -27,17 +29,17 @@ public class InitialState extends AbstractBotState {
     }
 
     @Override
-    public void process(Update update) {
+    public void process(Update update, Map<String, Object> data) {
         UserDto userDto = update.getCallbackQuery() != null
                 ? update.getCallbackQuery().getFrom()
                 : update.getMessage().getFrom();
-        if (userService.get(userDto.getId()).isEmpty()) {
+        if (userService.get(userDto.getId()) == null) {
             userService.save(userDto);
             log.info("👤 Пользователь {} ({}) зарегистрирован!", userDto.getFirstName(), userDto.getUsername());
             MessageParams params = wrapMessageParams(userDto.getId(), "👤 Пользователь " + userDto.getFirstName()
                     + "(" + userDto.getUsername() + ") зарегистрирован!", null);
             telegramApiClient.sendMessage(params);
         }
-        super.process(update);
+        super.process(update, data);
     }
 }

@@ -7,6 +7,8 @@ import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 import ru.mephi.knowledgechecker.state.impl.menu.InitialState;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -14,7 +16,7 @@ import java.util.concurrent.ConcurrentMap;
 @Component
 public class StateContext {
     private final InitialState initialState;
-    private final ConcurrentMap<Long, BotState> states = new ConcurrentHashMap<>();
+    private final ConcurrentMap<Long, ExtendedState> states = new ConcurrentHashMap<>();
     private final ConcurrentMap<Long, LocalDateTime> timestamps = new ConcurrentHashMap<>();
 
     public StateContext(InitialState initialState) {
@@ -24,27 +26,39 @@ public class StateContext {
     public void process(Update update) {
         try {
             Long userId = update.getUserId();
-            BotState currentState = getState(userId);
-            log.info("CURRENT STATE: {}", currentState.getClass().getName());
-            currentState.process(update);
+            ExtendedState currentState = getState(userId);
+            log.info("CURRENT STATE: {}", currentState.getState().getClass().getName());
+            currentState.getState().process(update, currentState.getData());
         } catch (InvalidUpdateException e) {
             log.warn(e.getMessage());
         }
     }
 
     // todo поменять мапу на БД (точнее сохранить мапу для кэширования)
-    public BotState getState(Long userId) {
+    public ExtendedState getState(Long userId) {
         if (!states.containsKey(userId)) {
             // checkDB(); // todo потом тут еще в базу надо лезть проверять..
-            putState(userId, initialState);
-            return initialState;
+            putState(userId, initialState, new HashMap<>());
+            return getState(userId);
         }
         return states.get(userId);
     }
 
     // todo поменять мапу на БД (точнее сохранить мапу для кэширования)
-    public void putState(Long userId, BotState state) {
-        states.put(userId, state);
+    public void putState(Long userId, BotState state, Map<String, Object> data) {
+        if (!states.containsKey(userId)) {
+            states.put(userId, new ExtendedState(state, data));
+        } else {
+            ExtendedState extendedState = states.get(userId);
+            extendedState.setState(state);
+            extendedState.setData(data);
+        }
+        timestamps.put(userId, LocalDateTime.now());
+    }
+
+    public void putState(Long userId, Map<String, Object> data) {
+        ExtendedState extendedState = states.get(userId);
+        extendedState.setData(data);
         timestamps.put(userId, LocalDateTime.now());
     }
 }

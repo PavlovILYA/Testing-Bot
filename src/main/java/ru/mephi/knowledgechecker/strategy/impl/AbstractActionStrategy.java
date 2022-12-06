@@ -7,6 +7,7 @@ import ru.mephi.knowledgechecker.state.BotState;
 import ru.mephi.knowledgechecker.state.StateContext;
 import ru.mephi.knowledgechecker.strategy.ActionStrategy;
 
+import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -19,7 +20,11 @@ public abstract class AbstractActionStrategy implements ActionStrategy {
     protected BotState nextState;
     protected final Queue<BotState> availableStates = new ConcurrentLinkedQueue<>();
 
-    protected void putStateToContext(Long userId, BotState state) {
-        stateContext.putState(userId, state);
+    protected void putStateToContext(Long userId, BotState state, Map<String, Object> data) {
+        stateContext.putState(userId, state, data);
+    }
+
+    protected void putStateToContext(Long userId, Map<String, Object> data) {
+        stateContext.putState(userId, data);
     }
 }

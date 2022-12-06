@@ -8,16 +8,14 @@ import ru.mephi.knowledgechecker.model.user.User;
 import ru.mephi.knowledgechecker.model.user.mapper.UserMapper;
 import ru.mephi.knowledgechecker.repository.UserRepository;
 
-import java.util.Optional;
-
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
 
-    public Optional<User> get(Long id) {
-        Optional<User> user = userRepository.findById(id);
+    public User get(Long id) {
+        User user = userRepository.findById(id).orElse(null);
         log.info("Get user: {}", user);
         return user;
     }

@@ -13,6 +13,7 @@ import ru.mephi.knowledgechecker.strategy.impl.AbstractActionStrategy;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static ru.mephi.knowledgechecker.common.Constants.PUBLIC_TEST_LIST;
 import static ru.mephi.knowledgechecker.common.ParamsWrapper.*;
@@ -34,7 +35,7 @@ public class ToPublicTestListStrategy extends AbstractActionStrategy {
     }
 
     @Override
-    public void process(Update update) {
+    public void process(Update update, Map<String, Object> data) {
         Long userId;
         if (update.getCallbackQuery() != null) {
             userId = update.getCallbackQuery().getFrom().getId();
@@ -43,7 +44,7 @@ public class ToPublicTestListStrategy extends AbstractActionStrategy {
         }
         MessageParams params =
                 wrapMessageParams(userId, "▶️ ГЛАВНАЯ ➡️ ПУБЛИЧНЫЕ ТЕСТЫ", getInlineKeyboardMarkup());
-        putStateToContext(userId, nextState);
+        putStateToContext(userId, nextState, data);
         telegramApiClient.sendMessage(params);
     }
 

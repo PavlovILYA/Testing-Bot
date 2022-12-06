@@ -13,6 +13,7 @@ import ru.mephi.knowledgechecker.strategy.impl.AbstractMessageStrategy;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static ru.mephi.knowledgechecker.common.ParamsWrapper.wrapInlineKeyboardMarkup;
 import static ru.mephi.knowledgechecker.common.ParamsWrapper.wrapMessageParams;
@@ -31,11 +32,11 @@ public class ToAdminMenuStrategy extends AbstractMessageStrategy {
     }
 
     @Override
-    public void process(Update update) {
+    public void process(Update update, Map<String, Object> data) {
         Long userId = update.getMessage().getChat().getId();
         MessageParams params =
                 wrapMessageParams(userId, "▶️ ГЛАВНАЯ ➡️ АДМИНИСТРАТОРСКОЕ МЕНЮ", getInlineKeyboardMarkup());
-        putStateToContext(userId, nextState);
+        putStateToContext(userId, nextState, data);
         telegramApiClient.sendMessage(params);
     }
 

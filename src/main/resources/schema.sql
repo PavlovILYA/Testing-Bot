@@ -1,3 +1,12 @@
+DROP table users_tests;
+DROP table open_answers;
+DROP table open_questions;
+DROP table variable_questions_answers;
+DROP table variable_questions;
+DROP table variable_answers;
+DROP table tests;
+DROP table users;
+
 CREATE TABLE IF NOT EXISTS users (
     id BIGINT UNIQUE, -- from tg chat
     first_name VARCHAR(255),
@@ -18,7 +27,7 @@ CREATE TABLE IF NOT EXISTS tests (
     max_questions_number INT,
     test_type VARCHAR(255), -- enum
     PRIMARY KEY (unique_title),
-    FOREIGN KEY (id) REFERENCES users(id)
+    FOREIGN KEY (creator_id) REFERENCES users(id)
 );
 
 CREATE TABLE IF NOT EXISTS variable_answers (
@@ -83,13 +92,3 @@ CREATE TABLE IF NOT EXISTS users_tests ( -- сохраненные тесты,
     FOREIGN KEY (user_id) REFERENCES users(id),
     FOREIGN KEY (test_id) REFERENCES tests(id)
 );
-
-
--- DROP table users_tests;
--- DROP table open_answers;
--- DROP table open_questions;
--- DROP table variable_questions_answers;
--- DROP table variable_questions;
--- DROP table variable_answers;
--- DROP table tests;
--- DROP table users;

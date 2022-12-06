@@ -11,6 +11,7 @@ import ru.mephi.knowledgechecker.strategy.impl.AbstractCallbackQueryStrategy;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static ru.mephi.knowledgechecker.common.Constants.CREATE_PUBLIC_TEST;
 import static ru.mephi.knowledgechecker.common.Constants.PUBLIC_TEST_LIST;
@@ -30,11 +31,11 @@ public class ToTestCreatingStrategy extends AbstractCallbackQueryStrategy {
     }
 
     @Override
-    public void process(Update update) {
+    public void process(Update update, Map<String, Object> data) {
         Long userId = update.getCallbackQuery().getFrom().getId();
         MessageParams params =
                 wrapMessageParams(userId, "Введите уникальное название теста", getInlineKeyboardMarkup());
-        putStateToContext(userId, nextState);
+        putStateToContext(userId, nextState, data);
         telegramApiClient.sendMessage(params);
     }
 

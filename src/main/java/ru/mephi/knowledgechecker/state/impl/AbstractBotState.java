@@ -8,6 +8,7 @@ import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 import ru.mephi.knowledgechecker.state.BotState;
 import ru.mephi.knowledgechecker.strategy.ActionStrategy;
 
+import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -20,15 +21,15 @@ public abstract class AbstractBotState implements BotState {
     protected final Queue<ActionStrategy> availableStrategies = new ConcurrentLinkedQueue<>();
 
     @Override
-    public void process(Update update) {
+    public void process(Update update, Map<String, Object> data) {
         for (ActionStrategy strategy : availableStrategies) {
             if (strategy.apply(update)) {
                 log.info("USE STRATEGY: {}", strategy.getClass().getName());
-                strategy.process(update);
+                strategy.process(update, data);
                 return;
             }
         }
         log.info("USE STRATEGY: {}", unknownStrategy.getClass().getName());
-        unknownStrategy.process(update);
+        unknownStrategy.process(update, data);
     }
 }
