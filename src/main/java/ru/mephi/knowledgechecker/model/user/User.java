@@ -21,6 +21,7 @@ public class User {
     private String username;
 
     @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @ManyToMany // todo: fetch, cascade
     @JoinTable(
             name = "users_tests",
@@ -29,10 +30,14 @@ public class User {
     )
     private Set<Test> addedTests;
 
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "creator", // todo: fetch, cascade
             fetch = FetchType.LAZY)
     private Set<Test> createdTests;
 
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "user") // todo: fetch, cascade
     Set<OpenAnswer> openAnswers;
 }

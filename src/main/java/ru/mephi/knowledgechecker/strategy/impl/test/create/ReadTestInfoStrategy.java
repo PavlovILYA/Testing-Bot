@@ -70,7 +70,7 @@ public class ReadTestInfoStrategy extends AbstractMessageStrategy {
         MessageParams params =
                 wrapMessageParams(user.getId(), "Добавить вопрос \n(На данный момент сохранено n вопросов)",
                         getInlineKeyboardMarkup());
-        data.put("next", "maxQuestionsNumber");
+        data.remove("next");
         putStateToContext(user.getId(), nextState, data);
         telegramApiClient.sendMessage(params);
     }

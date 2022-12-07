@@ -7,6 +7,9 @@ import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.keyboard.KeyboardMarkup;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageParams;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.keyboard.inline.InlineKeyboardButton;
+import ru.mephi.knowledgechecker.model.test.Test;
+import ru.mephi.knowledgechecker.model.user.User;
+import ru.mephi.knowledgechecker.service.UserService;
 import ru.mephi.knowledgechecker.state.impl.menu.PublicTestListState;
 import ru.mephi.knowledgechecker.common.Constants;
 import ru.mephi.knowledgechecker.strategy.impl.AbstractActionStrategy;
@@ -21,7 +24,11 @@ import static ru.mephi.knowledgechecker.common.ParamsWrapper.*;
 @Slf4j
 @Component
 public class ToPublicTestListStrategy extends AbstractActionStrategy {
-    public ToPublicTestListStrategy(@Lazy PublicTestListState nextState) {
+    private final UserService userService;
+
+    public ToPublicTestListStrategy(UserService userService,
+                                    @Lazy PublicTestListState nextState) {
+        this.userService = userService;
         this.nextState = nextState;
     }
 
@@ -42,13 +49,14 @@ public class ToPublicTestListStrategy extends AbstractActionStrategy {
         } else {
             userId = update.getMessage().getChat().getId();
         }
+        User user = userService.get(userId);
         MessageParams params =
-                wrapMessageParams(userId, "▶️ ГЛАВНАЯ ➡️ ПУБЛИЧНЫЕ ТЕСТЫ", getInlineKeyboardMarkup());
+                wrapMessageParams(userId, "▶️ ГЛАВНАЯ ➡️ ПУБЛИЧНЫЕ ТЕСТЫ", getInlineKeyboardMarkup(user));
         putStateToContext(userId, nextState, data);
         telegramApiClient.sendMessage(params);
     }
 
-    private KeyboardMarkup getInlineKeyboardMarkup() {
+    private KeyboardMarkup getInlineKeyboardMarkup(User user) {
         List<List<InlineKeyboardButton>> markup = new ArrayList<>();
         List<InlineKeyboardButton> menu = new ArrayList<>();
         menu.add(InlineKeyboardButton.builder()
@@ -65,15 +73,14 @@ public class ToPublicTestListStrategy extends AbstractActionStrategy {
                 .build());
         markup.add(menu);
 
-        // todo
-//        List<InlineKeyboardButton> publicTests = new ArrayList<>();
-//        for (test : tests) {
-//            publicTests.add(InlineKeyboardButton.builder()
-//                    .text(test.getName())
-//                    .callbackData("public-test:" + test.getId())
-//                    .build());
-//        }
-//        markup.add(two);
+        for (Test test: user.getCreatedTests()) {
+            List<InlineKeyboardButton> testList = new ArrayList<>();
+            testList.add(InlineKeyboardButton.builder()
+                    .text(test.getTitle())
+                    .callbackData("public-test:" + test.getId())
+                    .build());
+            markup.add(testList);
+        }
         return wrapInlineKeyboardMarkup(markup);
     }
 }

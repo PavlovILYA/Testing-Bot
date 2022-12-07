@@ -1,9 +1,6 @@
 package ru.mephi.knowledgechecker.model.test;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import ru.mephi.knowledgechecker.model.question.VariableQuestion;
 import ru.mephi.knowledgechecker.model.user.User;
 
@@ -22,7 +19,9 @@ public class Test {
     private Long id;
     @Column(unique = true)
     private String uniqueTitle;
-    @ManyToOne  // todo: fetch, cascade
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @ManyToOne(fetch = FetchType.LAZY)  // todo: fetch, cascade
     @JoinColumn(table = "tests", name = "creator_id")
     private User creator;
     private String title;
@@ -31,10 +30,14 @@ public class Test {
     @Enumerated(value = EnumType.STRING)
     private TestType testType;
 
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "test", // todo: fetch, cascade
               fetch = FetchType.LAZY, orphanRemoval = true)
     Set<VariableQuestion> variableQuestions;
 
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @ManyToMany(mappedBy = "addedTests") // а надо оно здесь вообще?
     Set<User> usingUsers;
 }
