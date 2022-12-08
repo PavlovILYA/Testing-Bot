@@ -1,6 +1,7 @@
 package ru.mephi.knowledgechecker.strategy.impl.test.create;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageParams;
@@ -23,7 +24,7 @@ public class ReadUniqueTestNameStrategy extends AbstractMessageStrategy {
     private final UserService userService;
 
     public ReadUniqueTestNameStrategy(TestService testService, UserService userService,
-                                      TestInfoReadingState testInfoReadingState) {
+                                      @Lazy TestInfoReadingState testInfoReadingState) {
         this.testService = testService;
         this.userService = userService;
         this.nextState = testInfoReadingState;

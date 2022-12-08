@@ -1,4 +1,4 @@
-package ru.mephi.knowledgechecker.strategy.impl.test.create;
+package ru.mephi.knowledgechecker.strategy.impl.test.create.question.variable;
 
 import org.springframework.stereotype.Component;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;

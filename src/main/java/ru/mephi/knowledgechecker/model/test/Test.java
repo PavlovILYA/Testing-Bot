@@ -1,6 +1,7 @@
 package ru.mephi.knowledgechecker.model.test;
 
 import lombok.*;
+import ru.mephi.knowledgechecker.model.question.OpenQuestion;
 import ru.mephi.knowledgechecker.model.question.VariableQuestion;
 import ru.mephi.knowledgechecker.model.user.User;
 
@@ -35,6 +36,12 @@ public class Test {
     @OneToMany(mappedBy = "test", // todo: fetch, cascade
               fetch = FetchType.LAZY, orphanRemoval = true)
     Set<VariableQuestion> variableQuestions;
+
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @OneToMany(mappedBy = "test", // todo: fetch, cascade
+            fetch = FetchType.LAZY, orphanRemoval = true)
+    Set<OpenQuestion> openQuestions;
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude

@@ -1,10 +1,10 @@
-package ru.mephi.knowledgechecker.state.impl.test.create;
+package ru.mephi.knowledgechecker.state.impl.test.create.question;
 
 import org.springframework.stereotype.Component;
 import ru.mephi.knowledgechecker.state.impl.AbstractBotState;
 import ru.mephi.knowledgechecker.strategy.impl.menu.ToMainMenuStrategy;
-import ru.mephi.knowledgechecker.strategy.impl.test.create.AddOpenQuestionStrategy;
-import ru.mephi.knowledgechecker.strategy.impl.test.create.AddVariableQuestionStrategy;
+import ru.mephi.knowledgechecker.strategy.impl.test.create.question.open.AddOpenQuestionStrategy;
+import ru.mephi.knowledgechecker.strategy.impl.test.create.question.variable.AddVariableQuestionStrategy;
 
 @Component
 public class QuestionAddingState extends AbstractBotState {
