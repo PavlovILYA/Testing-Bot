@@ -76,7 +76,9 @@ public class ReadOpenQuestionInfoStrategy extends AbstractMessageStrategy {
         questionCount += test.getOpenQuestions().size();
         MessageParams params =
                 wrapMessageParams(user.getId(),
-                        "Добавить вопрос \n(На данный момент сохранено " + questionCount + " вопросов)",
+                        "Добавить вопрос \n\n" +
+                                "На данный момент сохранено " + questionCount + " вопросов\n" +
+                                "Максимальное количество отображаемых вопросов: " + test.getMaxQuestionsNumber(),
                         getAddQuestionInlineKeyboardMarkup());
         data.remove("next");
         putStateToContext(user.getId(), nextState, data);

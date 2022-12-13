@@ -37,11 +37,26 @@ public class KeyboardMarkups {
                 .text("Открытый")
                 .callbackData(ADD_OPEN_QUESTION)
                 .build());
-        markup.add(menu);
         menu.add(InlineKeyboardButton.builder()
                 .text("✅️")
                 .callbackData(TO_MAIN_MENU)
                 .build());
+        markup.add(menu);
+        return wrapInlineKeyboardMarkup(markup);
+    }
+
+    public static KeyboardMarkup getAddWrongVariableAnswerInlineKeyboardMarkup() {
+        List<List<InlineKeyboardButton>> markup = new ArrayList<>();
+        List<InlineKeyboardButton> menu = new ArrayList<>();
+        menu.add(InlineKeyboardButton.builder()
+                .text("Добавить")
+                .callbackData(ADD_WRONG_VARIABLE_ANSWER)
+                .build());
+        menu.add(InlineKeyboardButton.builder()
+                .text("✅️")
+                .callbackData(TO_MAIN_MENU)
+                .build());
+        markup.add(menu);
         return wrapInlineKeyboardMarkup(markup);
     }
 }
