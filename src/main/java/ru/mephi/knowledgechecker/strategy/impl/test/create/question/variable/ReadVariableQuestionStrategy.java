@@ -11,6 +11,7 @@ import ru.mephi.knowledgechecker.service.TestService;
 import ru.mephi.knowledgechecker.service.UserService;
 import ru.mephi.knowledgechecker.service.VariableAnswerService;
 import ru.mephi.knowledgechecker.service.VariableQuestionService;
+import ru.mephi.knowledgechecker.state.impl.test.create.question.variable.WrongVariableAnswerAddingState;
 import ru.mephi.knowledgechecker.strategy.impl.AbstractMessageStrategy;
 
 import java.util.Map;
@@ -27,12 +28,15 @@ public class ReadVariableQuestionStrategy extends AbstractMessageStrategy {
 
     public ReadVariableQuestionStrategy(UserService userService,
                                         TestService testService,
-                                        VariableQuestionService variableQuestionService, VariableAnswerService variableAnswerService) {
+                                        VariableQuestionService variableQuestionService,
+                                        VariableAnswerService variableAnswerService,
+                                        WrongVariableAnswerAddingState wrongVariableAnswerAddingState) {
 
         this.userService = userService;
         this.testService = testService;
         this.variableQuestionService = variableQuestionService;
         this.variableAnswerService = variableAnswerService;
+        this.nextState = wrongVariableAnswerAddingState;
     }
 
     @Override
@@ -49,7 +53,7 @@ public class ReadVariableQuestionStrategy extends AbstractMessageStrategy {
                 readText(update.getMessage().getText(), data, user, test);
                 break;
             case "correctAnswer":
-                readCorrectAnswer(update.getMessage().getText(), data, user, test);
+                readCorrectAnswer(update.getMessage().getText(), data, user);
                 break;
             case "maxAnswerNumber":
                 readMaxAnswerNumber(Integer.parseInt(update.getMessage().getText()), data, user);
@@ -73,7 +77,7 @@ public class ReadVariableQuestionStrategy extends AbstractMessageStrategy {
         telegramApiClient.sendMessage(params);
     }
 
-    private void readCorrectAnswer(String correctAnswerText, Map<String, Object> data, User user, Test test) {
+    private void readCorrectAnswer(String correctAnswerText, Map<String, Object> data, User user) {
         VariableQuestion question = variableQuestionService.get((Long) data.get("questionId"));
         VariableAnswer answer = VariableAnswer.builder()
                 .text(correctAnswerText)
@@ -96,8 +100,8 @@ public class ReadVariableQuestionStrategy extends AbstractMessageStrategy {
         MessageParams params =
                 wrapMessageParams(user.getId(),
                         "Добавить неверный ответ\n\n" +
-                                "На данный момент добавлено " + question.getWrongAnswers().size() + " неверных ответов\n" +
-                                "Максимальное количество отображаемых неверных вопросов: " + question.getMaxAnswerNumber(),
+                             "На данный момент добавлено " + question.getWrongAnswers().size() + " неверных ответов\n" +
+                             "Максимальное количество отображаемых неверных вопросов: " + question.getMaxAnswerNumber(),
                         getAddWrongVariableAnswerInlineKeyboardMarkup());
         data.remove("next");
         putStateToContext(user.getId(), nextState, data);
