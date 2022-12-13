@@ -54,7 +54,7 @@ public class KeyboardMarkups {
                 .build());
         menu.add(InlineKeyboardButton.builder()
                 .text("✅️")
-                .callbackData(TO_MAIN_MENU)
+                .callbackData(TO_QUESTION_ADDING)
                 .build());
         markup.add(menu);
         return wrapInlineKeyboardMarkup(markup);

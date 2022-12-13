@@ -35,7 +35,7 @@ public class ToAdminMenuStrategy extends AbstractMessageStrategy {
     public void process(Update update, Map<String, Object> data) {
         Long userId = update.getMessage().getChat().getId();
         MessageParams params =
-                wrapMessageParams(userId, "▶️ ГЛАВНАЯ ➡️ АДМИНИСТРАТОРСКОЕ МЕНЮ", getInlineKeyboardMarkup());
+                wrapMessageParams(userId, "🔽\nГЛАВНАЯ\n⬇️\nАДМИНИСТРАТОРСКОЕ МЕНЮ", getInlineKeyboardMarkup());
         putStateToContext(userId, nextState, data);
         telegramApiClient.sendMessage(params);
     }

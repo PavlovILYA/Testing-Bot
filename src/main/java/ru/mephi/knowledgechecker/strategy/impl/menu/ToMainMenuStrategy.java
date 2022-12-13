@@ -41,7 +41,7 @@ public class ToMainMenuStrategy extends AbstractActionStrategy {
                 ? update.getCallbackQuery().getFrom().getId()
                 : update.getMessage().getFrom().getId();
         putStateToContext(userId, nextState, data);
-        sendStartMenu(userId, "▶️ ГЛАВНАЯ ⤵️");
+        sendStartMenu(userId, "🔽️\nГЛАВНАЯ ⤵️");
     }
 
     private void sendStartMenu(Long chatId, String text) {

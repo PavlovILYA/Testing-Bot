@@ -13,4 +13,6 @@ public class Constants {
     public static final String ADD_VARIABLE_QUESTION = "Добавить вопрос с вариантами";
     public static final String ADD_OPEN_QUESTION = "Добавить открытый вопрос";
     public static final String ADD_WRONG_VARIABLE_ANSWER = "Добавить неверный ответ";
+    public static final String TO_QUESTION_ADDING = "Добавить вопрос";
+
 }

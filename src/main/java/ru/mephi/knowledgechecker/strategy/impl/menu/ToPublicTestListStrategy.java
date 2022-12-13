@@ -51,7 +51,7 @@ public class ToPublicTestListStrategy extends AbstractActionStrategy {
         }
         User user = userService.get(userId);
         MessageParams params =
-                wrapMessageParams(userId, "▶️ ГЛАВНАЯ ➡️ ПУБЛИЧНЫЕ ТЕСТЫ", getInlineKeyboardMarkup(user));
+                wrapMessageParams(userId, "🔽\nГЛАВНАЯ\n⬇️️\nПУБЛИЧНЫЕ ТЕСТЫ", getInlineKeyboardMarkup(user));
         putStateToContext(userId, nextState, data);
         telegramApiClient.sendMessage(params);
     }

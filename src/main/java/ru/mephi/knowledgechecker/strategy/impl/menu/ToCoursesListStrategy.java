@@ -34,7 +34,7 @@ public class ToCoursesListStrategy extends AbstractMessageStrategy {
     public void process(Update update, Map<String, Object> data) {
         Long userId = update.getMessage().getChat().getId();
         MessageParams params =
-                wrapMessageParams(userId, "▶️ ГЛАВНАЯ ➡️ КУРСЫ", getInlineKeyboardMarkup());
+                wrapMessageParams(userId, "🔽\nГЛАВНАЯ\n⬇️\n️КУРСЫ", getInlineKeyboardMarkup());
         putStateToContext(userId, nextState, data);
         telegramApiClient.sendMessage(params);
     }

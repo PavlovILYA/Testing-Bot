@@ -1,5 +1,6 @@
 package ru.mephi.knowledgechecker.strategy.impl.test.create.question.variable;
 
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageParams;
@@ -30,7 +31,7 @@ public class ReadVariableQuestionStrategy extends AbstractMessageStrategy {
                                         TestService testService,
                                         VariableQuestionService variableQuestionService,
                                         VariableAnswerService variableAnswerService,
-                                        WrongVariableAnswerAddingState wrongVariableAnswerAddingState) {
+                                        @Lazy WrongVariableAnswerAddingState wrongVariableAnswerAddingState) {
 
         this.userService = userService;
         this.testService = testService;
@@ -70,7 +71,7 @@ public class ReadVariableQuestionStrategy extends AbstractMessageStrategy {
         question = variableQuestionService.save(question);
         MessageParams params =
                 wrapMessageParams(user.getId(), "Введите правильный ответ\n\n" +
-                        "(Предпочтительно вводить короткие варианты ответа: A, B, etc.)", null);
+                        "Предпочтительно вводить короткие варианты ответа: A, B, etc.", null);
         data.put("next", "correctAnswer");
         data.put("questionId", question.getId());
         putStateToContext(user.getId(), data);

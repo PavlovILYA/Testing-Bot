@@ -53,7 +53,7 @@ public class ReadTestInfoStrategy extends AbstractMessageStrategy {
         test.setTitle(title);
         testService.save(test);
         MessageParams params =
-                wrapMessageParams(user.getId(), "Введите полное количество отображаемых вопросов\n" +
+                wrapMessageParams(user.getId(), "Введите количество отображаемых вопросов\n\n" +
                                 "(Вопросов можно будет создать больше, тогда будет браться случайная выборка)", null);
         data.put("next", "maxQuestionsNumber");
         putStateToContext(user.getId(), data);
@@ -67,7 +67,9 @@ public class ReadTestInfoStrategy extends AbstractMessageStrategy {
         questionCount += test.getOpenQuestions().size();
         MessageParams params =
                 wrapMessageParams(user.getId(),
-                        "Добавить вопрос \n(На данный момент сохранено " + questionCount + " вопросов)",
+                        "Добавить вопрос \n\n" +
+                                "На данный момент сохранено " + questionCount + " вопросов\n" +
+                                "Максимальное количество отображаемых вопросов: " + test.getMaxQuestionsNumber(),
                         getAddQuestionInlineKeyboardMarkup());
         data.remove("next");
         putStateToContext(user.getId(), nextState, data);

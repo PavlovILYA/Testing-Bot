@@ -28,7 +28,7 @@ public class AddWrongVariableAnswerStrategy extends AbstractCallbackQueryStrateg
     public void process(Update update, Map<String, Object> data) {
         MessageParams params =
                 wrapMessageParams(update.getCallbackQuery().getFrom().getId(), "Введите правильный ответ\n\n" +
-                        "(Предпочтительно вводить короткие варианты ответа: A, B, etc.)", null);
+                        "Предпочтительно вводить короткие варианты ответа: A, B, etc.", null);
         putStateToContext(update.getCallbackQuery().getFrom().getId(), nextState, data);
         telegramApiClient.sendMessage(params);
     }

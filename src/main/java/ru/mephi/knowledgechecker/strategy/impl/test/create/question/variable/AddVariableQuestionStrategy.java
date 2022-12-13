@@ -35,7 +35,7 @@ public class AddVariableQuestionStrategy extends AbstractCallbackQueryStrategy {
         User user = userService.get(update.getCallbackQuery().getFrom().getId());
         MessageParams params =
                 wrapMessageParams(user.getId(), "Введите содержание вопроса\n\n" +
-                        "*Предпочтительно* **добавить** в _формулировку_ __вопроса__ варианты ответа:\n" +
+                        "Предпочтительно добавить в формулировку вопроса варианты ответа:\n" +
                         "A: Ответ 1\n" +
                         "B: Ответ 2\n" +
                         "etc.", null);
