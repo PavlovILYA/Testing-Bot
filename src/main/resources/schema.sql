@@ -1,3 +1,4 @@
+DROP table solving;
 DROP table users_tests;
 DROP table open_answers;
 DROP table open_questions;
@@ -92,3 +93,20 @@ CREATE TABLE IF NOT EXISTS users_tests ( -- сохраненные тесты,
     FOREIGN KEY (user_id) REFERENCES users(id),
     FOREIGN KEY (test_id) REFERENCES tests(id)
 );
+
+CREATE TABLE IF NOT EXISTS solving ( -- эту таблицу потом можно будет вынести в отдельную БД
+    id BIGINT,                       -- и создать отдельный микросервис для работы со статистикой
+    user_id BIGINT UNIQUE,           -- (который хранит информацию из других источников, например!)
+    test_id BIGINT,
+    open_question_ids VARCHAR(1000),
+    open_answer_ids VARCHAR(1000),
+    variable_question_ids VARCHAR(1000),
+    variable_answer_ids VARCHAR(1000),
+    started_at timestamp,
+    PRIMARY KEY (id),
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (test_id) REFERENCES tests(id)
+);
+
+CREATE INDEX IF NOT EXISTS solving_user_id
+    ON solving(user_id);
