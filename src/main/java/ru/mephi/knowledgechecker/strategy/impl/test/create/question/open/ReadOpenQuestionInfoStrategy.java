@@ -42,7 +42,7 @@ public class ReadOpenQuestionInfoStrategy extends AbstractMessageStrategy {
     @Override
     public void process(Update update, Map<String, Object> data) {
         User user = userService.get(update.getMessage().getFrom().getId());
-        Test test = testService.get((String) data.get("testId"));
+        Test test = testService.getByUniqueTitle((String) data.get("testId"));
         switch ((String) data.get("next")) {
             case "text":
                 readText(update.getMessage().getText(), data, user, test);

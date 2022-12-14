@@ -28,6 +28,7 @@ public class StateContext {
             Long userId = update.getUserId();
             ExtendedState currentState = getState(userId);
             log.info("CURRENT STATE: {}", currentState.getState().getClass().getName());
+            log.info("CURRENT DATA: {}", currentState.getData());
             currentState.getState().process(update, currentState.getData());
         } catch (InvalidUpdateException e) {
             log.warn(e.getMessage());

@@ -12,7 +12,7 @@ import ru.mephi.knowledgechecker.repository.TestRepository;
 public class TestService {
     private final TestRepository testRepository;
 
-    public Test get(String uniqueTitle) {
+    public Test getByUniqueTitle(String uniqueTitle) {
         Test test = testRepository.findByUniqueTitle(uniqueTitle);
         log.info("Get test: {}", test);
         return test;

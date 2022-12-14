@@ -33,7 +33,7 @@ public class ToQuestionAddingStrategy extends AbstractCallbackQueryStrategy {
 
     @Override
     public void process(Update update, Map<String, Object> data) {
-        Test test = testService.get((String) data.get("testId"));
+        Test test = testService.getByUniqueTitle((String) data.get("testId"));
         int questionCount = test.getVariableQuestions().size();
         questionCount += test.getOpenQuestions().size();
         MessageParams params =

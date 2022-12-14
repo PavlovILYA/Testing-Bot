@@ -59,4 +59,17 @@ public class KeyboardMarkups {
         markup.add(menu);
         return wrapInlineKeyboardMarkup(markup);
     }
+
+    public static KeyboardMarkup getTestSolvingTypesInlineKeyboardMarkup() {
+        List<List<InlineKeyboardButton>> markup = new ArrayList<>();
+        markup.add(List.of(InlineKeyboardButton.builder()
+                .text(SHOW_ANSWER)
+                .callbackData(SHOW_ANSWER)
+                .build()));
+        markup.add(List.of(InlineKeyboardButton.builder()
+                .text(GENERATE_REPORT)
+                .callbackData(GENERATE_REPORT)
+                .build()));
+        return wrapInlineKeyboardMarkup(markup);
+    }
 }
