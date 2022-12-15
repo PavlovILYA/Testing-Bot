@@ -5,7 +5,7 @@ import ru.mephi.knowledgechecker.model.answer.OpenAnswer;
 import ru.mephi.knowledgechecker.model.test.Test;
 
 import javax.persistence.*;
-import java.util.Set;
+import java.util.List;
 
 @Data
 @Entity
@@ -28,16 +28,16 @@ public class User {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "test_id")
     )
-    private Set<Test> addedTests;
+    private List<Test> addedTests;
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "creator", // todo: fetch, cascade
             fetch = FetchType.LAZY)
-    private Set<Test> createdTests;
+    private List<Test> createdTests;
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "user") // todo: fetch, cascade
-    Set<OpenAnswer> openAnswers;
+    List<OpenAnswer> openAnswers;
 }

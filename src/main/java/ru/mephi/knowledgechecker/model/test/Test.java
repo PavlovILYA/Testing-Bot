@@ -6,7 +6,7 @@ import ru.mephi.knowledgechecker.model.question.VariableQuestion;
 import ru.mephi.knowledgechecker.model.user.User;
 
 import javax.persistence.*;
-import java.util.Set;
+import java.util.List;
 
 @Data
 @Entity
@@ -35,16 +35,16 @@ public class Test {
     @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "test", // todo: fetch, cascade
               fetch = FetchType.LAZY, orphanRemoval = true)
-    Set<VariableQuestion> variableQuestions;
+    List<VariableQuestion> variableQuestions;
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "test", // todo: fetch, cascade
             fetch = FetchType.LAZY, orphanRemoval = true)
-    Set<OpenQuestion> openQuestions;
+    List<OpenQuestion> openQuestions;
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @ManyToMany(mappedBy = "addedTests") // а надо оно здесь вообще?
-    Set<User> usingUsers;
+    List<User> usingUsers;
 }

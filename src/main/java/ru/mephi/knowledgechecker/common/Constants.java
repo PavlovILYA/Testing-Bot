@@ -14,6 +14,6 @@ public class Constants {
     public static final String ADD_OPEN_QUESTION = "Добавить открытый вопрос";
     public static final String ADD_WRONG_VARIABLE_ANSWER = "Добавить неверный ответ";
     public static final String TO_QUESTION_ADDING = "Добавить вопрос";
-    public static final String SHOW_ANSWER = "Показывать правильный ответ";
-    public static final String GENERATE_REPORT = "Результат в конце теста";
+    public static final String DEMONSTRATION_ANSWER = "Показывать правильный ответ";
+    public static final String REPORT_GENERATING = "Результат в конце теста";
 }

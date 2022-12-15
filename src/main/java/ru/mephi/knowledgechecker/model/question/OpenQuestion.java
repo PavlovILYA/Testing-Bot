@@ -8,7 +8,7 @@ import ru.mephi.knowledgechecker.model.answer.OpenAnswer;
 import ru.mephi.knowledgechecker.model.test.Test;
 
 import javax.persistence.*;
-import java.util.Set;
+import java.util.List;
 
 @Data
 @Entity
@@ -30,5 +30,5 @@ public class OpenQuestion {
     private String correctAnswer;
 
     @OneToMany(mappedBy = "question") // todo: fetch, cascade
-    Set<OpenAnswer> ratings;
+    List<OpenAnswer> ratings;
 }

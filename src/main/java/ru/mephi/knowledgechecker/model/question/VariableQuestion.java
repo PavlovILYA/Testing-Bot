@@ -8,7 +8,7 @@ import ru.mephi.knowledgechecker.model.answer.VariableAnswer;
 import ru.mephi.knowledgechecker.model.test.Test;
 
 import javax.persistence.*;
-import java.util.Set;
+import java.util.List;
 
 @Data
 @Entity
@@ -38,5 +38,5 @@ public class VariableQuestion {
             joinColumns = @JoinColumn(name = "question_id"),
             inverseJoinColumns = @JoinColumn(name = "answer_id")
     )
-    private Set<VariableAnswer> wrongAnswers;
+    private List<VariableAnswer> wrongAnswers;
 }
