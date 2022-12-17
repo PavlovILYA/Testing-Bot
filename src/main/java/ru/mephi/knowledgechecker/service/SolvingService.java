@@ -53,7 +53,10 @@ public class SolvingService {
                 .user(user)
                 .test(test)
                 .openQuestionIds(openQuestionIds)
+                .openAnswerIds("")
                 .variableQuestionIds(variableQuestionIds)
+                .variableAnswerIds("")
+                .variableAnswerResults("")
                 .startedAt(LocalDateTime.now())
                 .build();
 

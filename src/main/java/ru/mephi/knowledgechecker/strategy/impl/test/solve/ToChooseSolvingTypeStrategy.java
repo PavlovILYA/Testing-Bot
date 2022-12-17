@@ -27,7 +27,7 @@ public class ToChooseSolvingTypeStrategy extends AbstractCallbackQueryStrategy {
 
     @Override
     public boolean apply(Update update) {
-        if (!super.apply(update) || !update.getCallbackQuery().getData().split(":")[1].equals("public-test")) {
+        if (!super.apply(update) || !update.getCallbackQuery().getData().split(":")[0].equals("public-test")) {
             return false;
         }
 

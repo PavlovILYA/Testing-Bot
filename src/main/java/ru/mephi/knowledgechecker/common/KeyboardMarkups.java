@@ -9,6 +9,7 @@ import ru.mephi.knowledgechecker.model.question.VariableQuestion;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static ru.mephi.knowledgechecker.common.Constants.*;
 import static ru.mephi.knowledgechecker.common.ParamsWrapper.wrapInlineKeyboardMarkup;
@@ -78,6 +79,10 @@ public class KeyboardMarkups {
 
     public static KeyboardMarkup getVariableAnswerKeyboardMarkup(VariableQuestion question) {
         List<VariableAnswer> answers = question.getWrongAnswers();
+        Collections.shuffle(answers);
+        answers = answers.stream()
+                .limit(question.getMaxAnswerNumber() - 1)
+                .collect(Collectors.toList());
         answers.add(question.getCorrectAnswer());
         Collections.shuffle(answers);
 

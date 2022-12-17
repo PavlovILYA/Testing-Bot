@@ -77,7 +77,7 @@ public class ToPublicTestListStrategy extends AbstractActionStrategy {
             List<InlineKeyboardButton> testList = new ArrayList<>();
             testList.add(InlineKeyboardButton.builder()
                     .text(test.getTitle())
-                    .callbackData("public-test:" + test.getId())
+                    .callbackData("public-test:" + test.getUniqueTitle())
                     .build());
             markup.add(testList);
         }

@@ -30,5 +30,6 @@ public class Solving {
     private String openAnswerIds;
     private String variableQuestionIds;
     private String variableAnswerIds;
+    private String variableAnswerResults;
     private LocalDateTime startedAt;
 }

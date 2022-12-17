@@ -1,12 +1,12 @@
 DROP table solving;
-DROP table users_tests;
-DROP table open_answers;
-DROP table open_questions;
-DROP table variable_questions_answers;
-DROP table variable_questions;
-DROP table variable_answers;
-DROP table tests;
-DROP table users;
+-- DROP table users_tests;
+-- DROP table open_answers;
+-- DROP table open_questions;
+-- DROP table variable_questions_answers;
+-- DROP table variable_questions;
+-- DROP table variable_answers;
+-- DROP table tests;
+-- DROP table users;
 
 CREATE TABLE IF NOT EXISTS users (
     id BIGINT UNIQUE, -- from tg chat
@@ -94,14 +94,15 @@ CREATE TABLE IF NOT EXISTS users_tests ( -- сохраненные тесты,
     FOREIGN KEY (test_id) REFERENCES tests(id)
 );
 
-CREATE TABLE IF NOT EXISTS solving ( -- эту таблицу потом можно будет вынести в отдельную БД
-    id BIGINT,                       -- и создать отдельный микросервис для работы со статистикой
-    user_id BIGINT UNIQUE,           -- (который хранит информацию из других источников, например!)
-    test_id BIGINT,
-    open_question_ids VARCHAR(1000),
+CREATE TABLE IF NOT EXISTS solving (
+    id BIGINT GENERATED ALWAYS AS IDENTITY UNIQUE,
+    user_id BIGINT UNIQUE,           -- эту таблицу потом можно будет вынести в отдельную БД
+    test_id BIGINT,                  -- и создать отдельный микросервис для работы со статистикой
+    open_question_ids VARCHAR(1000), -- (который хранит информацию из других источников, например!)
     open_answer_ids VARCHAR(1000),
     variable_question_ids VARCHAR(1000),
     variable_answer_ids VARCHAR(1000),
+    variable_answer_results VARCHAR(1000),
     started_at timestamp,
     PRIMARY KEY (id),
     FOREIGN KEY (user_id) REFERENCES users(id),

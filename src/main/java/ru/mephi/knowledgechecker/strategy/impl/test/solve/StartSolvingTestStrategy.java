@@ -51,6 +51,6 @@ public class StartSolvingTestStrategy extends AbstractCallbackQueryStrategy {
         data.remove("testUniqueTitle");
         data.put("solvingType", update.getCallbackQuery().getData());
         putStateToContext(update.getCallbackQuery().getFrom().getId(), nextState, data);
-        showQuestionStrategy.sendQuestion(solving, data);
+        showQuestionStrategy.sendQuestion(solving, data, update);
     }
 }
