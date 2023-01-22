@@ -39,12 +39,26 @@ public class ReadWrongVariableAnswerStrategy extends AbstractMessageStrategy {
     @Override
     public void process(Update update, Map<String, Object> data) {
         VariableQuestion question = variableQuestionService.get((Long) data.get("questionId"));
-        VariableAnswer answer = VariableAnswer.builder()
-                .text(update.getMessage().getText())
-                .build();
-        answer = variableAnswerService.save(answer);
+        if (question.getCorrectAnswer().getText().equals(update.getMessage().getText())) {
+            sendError(update.getMessage().getFrom().getId(), "Это правильный вариант ответа, " +
+                    "попробуйте еще раз ввести пример неверного");
+            return;
+        }
+        VariableAnswer answer = variableAnswerService.getByText(update.getMessage().getText());
+        if (answer == null) {
+            answer = VariableAnswer.builder()
+                    .text(update.getMessage().getText())
+                    .build();
+            answer = variableAnswerService.save(answer);
+        }
         question.getWrongAnswers().add(answer);
-        question = variableQuestionService.save(question);
+        try {
+            question = variableQuestionService.save(question);
+        } catch (RuntimeException e) {
+            sendError(update.getMessage().getFrom().getId(), "Этот вариант ответа Вы уже использовали для этого вопроса, " +
+                    "попробуйте еще раз");
+            return;
+        }
         String boldMessage = "Добавление неверного ответа";
         String italicMessage =
                 "\n\nНа данный момент добавлено " + question.getWrongAnswers().size() + " неверных ответов\n" +

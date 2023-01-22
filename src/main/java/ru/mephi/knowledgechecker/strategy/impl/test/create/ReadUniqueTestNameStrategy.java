@@ -41,6 +41,11 @@ public class ReadUniqueTestNameStrategy extends AbstractMessageStrategy {
     public void process(Update update, Map<String, Object> data) {
         String uniqueTestName = update.getMessage().getText();
         User user = userService.get(update.getMessage().getFrom().getId());
+        if (testService.getByUniqueTitle(uniqueTestName) != null) {
+            sendError(update.getMessage().getFrom().getId(), "Тест с таким названием уже существует, " +
+                    "попробуйте еще раз");
+            return;
+        }
         Test test = Test.builder()
                 .uniqueTitle(uniqueTestName)
                 .creator(user)

@@ -79,7 +79,7 @@ public class ShowQuestionStrategy extends AbstractMessageStrategy {
     private void saveVariableAnswer(Solving solving, String answerText) {
         VariableAnswer answer = variableAnswerService.getByText(answerText);
         if (answer == null) {
-            sendError(solving.getUser().getId());
+            sendError(solving.getUser().getId(), "Неверный формат ответа");
             return;
         }
 
@@ -133,16 +133,6 @@ public class ShowQuestionStrategy extends AbstractMessageStrategy {
         answer = openAnswerService.save(answer);
         solving.setOpenAnswerIds(concatIt(solving.getOpenAnswerIds(), answer.getId().getQuestionId()));
         solvingService.save(solving);
-    }
-
-    private void sendError(long userId) {
-        String message = "Неверный формат ответа 🥴";
-        MessageParams params =
-                wrapMessageParams(userId, message,
-                        List.of(new MessageEntity("bold", 0, message.length())),
-                        null);
-        telegramApiClient.sendMessage(params);
-        // todo: обновить keyboard?
     }
 
     public void sendQuestion(Solving solving, Map<String, Object> data, Update update) {
