@@ -59,7 +59,12 @@ public class ReadVariableQuestionStrategy extends AbstractMessageStrategy {
                 readCorrectAnswer(update.getMessage().getText(), data, user);
                 break;
             case "maxAnswerNumber":
-                readMaxAnswerNumber(Integer.parseInt(update.getMessage().getText()), data, user);
+                try {
+                    readMaxAnswerNumber(Integer.parseInt(update.getMessage().getText()), data, user);
+                } catch (NumberFormatException e) {
+                    sendError(user.getId(), "Неверный формат, попробуйте ввести число еще раз");
+                    return;
+                }
                 break;
             default: // todo: add attachment
         }

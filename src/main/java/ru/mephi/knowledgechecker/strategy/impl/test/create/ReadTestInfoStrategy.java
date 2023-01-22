@@ -45,7 +45,12 @@ public class ReadTestInfoStrategy extends AbstractMessageStrategy {
                 readTitle(update.getMessage().getText(), data, user, test);
                 break;
             case "maxQuestionsNumber":
-                readMaxQuestionsNumber(Integer.parseInt(update.getMessage().getText()), data, user, test);
+                try {
+                    readMaxQuestionsNumber(Integer.parseInt(update.getMessage().getText()), data, user, test);
+                } catch (NumberFormatException e) {
+                    sendError(user.getId(), "Неверный формат, попробуйте ввести число еще раз");
+                    return;
+                }
                 break;
             default: // todo: add attachment
         }

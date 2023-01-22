@@ -86,7 +86,7 @@ public class KeyboardMarkups {
         answers.add(question.getCorrectAnswer());
         Collections.shuffle(answers);
 
-        boolean odd = question.getMaxAnswerNumber() % 2 != 0;
+        boolean odd = answers.size() % 2 != 0;
 
         VariableAnswer oddAnswer = null;
         if (odd) {
