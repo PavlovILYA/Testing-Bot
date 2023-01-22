@@ -19,9 +19,12 @@ import ru.mephi.knowledgechecker.state.impl.menu.MainMenuState;
 import ru.mephi.knowledgechecker.strategy.impl.AbstractMessageStrategy;
 import ru.mephi.knowledgechecker.strategy.impl.menu.ToMainMenuStrategy;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static ru.mephi.knowledgechecker.common.Constants.DEMONSTRATION_ANSWER;
 import static ru.mephi.knowledgechecker.common.KeyboardMarkups.getVariableAnswerKeyboardMarkup;
 import static ru.mephi.knowledgechecker.common.ParamsWrapper.wrapMessageParams;
 
@@ -67,19 +70,20 @@ public class ShowQuestionStrategy extends AbstractMessageStrategy {
     private void saveAnswer(Solving solving, Map<String, Object> data, String answerText) {
         switch ((String) data.get("previousQuestionType")) {
             case "open":
-                saveOpenAnswer(solving, answerText);
+                saveOpenAnswer(solving, answerText, data.get("solvingType").equals(DEMONSTRATION_ANSWER));
                 break;
             case "variable":
-                saveVariableAnswer(solving, answerText);
+                saveVariableAnswer(solving, answerText, data.get("solvingType").equals(DEMONSTRATION_ANSWER));
                 break;
             default:
         }
     }
 
-    private void saveVariableAnswer(Solving solving, String answerText) {
+    private void saveVariableAnswer(Solving solving, String answerText, boolean showAnswer) {
         VariableAnswer answer = variableAnswerService.getByText(answerText);
         if (answer == null) {
-            sendError(solving.getUser().getId(), "Неверный формат ответа");
+            sendError(solving.getUser().getId(), "Неверный формат ответа\n" +
+                    "(Для удобства воспользуйтесь кастомной клавиатурой)");
             return;
         }
 
@@ -95,8 +99,16 @@ public class ShowQuestionStrategy extends AbstractMessageStrategy {
 
         if (question.getCorrectAnswer().equals(answer)) {
             solving.setVariableAnswerResults(concatIt(solving.getVariableAnswerResults(), 1L));
+            if (showAnswer) {
+                telegramApiClient.sendMessage(wrapMessageParams(solving.getUser().getId(), "✅",
+                        List.of(new MessageEntity("spoiler", 0, 1)), null));
+            }
         } else {
             solving.setVariableAnswerResults(concatIt(solving.getVariableAnswerResults(), 0L));
+            if (showAnswer) {
+                telegramApiClient.sendMessage(wrapMessageParams(solving.getUser().getId(), "❌",
+                        List.of(new MessageEntity("spoiler", 0, 1)), null));
+            }
         }
 
         solving.setVariableAnswerIds(concatIt(solving.getVariableAnswerIds(), answer.getId()));
@@ -110,7 +122,7 @@ public class ShowQuestionStrategy extends AbstractMessageStrategy {
         return previously + ";" + nextOne;
     }
 
-    private void saveOpenAnswer(Solving solving, String answerText) {
+    private void saveOpenAnswer(Solving solving, String answerText, boolean showAnswer) {
         List<Long> openQuestionIds = parseIds(solving.getOpenQuestionIds());
         List<Long> openAnswerIds = parseIds(solving.getOpenAnswerIds());
         Long questionId = openQuestionIds.get(openAnswerIds.size());
@@ -133,6 +145,11 @@ public class ShowQuestionStrategy extends AbstractMessageStrategy {
         answer = openAnswerService.save(answer);
         solving.setOpenAnswerIds(concatIt(solving.getOpenAnswerIds(), answer.getId().getQuestionId()));
         solvingService.save(solving);
+
+        if (showAnswer) {
+            telegramApiClient.sendMessage(wrapMessageParams(solving.getUser().getId(), question.getCorrectAnswer(),
+                    List.of(new MessageEntity("spoiler", 0, question.getCorrectAnswer().length())), null));
+        }
     }
 
     public void sendQuestion(Solving solving, Map<String, Object> data, Update update) {
@@ -140,6 +157,7 @@ public class ShowQuestionStrategy extends AbstractMessageStrategy {
         List<Long> variableAnswerIds = parseIds(solving.getVariableAnswerIds());
         List<Long> openQuestionIds = parseIds(solving.getOpenQuestionIds());
         List<Long> openAnswerIds = parseIds(solving.getOpenAnswerIds());
+        int questionAmount = variableQuestionIds.size() + openQuestionIds.size();
 
         if (variableQuestionIds.size() == variableAnswerIds.size()) {
             if (openQuestionIds.size() == openAnswerIds.size()) {
@@ -149,16 +167,17 @@ public class ShowQuestionStrategy extends AbstractMessageStrategy {
             } else {
                 data.put("previousQuestionType", "open");
                 putStateToContext(solving.getUser().getId(), data);
-                sendOpenQuestion(solving, openQuestionIds, openAnswerIds);
+                sendOpenQuestion(solving, openQuestionIds, openAnswerIds, questionAmount, variableQuestionIds.size());
             }
         } else {
             data.put("previousQuestionType", "variable");
             putStateToContext(solving.getUser().getId(), data);
-            sendVariableQuestion(solving, variableQuestionIds, variableAnswerIds);
+            sendVariableQuestion(solving, variableQuestionIds, variableAnswerIds, questionAmount);
         }
     }
 
-    private void sendVariableQuestion(Solving solving, List<Long> variableQuestionIds, List<Long> variableAnswerIds) {
+    private void sendVariableQuestion(Solving solving, List<Long> variableQuestionIds,
+                                      List<Long> variableAnswerIds, int questionAmount) {
         log.debug("CHECK variableQuestionIds: {}", variableQuestionIds);
         log.debug("CHECK variableAnswerIds: {}", variableAnswerIds);
         Long questionId = variableQuestionIds.get(variableAnswerIds.size());
@@ -167,7 +186,7 @@ public class ShowQuestionStrategy extends AbstractMessageStrategy {
                 .filter(q -> Objects.equals(q.getId(), questionId))
                 .findFirst().orElse(null);
         assert question != null;
-        String message = "Вопрос № " + (variableAnswerIds.size() + 1) + "\n\n";
+        String message = "❓ Вопрос № " + (variableAnswerIds.size() + 1) + " (из " + questionAmount + ")\n\n";
         MessageParams params =
                 wrapMessageParams(solving.getUser().getId(), message + question.getText(),
                         List.of(new MessageEntity("bold", 0, message.length()),
@@ -176,27 +195,50 @@ public class ShowQuestionStrategy extends AbstractMessageStrategy {
         telegramApiClient.sendMessage(params);
     }
 
-    private void sendOpenQuestion(Solving solving, List<Long> openQuestionIds, List<Long> openAnswerIds) {
+    private void sendOpenQuestion(Solving solving, List<Long> openQuestionIds,
+                                  List<Long> openAnswerIds, int questionAmount, int offset) {
         Long questionId = openQuestionIds.get(openAnswerIds.size());
         OpenQuestion question = solving.getTest()
                 .getOpenQuestions().stream()
                 .filter(q -> Objects.equals(q.getId(), questionId))
                 .findFirst().orElse(null);
         assert question != null;
-        String message = "Открытый вопрос № " + (openAnswerIds.size() + 1) + "\n\n";
+        String boldMessage = "❓ Вопрос № " + (offset + openAnswerIds.size() + 1) + " (из " + questionAmount + ")\n";
+        String italicMessage = "💬 Дайте развернутый ответ\n\n";
         MessageParams params =
-                wrapMessageParams(solving.getUser().getId(), message + question.getText(),
-                        List.of(new MessageEntity("bold", 0, message.length()),
-                                new MessageEntity("code", message.length(), question.getText().length())),
+                wrapMessageParams(solving.getUser().getId(), boldMessage + italicMessage + question.getText(),
+                        List.of(new MessageEntity("bold", 0, boldMessage.length()),
+                                new MessageEntity("italic", boldMessage.length(), italicMessage.length()),
+                                new MessageEntity("code", boldMessage.length() + italicMessage.length(),
+                                        question.getText().length())),
                         null);
         telegramApiClient.sendMessage(params);
     }
 
     private void generateReport(Solving solving, Map<String, Object> data, Update update) {
-        sendVariableResults(solving);
-        sendOpenResults(solving);
+        sendFinishCongrats(solving);
+        if (!data.get("solvingType").equals(DEMONSTRATION_ANSWER)) {
+            sendVariableResults(solving);
+            sendOpenResults(solving);
+        }
         clearSolving(solving);
+        data.remove("solvingType");
         toMainMenuStrategy.process(update, data);
+    }
+
+    private void sendFinishCongrats(Solving solving) {
+        String boldMessage = "🏁 Тест завершен 🏁\n";
+        String codeMessage = "⏰ Время: " +
+                Duration.between(solving.getStartedAt(), LocalDateTime.now()).toString()
+                        .substring(2)
+                        .replaceAll("(\\d[HMS])(?!$)", "$1 ")
+                        .toLowerCase();
+        MessageParams params =
+                wrapMessageParams(solving.getUser().getId(), boldMessage + codeMessage,
+                        List.of(new MessageEntity("bold", 0, boldMessage.length()),
+                                new MessageEntity("code", boldMessage.length(), codeMessage.length())),
+                        null);
+        telegramApiClient.sendMessage(params);
     }
 
     private void sendVariableResults(Solving solving) {
@@ -205,14 +247,15 @@ public class ShowQuestionStrategy extends AbstractMessageStrategy {
         }
         int allCount = parseIds(solving.getVariableAnswerResults()).size();
         Long correctCount = parseIds(solving.getVariableAnswerResults()).stream().reduce(0L, Long::sum);
-        String boldMessage = "🏁 Тест завершен 🏁\n\n";
-        String codeMessage = "Количество правильных ответов на вопросы с вариантами ответов:\n" +
-                "✅ " + correctCount + "/" + allCount + " [" + ((double) correctCount / allCount * 100) + "%]";
+        String boldMessage = "Вопросы с готовыми ответами:\n";
+        String codeMessage = "✅ " + correctCount + "/" + allCount + " [" + ((double) correctCount / allCount * 100) + "%]";
+        String spoilerMessage = "\nОтветы: " + solving.getVariableAnswerResults();
         MessageParams params =
-                wrapMessageParams(solving.getUser().getId(), boldMessage + codeMessage,
+                wrapMessageParams(solving.getUser().getId(), boldMessage + codeMessage + spoilerMessage,
                         List.of(new MessageEntity("bold", 0, boldMessage.length()),
                                 new MessageEntity("code", boldMessage.length(), codeMessage.length()),
-                                new MessageEntity("spoiler", boldMessage.length(), codeMessage.length())),
+                                new MessageEntity("spoiler", boldMessage.length() + codeMessage.length(),
+                                        spoilerMessage.length())),
                         null);
         telegramApiClient.sendMessage(params);
     }
@@ -226,7 +269,7 @@ public class ShowQuestionStrategy extends AbstractMessageStrategy {
         for (int i = 0; i < questionIds.size(); i++) {
             OpenQuestion question = openQuestionService.get(questionIds.get(i));
             OpenAnswer answer = openAnswerService.get(solving.getUser().getId(), answersIds.get(i));
-            String boldMessage1 = "❓ Вопрос:\n";
+            String boldMessage1 = "❓ Открытый вопрос:\n";
             String boldMessage2 = "\n☑️ Ваш ответ:\n";
             String boldMessage3 = "\n️✅ Правильный ответ:\n";
             String message = boldMessage1 + question.getText() + boldMessage2 + answer.getText()
