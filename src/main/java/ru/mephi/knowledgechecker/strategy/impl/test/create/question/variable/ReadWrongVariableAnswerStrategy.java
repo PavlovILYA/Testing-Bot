@@ -48,7 +48,7 @@ public class ReadWrongVariableAnswerStrategy extends AbstractMessageStrategy {
         String boldMessage = "Добавление неверного ответа";
         String italicMessage =
                 "\n\nНа данный момент добавлено " + question.getWrongAnswers().size() + " неверных ответов\n" +
-                "Максимальное количество отображаемых неверных вопросов: " + question.getMaxAnswerNumber();
+                "Максимальное количество отображаемых неверных вопросов: " + (question.getMaxAnswerNumber() - 1);
         MessageParams params =
                 wrapMessageParams(update.getMessage().getFrom().getId(), boldMessage + italicMessage,
                         List.of(new MessageEntity("bold", 0, boldMessage.length()),

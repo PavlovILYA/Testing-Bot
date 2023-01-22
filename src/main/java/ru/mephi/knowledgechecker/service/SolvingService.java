@@ -35,6 +35,11 @@ public class SolvingService {
         return solving;
     }
 
+    public void remove(Solving solving) {
+        log.info("Delete solving: {}", solving);
+        solvingRepository.delete(solving);
+    }
+
     public Solving generateQuestions(User user, Test test) {
         int amount = test.getMaxQuestionsNumber();
         int allOpenAmount = test.getOpenQuestions().size();

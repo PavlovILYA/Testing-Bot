@@ -12,6 +12,7 @@ import ru.mephi.knowledgechecker.model.question.OpenQuestion;
 import ru.mephi.knowledgechecker.model.question.VariableQuestion;
 import ru.mephi.knowledgechecker.model.solving.Solving;
 import ru.mephi.knowledgechecker.service.OpenAnswerService;
+import ru.mephi.knowledgechecker.service.OpenQuestionService;
 import ru.mephi.knowledgechecker.service.SolvingService;
 import ru.mephi.knowledgechecker.service.VariableAnswerService;
 import ru.mephi.knowledgechecker.state.impl.menu.MainMenuState;
@@ -30,15 +31,18 @@ public class ShowQuestionStrategy extends AbstractMessageStrategy {
     private final SolvingService solvingService;
     private final VariableAnswerService variableAnswerService;
     private final OpenAnswerService openAnswerService;
+    private final OpenQuestionService openQuestionService;
     private final ToMainMenuStrategy toMainMenuStrategy;
 
     public ShowQuestionStrategy(SolvingService solvingService,
                                 VariableAnswerService variableAnswerService,
                                 OpenAnswerService openAnswerService,
+                                OpenQuestionService openQuestionService,
                                 MainMenuState mainMenuState, ToMainMenuStrategy toMainMenuStrategy) {
         this.solvingService = solvingService;
         this.variableAnswerService = variableAnswerService;
         this.openAnswerService = openAnswerService;
+        this.openQuestionService = openQuestionService;
         this.toMainMenuStrategy = toMainMenuStrategy;
         this.nextState = mainMenuState;
     }
@@ -199,18 +203,69 @@ public class ShowQuestionStrategy extends AbstractMessageStrategy {
     }
 
     private void generateReport(Solving solving, Map<String, Object> data, Update update) {
-        String variableResult = solving.getVariableAnswerResults();
-        String message = "Результаты теста:\n";
+        sendVariableResults(solving);
+        sendOpenResults(solving);
+        clearSolving(solving);
+        toMainMenuStrategy.process(update, data);
+    }
+
+    private void sendVariableResults(Solving solving) {
+        if (solving.getVariableAnswerResults().isEmpty()) {
+            return;
+        }
+        int allCount = parseIds(solving.getVariableAnswerResults()).size();
+        Long correctCount = parseIds(solving.getVariableAnswerResults()).stream().reduce(0L, Long::sum);
+        String boldMessage = "🏁 Тест завершен 🏁\n\n";
+        String codeMessage = "Количество правильных ответов на вопросы с вариантами ответов:\n" +
+                "✅ " + correctCount + "/" + allCount + " [" + ((double) correctCount / allCount * 100) + "%]";
         MessageParams params =
-                wrapMessageParams(solving.getUser().getId(), message + variableResult,
-                        List.of(new MessageEntity("bold", 0, message.length()),
-                                new MessageEntity("code", message.length(), variableResult.length()),
-                                new MessageEntity("spoiler", message.length(), variableResult.length())),
+                wrapMessageParams(solving.getUser().getId(), boldMessage + codeMessage,
+                        List.of(new MessageEntity("bold", 0, boldMessage.length()),
+                                new MessageEntity("code", boldMessage.length(), codeMessage.length()),
+                                new MessageEntity("spoiler", boldMessage.length(), codeMessage.length())),
                         null);
         telegramApiClient.sendMessage(params);
-        // todo: сделать отчет красивеньким
-        toMainMenuStrategy.process(update, data);
-        // todo: удалить запись из таблицы solving
+    }
+
+    private void sendOpenResults(Solving solving) {
+        if (solving.getOpenQuestionIds().isEmpty()) {
+            return;
+        }
+        List<Long> questionIds = parseIds(solving.getOpenQuestionIds());
+        List<Long> answersIds = parseIds(solving.getOpenAnswerIds());
+        for (int i = 0; i < questionIds.size(); i++) {
+            OpenQuestion question = openQuestionService.get(questionIds.get(i));
+            OpenAnswer answer = openAnswerService.get(solving.getUser().getId(), answersIds.get(i));
+            String boldMessage1 = "❓ Вопрос:\n";
+            String boldMessage2 = "\n☑️ Ваш ответ:\n";
+            String boldMessage3 = "\n️✅ Правильный ответ:\n";
+            String message = boldMessage1 + question.getText() + boldMessage2 + answer.getText()
+                    + boldMessage3 + question.getCorrectAnswer();
+            MessageParams params =
+                    wrapMessageParams(solving.getUser().getId(), message,
+                            List.of(new MessageEntity("bold", 0, boldMessage1.length()),
+                                    new MessageEntity("code", boldMessage1.length(), question.getText().length()),
+                                    new MessageEntity("bold",
+                                            boldMessage1.length() + question.getText().length(),
+                                            boldMessage2.length()),
+                                    new MessageEntity("code",
+                                            boldMessage1.length() + question.getText().length() + boldMessage2.length(),
+                                            answer.getText().length()),
+                                    new MessageEntity("bold",
+                                            message.length() - boldMessage3.length() - question.getCorrectAnswer().length(),
+                                            boldMessage3.length()),
+                                    new MessageEntity("spoiler",
+                                            message.length() - question.getCorrectAnswer().length(),
+                                            question.getCorrectAnswer().length())),
+                            null);
+            telegramApiClient.sendMessage(params);
+        }
+    }
+
+    private void clearSolving(Solving solving) {
+        List<Long> answersIds = parseIds(solving.getOpenAnswerIds());
+        openAnswerService.removeByUserIdAndQuestionIds(solving.getUser().getId(), answersIds);
+        solvingService.remove(solving);
     }
 
     private List<Long> parseIds(String string) {

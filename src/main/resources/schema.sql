@@ -1,4 +1,4 @@
-DROP table solving;
+-- DROP table solving;
 -- DROP table users_tests;
 -- DROP table open_answers;
 -- DROP table open_questions;

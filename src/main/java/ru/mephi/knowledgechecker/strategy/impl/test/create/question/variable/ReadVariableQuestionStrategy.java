@@ -107,12 +107,12 @@ public class ReadVariableQuestionStrategy extends AbstractMessageStrategy {
 
     private void readMaxAnswerNumber(Integer maxAnswerNumber, Map<String, Object> data, User user) {
         VariableQuestion question = variableQuestionService.get((Long) data.get("questionId"));
-        question.setMaxAnswerNumber(maxAnswerNumber);
+        question.setMaxAnswerNumber(maxAnswerNumber + 1);
         question = variableQuestionService.save(question);
         String boldMessage = "Добавление неверного ответа";
         String italicMessage =
                 "\n\nНа данный момент добавлено " + question.getWrongAnswers().size() + " неверных ответов\n" +
-                "Максимальное количество отображаемых неверных вопросов: " + question.getMaxAnswerNumber();
+                "Максимальное количество отображаемых неверных вопросов: " + (question.getMaxAnswerNumber() - 1);
         MessageParams params =
                 wrapMessageParams(user.getId(), boldMessage + italicMessage,
                         List.of(new MessageEntity("bold", 0, boldMessage.length()),

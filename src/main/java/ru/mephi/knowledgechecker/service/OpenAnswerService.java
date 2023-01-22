@@ -4,7 +4,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.mephi.knowledgechecker.model.answer.OpenAnswer;
+import ru.mephi.knowledgechecker.model.answer.OpenAnswerKey;
 import ru.mephi.knowledgechecker.repository.OpenAnswerRepository;
+
+import java.util.List;
 
 @Slf4j
 @Service
@@ -12,8 +15,12 @@ import ru.mephi.knowledgechecker.repository.OpenAnswerRepository;
 public class OpenAnswerService {
     private final OpenAnswerRepository openAnswerRepository;
 
-    public OpenAnswer get(Long id) {
-        OpenAnswer answer = openAnswerRepository.findById(id).orElse(null);
+    public OpenAnswer get(Long userId, Long questionId) {
+        OpenAnswerKey key = OpenAnswerKey.builder()
+                .questionId(questionId)
+                .userId(userId)
+                .build();
+        OpenAnswer answer = openAnswerRepository.findById(key).orElse(null);
         log.info("Get answer: {}", answer);
         return answer;
     }
@@ -22,5 +29,16 @@ public class OpenAnswerService {
         answer = openAnswerRepository.save(answer);
         log.info("Saved answer: {}", answer);
         return answer;
+    }
+
+    public void removeByUserIdAndQuestionIds(Long userId, List<Long> questionIds) {
+        log.info("Delete answers of user {} for questions: {}", userId, questionIds);
+        for (Long questionId : questionIds) {
+            OpenAnswerKey key = OpenAnswerKey.builder()
+                    .questionId(questionId)
+                    .userId(userId)
+                    .build();
+            openAnswerRepository.deleteById(key);
+        }
     }
 }
