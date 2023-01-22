@@ -3,6 +3,7 @@ package ru.mephi.knowledgechecker.strategy.impl.test.solve;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
+import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageEntity;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageParams;
 import ru.mephi.knowledgechecker.model.test.Test;
 import ru.mephi.knowledgechecker.model.test.TestType;
@@ -10,6 +11,7 @@ import ru.mephi.knowledgechecker.service.TestService;
 import ru.mephi.knowledgechecker.state.impl.test.solve.ChooseSolvingTypeState;
 import ru.mephi.knowledgechecker.strategy.impl.AbstractCallbackQueryStrategy;
 
+import java.util.List;
 import java.util.Map;
 
 import static ru.mephi.knowledgechecker.common.KeyboardMarkups.getTestSolvingTypesInlineKeyboardMarkup;
@@ -39,9 +41,10 @@ public class ToChooseSolvingTypeStrategy extends AbstractCallbackQueryStrategy {
 
     @Override
     public void process(Update update, Map<String, Object> data) {
+        String message = "Выберите вариант прохождения теста";
         MessageParams params =
-                wrapMessageParams(update.getCallbackQuery().getFrom().getId(),
-                        "Выберите вариант прохождения теста",
+                wrapMessageParams(update.getCallbackQuery().getFrom().getId(), message,
+                        List.of(new MessageEntity("bold", 0, message.length())),
                         getTestSolvingTypesInlineKeyboardMarkup());
         data.put("testUniqueTitle", update.getCallbackQuery().getData().split(":")[1]);
         putStateToContext(update.getCallbackQuery().getFrom().getId(), nextState, data);

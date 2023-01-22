@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
+import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageEntity;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.keyboard.KeyboardMarkup;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageParams;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.keyboard.inline.InlineKeyboardButton;
@@ -33,8 +34,10 @@ public class ToCoursesListStrategy extends AbstractMessageStrategy {
     @Override
     public void process(Update update, Map<String, Object> data) {
         Long userId = update.getMessage().getChat().getId();
+        String text = "🔽\nГЛАВНОЕ МЕНЮ\n⬇️\n️КУРСЫ";
         MessageParams params =
-                wrapMessageParams(userId, "🔽\nГЛАВНАЯ\n⬇️\n️КУРСЫ", getInlineKeyboardMarkup());
+                wrapMessageParams(userId, text, List.of(new MessageEntity("bold", 0, text.length())),
+                        getInlineKeyboardMarkup());
         putStateToContext(userId, nextState, data);
         telegramApiClient.sendMessage(params);
     }

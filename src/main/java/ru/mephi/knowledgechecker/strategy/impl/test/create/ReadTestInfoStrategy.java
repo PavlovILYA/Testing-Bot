@@ -3,6 +3,7 @@ package ru.mephi.knowledgechecker.strategy.impl.test.create;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
+import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageEntity;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageParams;
 import ru.mephi.knowledgechecker.model.test.Test;
 import ru.mephi.knowledgechecker.model.user.User;
@@ -11,6 +12,7 @@ import ru.mephi.knowledgechecker.service.UserService;
 import ru.mephi.knowledgechecker.state.impl.test.create.question.QuestionAddingState;
 import ru.mephi.knowledgechecker.strategy.impl.AbstractMessageStrategy;
 
+import java.util.List;
 import java.util.Map;
 
 import static ru.mephi.knowledgechecker.common.KeyboardMarkups.getAddQuestionInlineKeyboardMarkup;
@@ -52,9 +54,15 @@ public class ReadTestInfoStrategy extends AbstractMessageStrategy {
     private void readTitle(String title, Map<String, Object> data, User user, Test test) {
         test.setTitle(title);
         testService.save(test);
+        String boldMessage = "Введите количество отображаемых вопросов";
+        String italicMessage =
+                "\n\n(Вопросов можно будет создать больше, тогда будет браться случайная выборка)";
         MessageParams params =
-                wrapMessageParams(user.getId(), "Введите количество отображаемых вопросов\n\n" +
-                                "(Вопросов можно будет создать больше, тогда будет браться случайная выборка)", null);
+                wrapMessageParams(user.getId(), boldMessage + italicMessage,
+                        List.of(new MessageEntity("bold", 0, boldMessage.length()),
+                                new MessageEntity("underline", 19, 12),
+                                new MessageEntity("italic", boldMessage.length(), italicMessage.length())),
+                        null);
         data.put("next", "maxQuestionsNumber");
         putStateToContext(user.getId(), data);
         telegramApiClient.sendMessage(params);
@@ -65,11 +73,14 @@ public class ReadTestInfoStrategy extends AbstractMessageStrategy {
         testService.save(test);
         int questionCount = test.getVariableQuestions().size();
         questionCount += test.getOpenQuestions().size();
+        String boldMessage = "Добавление вопроса";
+        String italicMessage =
+                "\n\nНа данный момент сохранено " + questionCount + " вопросов\n" +
+                "Максимальное количество отображаемых вопросов: " + test.getMaxQuestionsNumber();
         MessageParams params =
-                wrapMessageParams(user.getId(),
-                        "Добавить вопрос \n\n" +
-                                "На данный момент сохранено " + questionCount + " вопросов\n" +
-                                "Максимальное количество отображаемых вопросов: " + test.getMaxQuestionsNumber(),
+                wrapMessageParams(user.getId(), boldMessage + italicMessage,
+                        List.of(new MessageEntity("bold", 0, boldMessage.length()),
+                                new MessageEntity("italic", boldMessage.length(), italicMessage.length())),
                         getAddQuestionInlineKeyboardMarkup());
         data.remove("next");
         putStateToContext(user.getId(), nextState, data);

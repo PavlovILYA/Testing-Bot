@@ -5,10 +5,12 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import ru.mephi.knowledgechecker.common.Command;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
+import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageEntity;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageParams;
 import ru.mephi.knowledgechecker.state.impl.menu.MainMenuState;
 import ru.mephi.knowledgechecker.strategy.impl.AbstractActionStrategy;
 
+import java.util.List;
 import java.util.Map;
 
 import static ru.mephi.knowledgechecker.common.ParamsWrapper.wrapMessageParams;
@@ -41,12 +43,14 @@ public class ToMainMenuStrategy extends AbstractActionStrategy {
                 ? update.getCallbackQuery().getFrom().getId()
                 : update.getMessage().getFrom().getId();
         putStateToContext(userId, nextState, data);
-        sendStartMenu(userId, "🔽️\nГЛАВНАЯ ⤵️");
+        sendStartMenu(userId, "🔽️\nГЛАВНОЕ МЕНЮ ⤵️");
     }
 
     private void sendStartMenu(Long chatId, String text) {
         MessageParams params =
-                wrapMessageParams(chatId, text, getStartReplyKeyboardMarkup());
+                wrapMessageParams(chatId, text,
+                        List.of(new MessageEntity("bold", 0, text.length())),
+                        getStartReplyKeyboardMarkup());
         telegramApiClient.sendMessage(params);
     }
 }

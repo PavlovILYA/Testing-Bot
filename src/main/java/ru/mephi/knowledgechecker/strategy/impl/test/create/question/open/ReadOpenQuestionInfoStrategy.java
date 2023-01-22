@@ -3,6 +3,7 @@ package ru.mephi.knowledgechecker.strategy.impl.test.create.question.open;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
+import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageEntity;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageParams;
 import ru.mephi.knowledgechecker.model.question.OpenQuestion;
 import ru.mephi.knowledgechecker.model.test.Test;
@@ -13,6 +14,7 @@ import ru.mephi.knowledgechecker.service.UserService;
 import ru.mephi.knowledgechecker.state.impl.test.create.question.QuestionAddingState;
 import ru.mephi.knowledgechecker.strategy.impl.AbstractMessageStrategy;
 
+import java.util.List;
 import java.util.Map;
 
 import static ru.mephi.knowledgechecker.common.KeyboardMarkups.getAddQuestionInlineKeyboardMarkup;
@@ -60,8 +62,12 @@ public class ReadOpenQuestionInfoStrategy extends AbstractMessageStrategy {
                 .test(test)
                 .build();
         question = openQuestionService.save(question);
+        String message = "Введите правильный ответ";
         MessageParams params =
-                wrapMessageParams(user.getId(), "Введите правильный ответ", null);
+                wrapMessageParams(user.getId(), message,
+                        List.of(new MessageEntity("bold", 0, message.length()),
+                                new MessageEntity("underline", 8, 10)),
+                        null);
         data.put("next", "correctAnswer");
         data.put("questionId", question.getId());
         putStateToContext(user.getId(), data);
@@ -74,11 +80,14 @@ public class ReadOpenQuestionInfoStrategy extends AbstractMessageStrategy {
         openQuestionService.save(question);
         int questionCount = test.getVariableQuestions().size();
         questionCount += test.getOpenQuestions().size();
+        String boldMessage = "Добавление вопроса";
+        String codeMessage =
+                "\n\nМаксимальное количество отображаемых вопросов: " + test.getMaxQuestionsNumber()  + "\n" +
+                "Количество сохраненных вопросов: " + questionCount;
         MessageParams params =
-                wrapMessageParams(user.getId(),
-                        "Добавить вопрос \n\n" +
-                                "На данный момент сохранено " + questionCount + " вопросов\n" +
-                                "Максимальное количество отображаемых вопросов: " + test.getMaxQuestionsNumber(),
+                wrapMessageParams(user.getId(), boldMessage + codeMessage,
+                        List.of(new MessageEntity("bold", 0, boldMessage.length()),
+                                new MessageEntity("italic", boldMessage.length(), codeMessage.length())),
                         getAddQuestionInlineKeyboardMarkup());
         data.remove("next");
         putStateToContext(user.getId(), nextState, data);

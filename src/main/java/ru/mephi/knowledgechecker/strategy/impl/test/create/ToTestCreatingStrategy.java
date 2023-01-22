@@ -1,8 +1,9 @@
-package ru.mephi.knowledgechecker.strategy.impl.menu;
+package ru.mephi.knowledgechecker.strategy.impl.test.create;
 
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
+import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageEntity;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageParams;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.keyboard.KeyboardMarkup;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.keyboard.inline.InlineKeyboardButton;
@@ -33,8 +34,12 @@ public class ToTestCreatingStrategy extends AbstractCallbackQueryStrategy {
     @Override
     public void process(Update update, Map<String, Object> data) {
         Long userId = update.getCallbackQuery().getFrom().getId();
+        String message = "Введите уникальное название теста";
         MessageParams params =
-                wrapMessageParams(userId, "Введите уникальное название теста", getInlineKeyboardMarkup());
+                wrapMessageParams(userId, message,
+                        List.of(new MessageEntity("bold", 0, message.length()),
+                                new MessageEntity("underline", 8, 10)),
+                        getInlineKeyboardMarkup());
         putStateToContext(userId, nextState, data);
         telegramApiClient.sendMessage(params);
     }

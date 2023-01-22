@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.keyboard.KeyboardMarkup;
 
+import java.util.List;
+
 @Data
 @Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -15,4 +17,5 @@ public class MessageParams {
     private String text;
     @JsonProperty("reply_markup")
     private KeyboardMarkup replyMarkup;
+    private List<MessageEntity> entities;
 }

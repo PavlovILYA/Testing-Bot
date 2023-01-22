@@ -3,10 +3,12 @@ package ru.mephi.knowledgechecker.strategy.impl.test.create.question.variable;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
+import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageEntity;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageParams;
 import ru.mephi.knowledgechecker.state.impl.test.create.question.variable.WrongVariableAnswerInfoReadingState;
 import ru.mephi.knowledgechecker.strategy.impl.AbstractCallbackQueryStrategy;
 
+import java.util.List;
 import java.util.Map;
 
 import static ru.mephi.knowledgechecker.common.Constants.ADD_WRONG_VARIABLE_ANSWER;
@@ -26,9 +28,14 @@ public class AddWrongVariableAnswerStrategy extends AbstractCallbackQueryStrateg
 
     @Override
     public void process(Update update, Map<String, Object> data) {
+        String boldMessage = "Введите неправильный ответ";
+        String italicMessage = "\n\nПредпочтительно вводить короткие варианты ответа: A, B, etc.";
         MessageParams params =
-                wrapMessageParams(update.getCallbackQuery().getFrom().getId(), "Введите правильный ответ\n\n" +
-                        "Предпочтительно вводить короткие варианты ответа: A, B, etc.", null);
+                wrapMessageParams(update.getCallbackQuery().getFrom().getId(), boldMessage + italicMessage,
+                        List.of(new MessageEntity("bold", 0, boldMessage.length()),
+                                new MessageEntity("underline", 8, 12),
+                                new MessageEntity("italic", boldMessage.length(), italicMessage.length())),
+                        null);
         putStateToContext(update.getCallbackQuery().getFrom().getId(), nextState, data);
         telegramApiClient.sendMessage(params);
     }

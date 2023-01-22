@@ -3,6 +3,7 @@ package ru.mephi.knowledgechecker.strategy.impl.test.solve;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
+import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageEntity;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageParams;
 import ru.mephi.knowledgechecker.model.answer.OpenAnswer;
 import ru.mephi.knowledgechecker.model.answer.OpenAnswerKey;
@@ -131,9 +132,11 @@ public class ShowQuestionStrategy extends AbstractMessageStrategy {
     }
 
     private void sendError(long userId) {
+        String message = "Неверный формат ответа 🥴";
         MessageParams params =
-                wrapMessageParams(userId,
-                        "Неверный формат ответа 🥴", null);
+                wrapMessageParams(userId, message,
+                        List.of(new MessageEntity("bold", 0, message.length())),
+                        null);
         telegramApiClient.sendMessage(params);
         // todo: обновить keyboard?
     }
@@ -170,9 +173,11 @@ public class ShowQuestionStrategy extends AbstractMessageStrategy {
                 .filter(q -> Objects.equals(q.getId(), questionId))
                 .findFirst().orElse(null);
         assert question != null;
+        String message = "Вопрос № " + (variableAnswerIds.size() + 1) + "\n\n";
         MessageParams params =
-                wrapMessageParams(solving.getUser().getId(),
-                        question.getText(),
+                wrapMessageParams(solving.getUser().getId(), message + question.getText(),
+                        List.of(new MessageEntity("bold", 0, message.length()),
+                                new MessageEntity("code", message.length(), question.getText().length())),
                         getVariableAnswerKeyboardMarkup(question));
         telegramApiClient.sendMessage(params);
     }
@@ -184,17 +189,24 @@ public class ShowQuestionStrategy extends AbstractMessageStrategy {
                 .filter(q -> Objects.equals(q.getId(), questionId))
                 .findFirst().orElse(null);
         assert question != null;
+        String message = "Открытый вопрос № " + (openAnswerIds.size() + 1) + "\n\n";
         MessageParams params =
-                wrapMessageParams(solving.getUser().getId(),
-                        question.getText(), null);
+                wrapMessageParams(solving.getUser().getId(), message + question.getText(),
+                        List.of(new MessageEntity("bold", 0, message.length()),
+                                new MessageEntity("code", message.length(), question.getText().length())),
+                        null);
         telegramApiClient.sendMessage(params);
     }
 
     private void generateReport(Solving solving, Map<String, Object> data, Update update) {
         String variableResult = solving.getVariableAnswerResults();
+        String message = "Результаты теста:\n";
         MessageParams params =
-                wrapMessageParams(solving.getUser().getId(),
-                        "Результаты теста:\n" + variableResult, null);
+                wrapMessageParams(solving.getUser().getId(), message + variableResult,
+                        List.of(new MessageEntity("bold", 0, message.length()),
+                                new MessageEntity("code", message.length(), variableResult.length()),
+                                new MessageEntity("spoiler", message.length(), variableResult.length())),
+                        null);
         telegramApiClient.sendMessage(params);
         // todo: сделать отчет красивеньким
         toMainMenuStrategy.process(update, data);

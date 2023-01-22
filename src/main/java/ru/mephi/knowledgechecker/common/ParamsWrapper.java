@@ -1,5 +1,6 @@
 package ru.mephi.knowledgechecker.common;
 
+import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageEntity;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.keyboard.KeyboardMarkup;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageParams;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.keyboard.inline.InlineKeyboardButton;
@@ -16,6 +17,18 @@ public class ParamsWrapper {
         return MessageParams.builder()
                 .chatId(chatId)
                 .text(text)
+                .replyMarkup(keyboardMarkup)
+                .build();
+    }
+
+    public static MessageParams wrapMessageParams(Long chatId,
+                                                  String text,
+                                                  List<MessageEntity> entities,
+                                                  KeyboardMarkup keyboardMarkup) {
+        return MessageParams.builder()
+                .chatId(chatId)
+                .text(text)
+                .entities(entities)
                 .replyMarkup(keyboardMarkup)
                 .build();
     }

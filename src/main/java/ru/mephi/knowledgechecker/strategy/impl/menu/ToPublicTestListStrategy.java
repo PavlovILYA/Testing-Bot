@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
+import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageEntity;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.keyboard.KeyboardMarkup;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageParams;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.keyboard.inline.InlineKeyboardButton;
@@ -50,8 +51,10 @@ public class ToPublicTestListStrategy extends AbstractActionStrategy {
             userId = update.getMessage().getChat().getId();
         }
         User user = userService.get(userId);
+        String text = "🔽\nГЛАВНОЕ МЕНЮ\n⬇️️\nПУБЛИЧНЫЕ ТЕСТЫ";
         MessageParams params =
-                wrapMessageParams(userId, "🔽\nГЛАВНАЯ\n⬇️️\nПУБЛИЧНЫЕ ТЕСТЫ", getInlineKeyboardMarkup(user));
+                wrapMessageParams(userId, text, List.of(new MessageEntity("bold", 0, text.length())),
+                        getInlineKeyboardMarkup(user));
         putStateToContext(userId, nextState, data);
         telegramApiClient.sendMessage(params);
     }
