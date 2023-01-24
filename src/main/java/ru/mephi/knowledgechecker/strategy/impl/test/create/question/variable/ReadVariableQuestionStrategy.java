@@ -95,7 +95,12 @@ public class ReadVariableQuestionStrategy extends AbstractMessageStrategy {
         VariableAnswer answer = VariableAnswer.builder()
                 .text(correctAnswerText)
                 .build();
-        answer = variableAnswerService.save(answer);
+        try {
+            answer = variableAnswerService.save(answer);
+        } catch (RuntimeException e) {
+            sendError(user.getId(), "Максимальная длина варианта ответа – 30 символов, попробуйте еще раз");
+            return;
+        }
         question.setCorrectAnswer(answer);
         variableQuestionService.save(question);
         String boldMessage = "Введите максимальное количество неверных ответов";

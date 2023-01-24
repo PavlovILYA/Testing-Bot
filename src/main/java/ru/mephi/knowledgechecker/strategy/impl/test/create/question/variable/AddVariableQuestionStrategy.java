@@ -40,11 +40,16 @@ public class AddVariableQuestionStrategy extends AbstractCallbackQueryStrategy {
                 "\n\nПредпочтительно добавить в формулировку вопроса варианты ответа:\n" +
                 "A: Ответ 1\n" +
                 "B: Ответ 2\n" +
-                "etc.";
+                "etc.\n";
+        String boldAndUnderlineMessage = "Максимальная длина варианта ответа – 30 символов";
         MessageParams params =
-                wrapMessageParams(user.getId(), boldMessage + italicMessage,
+                wrapMessageParams(user.getId(), boldMessage + italicMessage + boldAndUnderlineMessage,
                         List.of(new MessageEntity("bold", 0, boldMessage.length()),
-                                new MessageEntity("italic", boldMessage.length(), italicMessage.length())),
+                                new MessageEntity("italic", boldMessage.length(), italicMessage.length()),
+                                new MessageEntity("bold", boldMessage.length() + italicMessage.length(),
+                                        boldAndUnderlineMessage.length()),
+                                new MessageEntity("underline", boldMessage.length() + italicMessage.length(),
+                                        boldAndUnderlineMessage.length())),
                         null);
         data.put("next", "text");
         putStateToContext(user.getId(), nextState, data);
