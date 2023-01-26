@@ -21,7 +21,7 @@ CREATE INDEX IF NOT EXISTS users_username
 
 CREATE TABLE IF NOT EXISTS tests (
     id BIGINT GENERATED ALWAYS AS IDENTITY UNIQUE,
-    unique_title VARCHAR(500) UNIQUE,
+    unique_title VARCHAR(50) UNIQUE, -- 30
     creator_id BIGINT,
     title VARCHAR(500),
     file_id BIGINT, -- from tg

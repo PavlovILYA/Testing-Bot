@@ -137,7 +137,7 @@ public class KeyboardMarkups {
             List<InlineKeyboardButton> testList = new ArrayList<>();
             testList.add(InlineKeyboardButton.builder()
                     .text("📌 " + test.getUniqueTitle())
-                    .callbackData("public-test:" + test.getUniqueTitle())
+                    .callbackData(PUBLIC_TEST_PREFIX + ":" + test.getUniqueTitle())
                     .build());
             markup.add(testList);
         }

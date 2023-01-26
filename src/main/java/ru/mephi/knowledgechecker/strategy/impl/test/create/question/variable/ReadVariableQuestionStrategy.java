@@ -56,13 +56,22 @@ public class ReadVariableQuestionStrategy extends AbstractMessageStrategy {
                 readText(update.getMessage().getText(), data, user, test);
                 break;
             case "correctAnswer":
+                if (update.getMessage().getText().length() > 30) {
+                    sendError(user.getId(), "Максимальная длина вариативного ответа 30 символов, " +
+                            "попробуйте еще раз");
+                    return;
+                }
                 readCorrectAnswer(update.getMessage().getText(), data, user);
                 break;
             case "maxAnswerNumber":
                 try {
-                    readMaxAnswerNumber(Integer.parseInt(update.getMessage().getText()), data, user);
+                    int maxAnswerNumber = Integer.parseInt(update.getMessage().getText());
+                    if (maxAnswerNumber <= 0 || maxAnswerNumber > 9) {
+                        throw new NumberFormatException();
+                    }
+                    readMaxAnswerNumber(maxAnswerNumber, data, user);
                 } catch (NumberFormatException e) {
-                    sendError(user.getId(), "Неверный формат, попробуйте ввести число еще раз");
+                    sendError(user.getId(), "Неверный формат, попробуйте еще раз\nВведите число от 1 до 9");
                     return;
                 }
                 break;
@@ -76,7 +85,7 @@ public class ReadVariableQuestionStrategy extends AbstractMessageStrategy {
                 .test(test)
                 .build();
         question = variableQuestionService.save(question);
-        String boldMessage = "Введите правильный ответ";
+        String boldMessage = "Введите правильный ответ (максимум 30 символов)";
         String italicMessage = "\n\nПредпочтительно вводить короткие варианты ответа: A, B, etc.";
         MessageParams params =
                 wrapMessageParams(user.getId(), boldMessage + italicMessage,
@@ -103,13 +112,10 @@ public class ReadVariableQuestionStrategy extends AbstractMessageStrategy {
         }
         question.setCorrectAnswer(answer);
         variableQuestionService.save(question);
-        String boldMessage = "Введите максимальное количество неверных ответов";
-        String italicMessage = "\n\n(Максимум 9)";
+        String boldMessage = "Введите максимальное количество неверных ответов (от 1 до 9)";
         MessageParams params =
-                wrapMessageParams(user.getId(), boldMessage + italicMessage,
-                        List.of(new MessageEntity("bold", 0, boldMessage.length()),
-                                new MessageEntity("italic", boldMessage.length(), italicMessage.length())),
-                        null);
+                wrapMessageParams(user.getId(), boldMessage,
+                        List.of(new MessageEntity("bold", 0, boldMessage.length())), null);
         data.put("next", "maxAnswerNumber");
         putStateToContext(user.getId(), data);
         telegramApiClient.sendMessage(params);

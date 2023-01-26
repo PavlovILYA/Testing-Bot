@@ -17,6 +17,7 @@ import ru.mephi.knowledgechecker.strategy.impl.AbstractMessageStrategy;
 import java.util.List;
 import java.util.Map;
 
+import static ru.mephi.knowledgechecker.common.Constants.CHECK_0_QUESTIONS;
 import static ru.mephi.knowledgechecker.common.KeyboardMarkups.getAddQuestionInlineKeyboardMarkup;
 import static ru.mephi.knowledgechecker.common.ParamsWrapper.wrapMessageParams;
 
@@ -90,6 +91,9 @@ public class ReadOpenQuestionInfoStrategy extends AbstractMessageStrategy {
                                 new MessageEntity("italic", boldMessage.length(), codeMessage.length())),
                         getAddQuestionInlineKeyboardMarkup());
         data.remove("next");
+        if (data.get(CHECK_0_QUESTIONS) == null) {
+            data.put(CHECK_0_QUESTIONS, test.getUniqueTitle());
+        }
         putStateToContext(user.getId(), nextState, data);
         telegramApiClient.sendMessage(params);
     }

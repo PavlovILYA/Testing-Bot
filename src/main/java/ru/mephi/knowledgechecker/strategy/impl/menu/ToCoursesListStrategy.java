@@ -60,7 +60,7 @@ public class ToCoursesListStrategy extends AbstractMessageStrategy {
 //        for (test : tests) {
 //            publicTests.add(InlineKeyboardButton.builder()
 //                    .text(test.getName())
-//                    .callbackData("public-test:" + test.getId())
+//                    .callbackData(PUBLIC_TEST_PREFIX + ":" + test.getId())
 //                    .build());
 //        }
 //        markup.add(two);

@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import static ru.mephi.knowledgechecker.common.Constants.PUBLIC_TEST_LIST;
+import static ru.mephi.knowledgechecker.common.Constants.PUBLIC_TEST_PREFIX;
 import static ru.mephi.knowledgechecker.common.KeyboardMarkups.getPublicTestListInlineKeyboardMarkup;
 import static ru.mephi.knowledgechecker.common.ParamsWrapper.wrapInlineKeyboardMarkup;
 import static ru.mephi.knowledgechecker.common.ParamsWrapper.wrapMessageParams;
@@ -96,7 +97,7 @@ public class ShowSearchResultStrategy extends AbstractMessageStrategy {
             List<InlineKeyboardButton> testList = new ArrayList<>();
             testList.add(InlineKeyboardButton.builder()
                     .text("📌 " + title)
-                    .callbackData("public-test:" + title)
+                    .callbackData(PUBLIC_TEST_PREFIX + ":" + title)
                     .build());
             markup.add(testList);
         }

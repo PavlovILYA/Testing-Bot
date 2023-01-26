@@ -1,9 +1,6 @@
 package ru.mephi.knowledgechecker.model.question;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import ru.mephi.knowledgechecker.model.answer.OpenAnswer;
 import ru.mephi.knowledgechecker.model.test.Test;
 
@@ -29,6 +26,7 @@ public class OpenQuestion {
     private Long fileId;  // from tg
     private String correctAnswer;
 
+    @ToString.Exclude
     @OneToMany(mappedBy = "question") // todo: fetch, cascade
     List<OpenAnswer> ratings;
 }

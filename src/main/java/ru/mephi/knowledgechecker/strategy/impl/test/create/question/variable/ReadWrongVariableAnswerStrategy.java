@@ -44,6 +44,11 @@ public class ReadWrongVariableAnswerStrategy extends AbstractMessageStrategy {
                     "попробуйте еще раз ввести пример неверного");
             return;
         }
+        if (update.getMessage().getText().length() > 30) {
+            sendError(update.getMessage().getFrom().getId(), "Максимальная длина вариативного ответа 30 символов, " +
+                    "попробуйте еще раз");
+            return;
+        }
         VariableAnswer answer = variableAnswerService.getByText(update.getMessage().getText());
         if (answer == null) {
             answer = VariableAnswer.builder()

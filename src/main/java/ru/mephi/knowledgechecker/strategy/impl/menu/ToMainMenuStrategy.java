@@ -7,22 +7,29 @@ import ru.mephi.knowledgechecker.common.Command;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageEntity;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageParams;
+import ru.mephi.knowledgechecker.model.test.Test;
+import ru.mephi.knowledgechecker.service.TestService;
 import ru.mephi.knowledgechecker.state.impl.menu.MainMenuState;
 import ru.mephi.knowledgechecker.strategy.impl.AbstractActionStrategy;
 
 import java.util.List;
 import java.util.Map;
 
-import static ru.mephi.knowledgechecker.common.ParamsWrapper.wrapMessageParams;
+import static ru.mephi.knowledgechecker.common.Constants.CHECK_0_QUESTIONS;
 import static ru.mephi.knowledgechecker.common.Constants.TO_MAIN_MENU;
 import static ru.mephi.knowledgechecker.common.KeyboardMarkups.getStartReplyKeyboardMarkup;
+import static ru.mephi.knowledgechecker.common.ParamsWrapper.wrapMessageParams;
 import static ru.mephi.knowledgechecker.strategy.impl.AbstractBotCommandStrategy.BOT_COMMAND;
 
 @Slf4j
 @Component
 public class ToMainMenuStrategy extends AbstractActionStrategy {
-    public ToMainMenuStrategy(@Lazy MainMenuState nextState) {
+    private final TestService testService;
+
+    public ToMainMenuStrategy(@Lazy MainMenuState nextState,
+                              TestService testService) {
         this.nextState = nextState;
+        this.testService = testService;
     }
 
     @Override
@@ -39,6 +46,15 @@ public class ToMainMenuStrategy extends AbstractActionStrategy {
 
     @Override
     public void process(Update update, Map<String, Object> data) {
+        if (data.get(CHECK_0_QUESTIONS) != null) {
+            String uniqueTitle = (String) data.get(CHECK_0_QUESTIONS);
+            Test test = testService.getByUniqueTitle(uniqueTitle);
+            if (test.getOpenQuestions().size() + test.getVariableQuestions().size() == 0) {
+                sendError(update.getCallbackQuery().getFrom().getId(), "Необходимо добавить как минимум один вопрос");
+                return;
+            }
+            data.remove(CHECK_0_QUESTIONS);
+        }
         Long userId = update.getCallbackQuery() != null
                 ? update.getCallbackQuery().getFrom().getId()
                 : update.getMessage().getFrom().getId();

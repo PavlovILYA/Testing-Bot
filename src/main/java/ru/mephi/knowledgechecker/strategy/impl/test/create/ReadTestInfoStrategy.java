@@ -15,6 +15,7 @@ import ru.mephi.knowledgechecker.strategy.impl.AbstractMessageStrategy;
 import java.util.List;
 import java.util.Map;
 
+import static ru.mephi.knowledgechecker.common.Constants.CHECK_0_QUESTIONS;
 import static ru.mephi.knowledgechecker.common.KeyboardMarkups.getAddQuestionInlineKeyboardMarkup;
 import static ru.mephi.knowledgechecker.common.ParamsWrapper.wrapMessageParams;
 
@@ -46,9 +47,14 @@ public class ReadTestInfoStrategy extends AbstractMessageStrategy {
                 break;
             case "maxQuestionsNumber":
                 try {
-                    readMaxQuestionsNumber(Integer.parseInt(update.getMessage().getText()), data, user, test);
+                    int maxQuestionNumber = Integer.parseInt(update.getMessage().getText());
+                    if (maxQuestionNumber <= 0 || maxQuestionNumber > 50) {
+                        throw new NumberFormatException();
+                    }
+                    readMaxQuestionsNumber(maxQuestionNumber, data, user, test);
                 } catch (NumberFormatException e) {
-                    sendError(user.getId(), "Неверный формат, попробуйте ввести число еще раз");
+                    sendError(user.getId(), "Неверный формат, попробуйте еще раз:\n" +
+                            "Введите число от 1 до 50");
                     return;
                 }
                 break;
@@ -59,7 +65,7 @@ public class ReadTestInfoStrategy extends AbstractMessageStrategy {
     private void readTitle(String title, Map<String, Object> data, User user, Test test) {
         test.setTitle(title);
         testService.save(test);
-        String boldMessage = "Введите количество отображаемых вопросов";
+        String boldMessage = "Введите количество отображаемых вопросов (от 1 до 50)";
         String italicMessage =
                 "\n\n(Вопросов можно будет создать больше, тогда будет браться случайная выборка)";
         MessageParams params =
@@ -88,6 +94,9 @@ public class ReadTestInfoStrategy extends AbstractMessageStrategy {
                                 new MessageEntity("italic", boldMessage.length(), italicMessage.length())),
                         getAddQuestionInlineKeyboardMarkup());
         data.remove("next");
+        if (data.get(CHECK_0_QUESTIONS) == null) {
+            data.put(CHECK_0_QUESTIONS, test.getUniqueTitle());
+        }
         putStateToContext(user.getId(), nextState, data);
         telegramApiClient.sendMessage(params);
     }

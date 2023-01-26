@@ -28,7 +28,7 @@ public class AddWrongVariableAnswerStrategy extends AbstractCallbackQueryStrateg
 
     @Override
     public void process(Update update, Map<String, Object> data) {
-        String boldMessage = "Введите неправильный ответ";
+        String boldMessage = "Введите неправильный ответ (максимум 30 символов)";
         String italicMessage = "\n\nПредпочтительно вводить короткие варианты ответа: A, B, etc.";
         MessageParams params =
                 wrapMessageParams(update.getCallbackQuery().getFrom().getId(), boldMessage + italicMessage,

@@ -34,7 +34,7 @@ public class ToTestCreatingStrategy extends AbstractCallbackQueryStrategy {
     @Override
     public void process(Update update, Map<String, Object> data) {
         Long userId = update.getCallbackQuery().getFrom().getId();
-        String message = "Введите уникальное название теста";
+        String message = "Введите уникальное название теста (максимум 30 символов)";
         MessageParams params =
                 wrapMessageParams(userId, message,
                         List.of(new MessageEntity("bold", 0, message.length()),

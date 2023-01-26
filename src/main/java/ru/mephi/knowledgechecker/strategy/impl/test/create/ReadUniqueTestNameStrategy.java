@@ -14,9 +14,11 @@ import ru.mephi.knowledgechecker.service.UserService;
 import ru.mephi.knowledgechecker.state.impl.test.create.TestInfoReadingState;
 import ru.mephi.knowledgechecker.strategy.impl.AbstractMessageStrategy;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
+import static ru.mephi.knowledgechecker.common.Constants.PUBLIC_TEST_PREFIX;
 import static ru.mephi.knowledgechecker.common.ParamsWrapper.wrapMessageParams;
 
 @Slf4j
@@ -43,6 +45,11 @@ public class ReadUniqueTestNameStrategy extends AbstractMessageStrategy {
         User user = userService.get(update.getMessage().getFrom().getId());
         if (testService.getByUniqueTitle(uniqueTestName) != null) {
             sendError(update.getMessage().getFrom().getId(), "Тест с таким названием уже существует, " +
+                    "попробуйте еще раз");
+            return;
+        }
+        if ((uniqueTestName + ":" + PUBLIC_TEST_PREFIX).getBytes(StandardCharsets.UTF_8).length > 64) {
+            sendError(update.getMessage().getFrom().getId(), "Длина уникального названия теста больше 30, " +
                     "попробуйте еще раз");
             return;
         }

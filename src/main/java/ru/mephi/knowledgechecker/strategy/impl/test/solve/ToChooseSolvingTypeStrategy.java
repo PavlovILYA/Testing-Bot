@@ -14,6 +14,7 @@ import ru.mephi.knowledgechecker.strategy.impl.AbstractCallbackQueryStrategy;
 import java.util.List;
 import java.util.Map;
 
+import static ru.mephi.knowledgechecker.common.Constants.PUBLIC_TEST_PREFIX;
 import static ru.mephi.knowledgechecker.common.KeyboardMarkups.getTestSolvingTypesInlineKeyboardMarkup;
 import static ru.mephi.knowledgechecker.common.ParamsWrapper.wrapMessageParams;
 
@@ -29,7 +30,7 @@ public class ToChooseSolvingTypeStrategy extends AbstractCallbackQueryStrategy {
 
     @Override
     public boolean apply(Update update) {
-        if (!super.apply(update) || !update.getCallbackQuery().getData().split(":")[0].equals("public-test")) {
+        if (!super.apply(update) || !update.getCallbackQuery().getData().split(":")[0].equals(PUBLIC_TEST_PREFIX)) {
             return false;
         }
 
