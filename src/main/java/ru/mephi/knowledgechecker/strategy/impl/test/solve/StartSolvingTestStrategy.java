@@ -14,7 +14,6 @@ import ru.mephi.knowledgechecker.service.UserService;
 import ru.mephi.knowledgechecker.state.impl.menu.PublicTestListState;
 import ru.mephi.knowledgechecker.state.impl.test.solve.SolvingTestState;
 import ru.mephi.knowledgechecker.strategy.impl.AbstractCallbackQueryStrategy;
-import ru.mephi.knowledgechecker.strategy.impl.menu.ToPublicTestListStrategy;
 
 import java.util.List;
 import java.util.Map;
@@ -36,7 +35,6 @@ public class StartSolvingTestStrategy extends AbstractCallbackQueryStrategy {
                                     TestService testService,
                                     SolvingService solvingService, ShowQuestionStrategy showQuestionStrategy,
                                     @Lazy SolvingTestState solvingTestState,
-                                    @Lazy ToPublicTestListStrategy toPublicTestListStrategy,
                                     @Lazy PublicTestListState publicTestListState) {
         this.userService = userService;
         this.testService = testService;
