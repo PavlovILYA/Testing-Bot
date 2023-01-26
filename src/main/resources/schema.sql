@@ -111,3 +111,19 @@ CREATE TABLE IF NOT EXISTS solving (
 
 CREATE INDEX IF NOT EXISTS solving_user_id
     ON solving(user_id);
+
+-- CREATE OR REPLACE FUNCTION regexp_match(v_text in varchar, v_regexp in varchar) returns boolean
+--     language plpgsql strict immutable
+-- as
+-- $$
+-- begin
+--     return v_text ~* v_regexp;
+-- end
+-- $$;
+
+-- DROP FUNCTION regexp_match(varchar, varchar);
+
+CREATE OR REPLACE FUNCTION regexp_match(varchar, varchar) RETURNS boolean
+    AS 'select $1 ~* $2;'
+    LANGUAGE SQL
+    IMMUTABLE;

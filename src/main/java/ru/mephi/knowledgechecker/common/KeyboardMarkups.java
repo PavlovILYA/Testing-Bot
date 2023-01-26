@@ -5,6 +5,8 @@ import ru.mephi.knowledgechecker.dto.telegram.outcome.keyboard.inline.InlineKeyb
 import ru.mephi.knowledgechecker.dto.telegram.outcome.keyboard.reply.KeyboardButton;
 import ru.mephi.knowledgechecker.model.answer.VariableAnswer;
 import ru.mephi.knowledgechecker.model.question.VariableQuestion;
+import ru.mephi.knowledgechecker.model.test.Test;
+import ru.mephi.knowledgechecker.model.user.User;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -112,5 +114,33 @@ public class KeyboardMarkups {
         }
 
         return wrapReplyKeyboardMarkup(markup, "Выберите правильный ответ");
+    }
+
+    public static KeyboardMarkup getPublicTestListInlineKeyboardMarkup(User user) {
+        List<List<InlineKeyboardButton>> markup = new ArrayList<>();
+        List<InlineKeyboardButton> menu = new ArrayList<>();
+        menu.add(InlineKeyboardButton.builder()
+                .text("⬅️")
+                .callbackData(Constants.TO_MAIN_MENU)
+                .build());
+        menu.add(InlineKeyboardButton.builder()
+                .text("📝 Создать тест")
+                .callbackData(Constants.CREATE_PUBLIC_TEST)
+                .build());
+        menu.add(InlineKeyboardButton.builder()
+                .text("🔎️ Найти тест")
+                .callbackData(Constants.FIND_PUBLIC_TEST)
+                .build());
+        markup.add(menu);
+
+        for (Test test: user.getCreatedTests()) {
+            List<InlineKeyboardButton> testList = new ArrayList<>();
+            testList.add(InlineKeyboardButton.builder()
+                    .text("📌 " + test.getUniqueTitle())
+                    .callbackData("public-test:" + test.getUniqueTitle())
+                    .build());
+            markup.add(testList);
+        }
+        return wrapInlineKeyboardMarkup(markup);
     }
 }
