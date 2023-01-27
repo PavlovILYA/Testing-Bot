@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS tests (
     max_questions_number INT,
     test_type VARCHAR(255), -- enum
     PRIMARY KEY (unique_title),
-    FOREIGN KEY (creator_id) REFERENCES users(id)
+    FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS variable_answers (
@@ -50,16 +50,16 @@ CREATE TABLE IF NOT EXISTS variable_questions (
     max_answer_number INT,
     correct_answer_id BIGINT,
     PRIMARY KEY (id),
-    FOREIGN KEY (test_id) REFERENCES tests(id),
-    FOREIGN KEY (correct_answer_id) REFERENCES variable_answers(id)
+    FOREIGN KEY (test_id) REFERENCES tests(id) ON DELETE CASCADE,
+    FOREIGN KEY (correct_answer_id) REFERENCES variable_answers(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS variable_questions_answers (
     question_id BIGINT,
     answer_id BIGINT,
     PRIMARY KEY (question_id, answer_id),
-    FOREIGN KEY (question_id) REFERENCES variable_questions(id),
-    FOREIGN KEY (answer_id) REFERENCES variable_answers(id)
+    FOREIGN KEY (question_id) REFERENCES variable_questions(id) ON DELETE CASCADE,
+    FOREIGN KEY (answer_id) REFERENCES variable_answers(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS open_questions (
@@ -71,7 +71,7 @@ CREATE TABLE IF NOT EXISTS open_questions (
     file_id BIGINT,  -- from tg
     correct_answer VARCHAR(5000),
     PRIMARY KEY (id),
-    FOREIGN KEY (test_id) REFERENCES tests(id)
+    FOREIGN KEY (test_id) REFERENCES tests(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS open_answers (
@@ -82,16 +82,16 @@ CREATE TABLE IF NOT EXISTS open_answers (
     audio_id BIGINT, -- from tg
     file_id BIGINT,  -- from tg
     PRIMARY KEY (question_id, user_id),
-    FOREIGN KEY (question_id) REFERENCES open_questions(id),
-    FOREIGN KEY (user_id) REFERENCES users(id)
+    FOREIGN KEY (question_id) REFERENCES open_questions(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS users_tests ( -- сохраненные тесты,
     user_id BIGINT,                      -- созданные другими
     test_id BIGINT,                      -- пользователями
     PRIMARY KEY (user_id, test_id),
-    FOREIGN KEY (user_id) REFERENCES users(id),
-    FOREIGN KEY (test_id) REFERENCES tests(id)
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (test_id) REFERENCES tests(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS solving (
@@ -105,8 +105,8 @@ CREATE TABLE IF NOT EXISTS solving (
     variable_answer_results VARCHAR(1000),
     started_at timestamp,
     PRIMARY KEY (id),
-    FOREIGN KEY (user_id) REFERENCES users(id),
-    FOREIGN KEY (test_id) REFERENCES tests(id)
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (test_id) REFERENCES tests(id) ON DELETE CASCADE
 );
 
 CREATE INDEX IF NOT EXISTS solving_user_id
