@@ -9,6 +9,7 @@ import ru.mephi.knowledgechecker.httpclient.TelegramApiClient;
 import ru.mephi.knowledgechecker.state.BotState;
 import ru.mephi.knowledgechecker.state.StateContext;
 import ru.mephi.knowledgechecker.strategy.ActionStrategy;
+import ru.mephi.knowledgechecker.strategy.StrategyProcessException;
 
 import java.util.List;
 import java.util.Map;
@@ -32,6 +33,11 @@ public abstract class AbstractActionStrategy implements ActionStrategy {
 
     protected void putStateToContext(Long userId, Map<String, Object> data) {
         stateContext.putState(userId, data);
+    }
+
+    @Override
+    public void analyzeException(StrategyProcessException exception) {
+        sendError(exception.getUserId(), exception.getMessage());
     }
 
     protected void sendError(long userId, String message) {

@@ -10,6 +10,7 @@ import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageParams;
 import ru.mephi.knowledgechecker.model.user.User;
 import ru.mephi.knowledgechecker.service.UserService;
 import ru.mephi.knowledgechecker.state.impl.menu.PublicTestListState;
+import ru.mephi.knowledgechecker.strategy.StrategyProcessException;
 import ru.mephi.knowledgechecker.strategy.impl.AbstractActionStrategy;
 
 import java.util.List;
@@ -40,7 +41,7 @@ public class ToPublicTestListStrategy extends AbstractActionStrategy {
     }
 
     @Override
-    public void process(Update update, Map<String, Object> data) {
+    public void process(Update update, Map<String, Object> data) throws StrategyProcessException {
         Long userId;
         if (update.getCallbackQuery() != null) {
             userId = update.getCallbackQuery().getFrom().getId();

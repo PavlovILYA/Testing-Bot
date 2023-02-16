@@ -17,6 +17,7 @@ import ru.mephi.knowledgechecker.service.OpenQuestionService;
 import ru.mephi.knowledgechecker.service.SolvingService;
 import ru.mephi.knowledgechecker.service.VariableAnswerService;
 import ru.mephi.knowledgechecker.state.impl.menu.MainMenuState;
+import ru.mephi.knowledgechecker.strategy.StrategyProcessException;
 import ru.mephi.knowledgechecker.strategy.impl.AbstractMessageStrategy;
 import ru.mephi.knowledgechecker.strategy.impl.menu.ToMainMenuStrategy;
 
@@ -61,14 +62,14 @@ public class ShowQuestionStrategy extends AbstractMessageStrategy {
     }
 
     @Override
-    public void process(Update update, Map<String, Object> data) {
+    public void process(Update update, Map<String, Object> data) throws StrategyProcessException {
         Solving solving = solvingService.getByUserId(update.getMessage().getFrom().getId());
         String answerText = update.getMessage().getText();
         saveAnswer(solving, data, answerText);
         sendQuestion(solving, data, update);
     }
 
-    private void saveAnswer(Solving solving, Map<String, Object> data, String answerText) {
+    private void saveAnswer(Solving solving, Map<String, Object> data, String answerText) throws StrategyProcessException {
         switch ((String) data.get("previousQuestionType")) {
             case "open":
                 saveOpenAnswer(solving, answerText, data.get("solvingType").equals(DEMONSTRATION_ANSWER));
@@ -80,12 +81,11 @@ public class ShowQuestionStrategy extends AbstractMessageStrategy {
         }
     }
 
-    private void saveVariableAnswer(Solving solving, String answerText, boolean showAnswer) {
+    private void saveVariableAnswer(Solving solving, String answerText, boolean showAnswer) throws StrategyProcessException {
         VariableAnswer answer = variableAnswerService.getByText(answerText);
         if (answer == null) {
-            sendError(solving.getUser().getId(), "Неверный формат ответа\n" +
+            throw new StrategyProcessException(solving.getUser().getId(), "Неверный формат ответа\n" +
                     "(Для удобства воспользуйтесь кастомной клавиатурой)");
-            return;
         }
 
         // todo: стоит здесь проверять ответ?
@@ -224,7 +224,11 @@ public class ShowQuestionStrategy extends AbstractMessageStrategy {
         }
         clearSolving(solving);
         data.remove("solvingType");
-        toMainMenuStrategy.process(update, data);
+        try {
+            toMainMenuStrategy.process(update, data);
+        } catch (StrategyProcessException e) {
+            toMainMenuStrategy.analyzeException(e);
+        }
     }
 
     private void sendFinishCongrats(Solving solving) {

@@ -9,6 +9,7 @@ import ru.mephi.knowledgechecker.model.test.Test;
 import ru.mephi.knowledgechecker.service.TestService;
 import ru.mephi.knowledgechecker.service.VariableQuestionService;
 import ru.mephi.knowledgechecker.state.impl.test.create.question.QuestionAddingState;
+import ru.mephi.knowledgechecker.strategy.StrategyProcessException;
 import ru.mephi.knowledgechecker.strategy.impl.AbstractCallbackQueryStrategy;
 
 import java.util.Map;
@@ -37,13 +38,12 @@ public class ToQuestionAddingStrategy extends AbstractCallbackQueryStrategy {
     }
 
     @Override
-    public void process(Update update, Map<String, Object> data) {
+    public void process(Update update, Map<String, Object> data) throws StrategyProcessException {
         if (data.get("questionId") != null) {
             VariableQuestion lastQuestion = variableQuestionService.get((Long) data.get("questionId"));
             if (lastQuestion.getWrongAnswers().size() == 0) {
-                sendError(update.getCallbackQuery().getFrom().getId(),
+                throw new StrategyProcessException(update.getCallbackQuery().getFrom().getId(),
                         "Необходимо добавить хотя бы один неправильный вариант ответа");
-                return;
             }
         }
 

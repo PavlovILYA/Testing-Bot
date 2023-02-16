@@ -8,6 +8,7 @@ import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageEntity;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageParams;
 import ru.mephi.knowledgechecker.state.impl.test.search.TestSearchAttemptState;
+import ru.mephi.knowledgechecker.strategy.StrategyProcessException;
 import ru.mephi.knowledgechecker.strategy.impl.AbstractCallbackQueryStrategy;
 
 import java.util.List;
@@ -30,7 +31,7 @@ public class AskForSearchQueryStrategy extends AbstractCallbackQueryStrategy {
     }
 
     @Override
-    public void process(Update update, Map<String, Object> data) {
+    public void process(Update update, Map<String, Object> data) throws StrategyProcessException {
         String boldMessage = "🔎️ Введите поисковой запрос\n\n";
         String italicMessage = "(Введите ключевое выражение, которое вероятнее всего содержится в названии теста)" +
                 "\n❗️ Чтобы объединить выборки по нескольким запросам, введите несколько ключевых выражений, " +

@@ -11,6 +11,7 @@ import ru.mephi.knowledgechecker.model.user.User;
 import ru.mephi.knowledgechecker.service.TestService;
 import ru.mephi.knowledgechecker.service.UserService;
 import ru.mephi.knowledgechecker.state.impl.test.create.question.QuestionAddingState;
+import ru.mephi.knowledgechecker.strategy.StrategyProcessException;
 import ru.mephi.knowledgechecker.strategy.impl.AbstractMessageStrategy;
 
 import java.util.List;
@@ -38,7 +39,7 @@ public class ReadTestInfoStrategy extends AbstractMessageStrategy {
     }
 
     @Override
-    public void process(Update update, Map<String, Object> data) {
+    public void process(Update update, Map<String, Object> data) throws StrategyProcessException {
         User user = userService.get(update.getMessage().getFrom().getId());
         Test test = testService.getByUniqueTitle((String) data.get("testId"));
         String next = (String) data.get("next");
@@ -54,9 +55,9 @@ public class ReadTestInfoStrategy extends AbstractMessageStrategy {
                     }
                     readMaxQuestionsNumber(maxQuestionNumber, data, user, test);
                 } catch (NumberFormatException e) {
-                    sendError(user.getId(), "Неверный формат, попробуйте еще раз:\n" +
+                    throw new StrategyProcessException(user.getId(),
+                            "Неверный формат, попробуйте еще раз:\n" +
                             "Введите число от 1 до 50");
-                    return;
                 }
                 break;
             default: // todo: add attachment

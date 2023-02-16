@@ -14,6 +14,7 @@ import ru.mephi.knowledgechecker.service.TestService;
 import ru.mephi.knowledgechecker.service.UserService;
 import ru.mephi.knowledgechecker.state.impl.menu.PublicTestListState;
 import ru.mephi.knowledgechecker.state.impl.test.solve.SolvingTestState;
+import ru.mephi.knowledgechecker.strategy.StrategyProcessException;
 import ru.mephi.knowledgechecker.strategy.impl.AbstractCallbackQueryStrategy;
 
 import java.util.List;
@@ -54,7 +55,7 @@ public class StartSolvingTestStrategy extends AbstractCallbackQueryStrategy {
     }
 
     @Override
-    public void process(Update update, Map<String, Object> data) {
+    public void process(Update update, Map<String, Object> data) throws StrategyProcessException {
         User user = userService.get(update.getCallbackQuery().getFrom().getId());
         Test test = testService.getByUniqueTitle((String) data.get("testUniqueTitle"));
         if (test.getMaxQuestionsNumber() == null ||

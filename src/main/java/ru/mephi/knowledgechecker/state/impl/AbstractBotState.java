@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Lazy;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 import ru.mephi.knowledgechecker.state.BotState;
 import ru.mephi.knowledgechecker.strategy.ActionStrategy;
+import ru.mephi.knowledgechecker.strategy.StrategyProcessException;
 
 import java.util.Map;
 import java.util.Queue;
@@ -24,12 +25,20 @@ public abstract class AbstractBotState implements BotState {
     public void process(Update update, Map<String, Object> data) {
         for (ActionStrategy strategy : availableStrategies) {
             if (strategy.apply(update)) {
-                log.info("USE STRATEGY: {}", strategy.getClass().getName());
-                strategy.process(update, data);
+                try {
+                    log.info("USE STRATEGY: {}", strategy.getClass().getName());
+                    strategy.process(update, data);
+                } catch (StrategyProcessException e) {
+                    strategy.analyzeException(e);
+                }
                 return;
             }
         }
-        log.info("USE STRATEGY: {}", unknownStrategy.getClass().getName());
-        unknownStrategy.process(update, data);
+        try {
+            log.info("USE STRATEGY: {}", unknownStrategy.getClass().getName());
+            unknownStrategy.process(update, data);
+        } catch (StrategyProcessException e) {
+            unknownStrategy.analyzeException(e);
+        }
     }
 }

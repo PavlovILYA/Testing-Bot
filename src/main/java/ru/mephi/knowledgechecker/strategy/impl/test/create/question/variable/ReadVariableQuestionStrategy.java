@@ -15,6 +15,7 @@ import ru.mephi.knowledgechecker.service.UserService;
 import ru.mephi.knowledgechecker.service.VariableAnswerService;
 import ru.mephi.knowledgechecker.service.VariableQuestionService;
 import ru.mephi.knowledgechecker.state.impl.test.create.question.variable.WrongVariableAnswerAddingState;
+import ru.mephi.knowledgechecker.strategy.StrategyProcessException;
 import ru.mephi.knowledgechecker.strategy.impl.AbstractMessageStrategy;
 
 import java.util.List;
@@ -49,7 +50,7 @@ public class ReadVariableQuestionStrategy extends AbstractMessageStrategy {
     }
 
     @Override
-    public void process(Update update, Map<String, Object> data) {
+    public void process(Update update, Map<String, Object> data) throws StrategyProcessException {
         User user = userService.get(update.getMessage().getFrom().getId());
         Test test = testService.getByUniqueTitle((String) data.get("testId"));
         switch ((String) data.get("next")) {
@@ -58,9 +59,8 @@ public class ReadVariableQuestionStrategy extends AbstractMessageStrategy {
                 break;
             case "correctAnswer":
                 if (update.getMessage().getText().length() > 30) {
-                    sendError(user.getId(), "Максимальная длина вариативного ответа 30 символов, " +
-                            "попробуйте еще раз");
-                    return;
+                    throw new StrategyProcessException(user.getId(),
+                            "Максимальная длина вариативного ответа 30 символов, попробуйте еще раз");
                 }
                 readCorrectAnswer(update.getMessage().getText(), data, user);
                 break;
@@ -72,8 +72,8 @@ public class ReadVariableQuestionStrategy extends AbstractMessageStrategy {
                     }
                     readMaxAnswerNumber(maxAnswerNumber, data, user);
                 } catch (NumberFormatException e) {
-                    sendError(user.getId(), "Неверный формат, попробуйте еще раз\nВведите число от 1 до 9");
-                    return;
+                    throw new StrategyProcessException(user.getId(),
+                            "Неверный формат, попробуйте еще раз\nВведите число от 1 до 9");
                 }
                 break;
             default: // todo: add attachment
@@ -100,7 +100,7 @@ public class ReadVariableQuestionStrategy extends AbstractMessageStrategy {
         telegramApiClient.sendMessage(params);
     }
 
-    private void readCorrectAnswer(String correctAnswerText, Map<String, Object> data, User user) {
+    private void readCorrectAnswer(String correctAnswerText, Map<String, Object> data, User user) throws StrategyProcessException {
         VariableQuestion question = variableQuestionService.get((Long) data.get("questionId"));
         VariableAnswer answer = VariableAnswer.builder()
                 .text(correctAnswerText)
@@ -108,8 +108,8 @@ public class ReadVariableQuestionStrategy extends AbstractMessageStrategy {
         try {
             answer = variableAnswerService.save(answer);
         } catch (RuntimeException e) {
-            sendError(user.getId(), "Максимальная длина варианта ответа – 30 символов, попробуйте еще раз");
-            return;
+            throw new StrategyProcessException(user.getId(),
+                    "Максимальная длина варианта ответа – 30 символов, попробуйте еще раз");
         }
         question.setCorrectAnswer(answer);
         variableQuestionService.save(question);

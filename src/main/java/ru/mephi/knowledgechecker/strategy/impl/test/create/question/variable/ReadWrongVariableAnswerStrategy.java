@@ -11,6 +11,7 @@ import ru.mephi.knowledgechecker.model.question.VariableQuestion;
 import ru.mephi.knowledgechecker.service.VariableAnswerService;
 import ru.mephi.knowledgechecker.service.VariableQuestionService;
 import ru.mephi.knowledgechecker.state.impl.test.create.question.variable.WrongVariableAnswerAddingState;
+import ru.mephi.knowledgechecker.strategy.StrategyProcessException;
 import ru.mephi.knowledgechecker.strategy.impl.AbstractMessageStrategy;
 
 import java.util.List;
@@ -38,17 +39,15 @@ public class ReadWrongVariableAnswerStrategy extends AbstractMessageStrategy {
     }
 
     @Override
-    public void process(Update update, Map<String, Object> data) {
+    public void process(Update update, Map<String, Object> data) throws StrategyProcessException {
         VariableQuestion question = variableQuestionService.get((Long) data.get("questionId"));
         if (question.getCorrectAnswer().getText().equals(update.getMessage().getText())) {
-            sendError(update.getMessage().getFrom().getId(), "Это правильный вариант ответа, " +
-                    "попробуйте еще раз ввести пример неверного");
-            return;
+            throw new StrategyProcessException(update.getMessage().getFrom().getId(),
+                    "Это правильный вариант ответа, попробуйте еще раз ввести пример неверного");
         }
         if (update.getMessage().getText().length() > 30) {
-            sendError(update.getMessage().getFrom().getId(), "Максимальная длина вариативного ответа 30 символов, " +
-                    "попробуйте еще раз");
-            return;
+            throw new StrategyProcessException(update.getMessage().getFrom().getId(),
+                    "Максимальная длина вариативного ответа 30 символов, попробуйте еще раз");
         }
         VariableAnswer answer = variableAnswerService.getByText(update.getMessage().getText());
         if (answer == null) {
@@ -61,9 +60,8 @@ public class ReadWrongVariableAnswerStrategy extends AbstractMessageStrategy {
         try {
             question = variableQuestionService.save(question);
         } catch (RuntimeException e) {
-            sendError(update.getMessage().getFrom().getId(), "Этот вариант ответа Вы уже использовали для этого вопроса, " +
-                    "попробуйте еще раз");
-            return;
+            throw new StrategyProcessException(update.getMessage().getFrom().getId(),
+                    "Этот вариант ответа Вы уже использовали для этого вопроса, попробуйте еще раз");
         }
         String boldMessage = "Добавление неверного ответа";
         String italicMessage =

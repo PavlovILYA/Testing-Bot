@@ -10,6 +10,7 @@ import ru.mephi.knowledgechecker.model.test.Test;
 import ru.mephi.knowledgechecker.model.test.TestType;
 import ru.mephi.knowledgechecker.service.TestService;
 import ru.mephi.knowledgechecker.state.impl.test.solve.ChooseSolvingTypeState;
+import ru.mephi.knowledgechecker.strategy.StrategyProcessException;
 import ru.mephi.knowledgechecker.strategy.impl.AbstractCallbackQueryStrategy;
 
 import java.util.List;
@@ -42,7 +43,7 @@ public class ToChooseSolvingTypeStrategy extends AbstractCallbackQueryStrategy {
     }
 
     @Override
-    public void process(Update update, Map<String, Object> data) {
+    public void process(Update update, Map<String, Object> data) throws StrategyProcessException {
         String message = "Выберите вариант прохождения теста";
         MessageParams params =
                 wrapMessageParams(update.getCallbackQuery().getFrom().getId(), message,

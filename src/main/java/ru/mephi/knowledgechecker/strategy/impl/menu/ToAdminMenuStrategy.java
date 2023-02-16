@@ -11,6 +11,7 @@ import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageParams;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.keyboard.KeyboardMarkup;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.keyboard.inline.InlineKeyboardButton;
 import ru.mephi.knowledgechecker.state.impl.menu.AdminMenuState;
+import ru.mephi.knowledgechecker.strategy.StrategyProcessException;
 import ru.mephi.knowledgechecker.strategy.impl.AbstractMessageStrategy;
 
 import java.util.ArrayList;
@@ -34,7 +35,7 @@ public class ToAdminMenuStrategy extends AbstractMessageStrategy {
     }
 
     @Override
-    public void process(Update update, Map<String, Object> data) {
+    public void process(Update update, Map<String, Object> data) throws StrategyProcessException {
         Long userId = update.getMessage().getChat().getId();
         String text = "🔽\nГЛАВНОЕ МЕНЮ\n⬇️\nАДМИНИСТРАТОРСКОЕ МЕНЮ";
         MessageParams params =

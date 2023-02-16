@@ -13,6 +13,7 @@ import ru.mephi.knowledgechecker.service.OpenQuestionService;
 import ru.mephi.knowledgechecker.service.TestService;
 import ru.mephi.knowledgechecker.service.UserService;
 import ru.mephi.knowledgechecker.state.impl.test.create.question.QuestionAddingState;
+import ru.mephi.knowledgechecker.strategy.StrategyProcessException;
 import ru.mephi.knowledgechecker.strategy.impl.AbstractMessageStrategy;
 
 import java.util.List;
@@ -44,7 +45,7 @@ public class ReadOpenQuestionInfoStrategy extends AbstractMessageStrategy {
     }
 
     @Override
-    public void process(Update update, Map<String, Object> data) {
+    public void process(Update update, Map<String, Object> data) throws StrategyProcessException {
         User user = userService.get(update.getMessage().getFrom().getId());
         Test test = testService.getByUniqueTitle((String) data.get("testId"));
         switch ((String) data.get("next")) {

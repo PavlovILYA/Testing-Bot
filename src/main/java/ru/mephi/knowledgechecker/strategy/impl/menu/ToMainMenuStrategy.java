@@ -11,6 +11,7 @@ import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageParams;
 import ru.mephi.knowledgechecker.model.test.Test;
 import ru.mephi.knowledgechecker.service.TestService;
 import ru.mephi.knowledgechecker.state.impl.menu.MainMenuState;
+import ru.mephi.knowledgechecker.strategy.StrategyProcessException;
 import ru.mephi.knowledgechecker.strategy.impl.AbstractActionStrategy;
 
 import java.util.List;
@@ -46,13 +47,13 @@ public class ToMainMenuStrategy extends AbstractActionStrategy {
     }
 
     @Override
-    public void process(Update update, Map<String, Object> data) {
+    public void process(Update update, Map<String, Object> data) throws StrategyProcessException {
         if (data.get(CHECK_0_QUESTIONS) != null) {
             String uniqueTitle = (String) data.get(CHECK_0_QUESTIONS);
             Test test = testService.getByUniqueTitle(uniqueTitle);
             if (test.getOpenQuestions().size() + test.getVariableQuestions().size() == 0) {
-                sendError(update.getCallbackQuery().getFrom().getId(), "Необходимо добавить как минимум один вопрос");
-                return;
+                throw new StrategyProcessException(update.getCallbackQuery().getFrom().getId(),
+                        "Необходимо добавить как минимум один вопрос");
             }
             data.remove(CHECK_0_QUESTIONS);
         }

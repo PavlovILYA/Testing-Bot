@@ -9,6 +9,7 @@ import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageParams;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.keyboard.KeyboardMarkup;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.keyboard.inline.InlineKeyboardButton;
 import ru.mephi.knowledgechecker.state.impl.test.create.TestCreatingState;
+import ru.mephi.knowledgechecker.strategy.StrategyProcessException;
 import ru.mephi.knowledgechecker.strategy.impl.AbstractCallbackQueryStrategy;
 
 import java.util.ArrayList;
@@ -33,7 +34,7 @@ public class ToTestCreatingStrategy extends AbstractCallbackQueryStrategy {
     }
 
     @Override
-    public void process(Update update, Map<String, Object> data) {
+    public void process(Update update, Map<String, Object> data) throws StrategyProcessException {
         Long userId = update.getCallbackQuery().getFrom().getId();
         String message = "Введите уникальное название теста (максимум 30 символов)";
         MessageParams params =

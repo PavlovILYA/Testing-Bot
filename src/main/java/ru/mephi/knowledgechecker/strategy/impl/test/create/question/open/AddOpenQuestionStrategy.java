@@ -9,6 +9,7 @@ import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageParams;
 import ru.mephi.knowledgechecker.model.user.User;
 import ru.mephi.knowledgechecker.service.UserService;
 import ru.mephi.knowledgechecker.state.impl.test.create.question.open.OpenQuestionInfoReadingState;
+import ru.mephi.knowledgechecker.strategy.StrategyProcessException;
 import ru.mephi.knowledgechecker.strategy.impl.AbstractCallbackQueryStrategy;
 
 import java.util.List;
@@ -34,7 +35,7 @@ public class AddOpenQuestionStrategy extends AbstractCallbackQueryStrategy {
     }
 
     @Override
-    public void process(Update update, Map<String, Object> data) {
+    public void process(Update update, Map<String, Object> data) throws StrategyProcessException {
         User user = userService.get(update.getCallbackQuery().getFrom().getId());
         String message = "Введите содержание вопроса";
         MessageParams params =

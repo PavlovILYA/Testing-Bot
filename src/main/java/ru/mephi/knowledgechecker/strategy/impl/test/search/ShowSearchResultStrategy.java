@@ -14,6 +14,7 @@ import ru.mephi.knowledgechecker.service.TestService;
 import ru.mephi.knowledgechecker.service.UserService;
 import ru.mephi.knowledgechecker.state.impl.menu.PublicTestListState;
 import ru.mephi.knowledgechecker.state.impl.test.search.TestSearchResultState;
+import ru.mephi.knowledgechecker.strategy.StrategyProcessException;
 import ru.mephi.knowledgechecker.strategy.impl.AbstractMessageStrategy;
 
 import java.util.ArrayList;
@@ -49,7 +50,7 @@ public class ShowSearchResultStrategy extends AbstractMessageStrategy {
     }
 
     @Override
-    public void process(Update update, Map<String, Object> data) {
+    public void process(Update update, Map<String, Object> data) throws StrategyProcessException {
         String keyWords = update.getMessage().getText().replaceAll(";", "|");
         List<String> testTitles = testService.findTests(keyWords, update.getMessage().getFrom().getId());
         if (testTitles.size() != 0) {

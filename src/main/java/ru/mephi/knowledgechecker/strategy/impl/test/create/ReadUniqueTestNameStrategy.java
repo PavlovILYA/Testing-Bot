@@ -13,6 +13,7 @@ import ru.mephi.knowledgechecker.model.user.User;
 import ru.mephi.knowledgechecker.service.TestService;
 import ru.mephi.knowledgechecker.service.UserService;
 import ru.mephi.knowledgechecker.state.impl.test.create.TestInfoReadingState;
+import ru.mephi.knowledgechecker.strategy.StrategyProcessException;
 import ru.mephi.knowledgechecker.strategy.impl.AbstractMessageStrategy;
 
 import java.nio.charset.StandardCharsets;
@@ -41,18 +42,16 @@ public class ReadUniqueTestNameStrategy extends AbstractMessageStrategy {
     }
 
     @Override
-    public void process(Update update, Map<String, Object> data) {
+    public void process(Update update, Map<String, Object> data) throws StrategyProcessException {
         String uniqueTestName = update.getMessage().getText();
         User user = userService.get(update.getMessage().getFrom().getId());
         if (testService.getByUniqueTitle(uniqueTestName) != null) {
-            sendError(update.getMessage().getFrom().getId(), "Тест с таким названием уже существует, " +
-                    "попробуйте еще раз");
-            return;
+            throw new StrategyProcessException(update.getMessage().getFrom().getId(),
+                    "Тест с таким названием уже существует, попробуйте еще раз");
         }
         if ((uniqueTestName + ":" + PUBLIC_TEST_PREFIX).getBytes(StandardCharsets.UTF_8).length > 64) {
-            sendError(update.getMessage().getFrom().getId(), "Длина уникального названия теста больше 30, " +
-                    "попробуйте еще раз");
-            return;
+            throw new StrategyProcessException(update.getMessage().getFrom().getId(),
+                    "Длина уникального названия теста больше 30, попробуйте еще раз");
         }
         Test test = Test.builder()
                 .uniqueTitle(uniqueTestName)
