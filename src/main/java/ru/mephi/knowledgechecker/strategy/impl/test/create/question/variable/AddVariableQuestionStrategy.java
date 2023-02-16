@@ -2,6 +2,8 @@ package ru.mephi.knowledgechecker.strategy.impl.test.create.question.variable;
 
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+import ru.mephi.knowledgechecker.common.CreationPhaseType;
+import ru.mephi.knowledgechecker.common.DataType;
 import ru.mephi.knowledgechecker.common.TextType;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageEntity;
@@ -35,7 +37,7 @@ public class AddVariableQuestionStrategy extends AbstractCallbackQueryStrategy {
     }
 
     @Override
-    public void process(Update update, Map<String, Object> data) throws StrategyProcessException {
+    public void process(Update update, Map<DataType, Object> data) throws StrategyProcessException {
         User user = userService.get(update.getCallbackQuery().getFrom().getId());
         String boldMessage = "Введите содержание вопроса";
         String italicMessage =
@@ -49,7 +51,7 @@ public class AddVariableQuestionStrategy extends AbstractCallbackQueryStrategy {
                         List.of(new MessageEntity(TextType.BOLD, 0, boldMessage.length()),
                                 new MessageEntity(TextType.ITALIC, boldMessage.length(), italicMessage.length())),
                         null);
-        data.put("next", "text");
+        data.put(DataType.NEXT_CREATION_PHASE, CreationPhaseType.TEXT);
         putStateToContext(user.getId(), nextState, data);
         telegramApiClient.sendMessage(params);
     }

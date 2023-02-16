@@ -3,6 +3,7 @@ package ru.mephi.knowledgechecker.strategy.impl.test.search;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+import ru.mephi.knowledgechecker.common.DataType;
 import ru.mephi.knowledgechecker.common.TextType;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageEntity;
@@ -50,7 +51,7 @@ public class ShowSearchResultStrategy extends AbstractMessageStrategy {
     }
 
     @Override
-    public void process(Update update, Map<String, Object> data) throws StrategyProcessException {
+    public void process(Update update, Map<DataType, Object> data) throws StrategyProcessException {
         String keyWords = update.getMessage().getText().replaceAll(";", "|");
         List<String> testTitles = testService.findTests(keyWords, update.getMessage().getFrom().getId());
         if (testTitles.size() != 0) {
@@ -60,7 +61,7 @@ public class ShowSearchResultStrategy extends AbstractMessageStrategy {
         }
     }
 
-    private void sendNotFound(Long userId, Map<String, Object> data) {
+    private void sendNotFound(Long userId, Map<DataType, Object> data) {
         putStateToContext(userId, publicTestListState, data);
         String message = "По данному запросу ничего не найдено 🤷🏼‍";
         MessageParams params =
@@ -77,7 +78,7 @@ public class ShowSearchResultStrategy extends AbstractMessageStrategy {
         telegramApiClient.sendMessage(params);
     }
 
-    private void sendResults(List<String> testTitles, Long userId, Map<String, Object> data) {
+    private void sendResults(List<String> testTitles, Long userId, Map<DataType, Object> data) {
         String message = "🕵🏻‍ Результаты поиска:";
         MessageParams params =
                 wrapMessageParams(userId, message,

@@ -2,6 +2,8 @@ package ru.mephi.knowledgechecker.strategy.impl.test.create;
 
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+import ru.mephi.knowledgechecker.common.CreationPhaseType;
+import ru.mephi.knowledgechecker.common.DataType;
 import ru.mephi.knowledgechecker.common.TextType;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageEntity;
@@ -18,7 +20,6 @@ import java.util.List;
 import java.util.Map;
 
 import static ru.mephi.knowledgechecker.common.CommonMessageParams.addingQuestionParams;
-import static ru.mephi.knowledgechecker.common.Constants.CHECK_0_QUESTIONS;
 import static ru.mephi.knowledgechecker.common.ParamsWrapper.wrapMessageParams;
 
 @Component
@@ -39,15 +40,15 @@ public class ReadTestInfoStrategy extends AbstractMessageStrategy {
     }
 
     @Override
-    public void process(Update update, Map<String, Object> data) throws StrategyProcessException {
+    public void process(Update update, Map<DataType, Object> data) throws StrategyProcessException {
         User user = userService.get(update.getMessage().getFrom().getId());
-        Test test = testService.getByUniqueTitle((String) data.get("testId"));
-        String next = (String) data.get("next");
+        Test test = testService.getByUniqueTitle((String) data.get(DataType.TEST_ID));
+        CreationPhaseType next = (CreationPhaseType) data.get(DataType.NEXT_CREATION_PHASE);
         switch (next) {
-            case "title":
+            case TITLE:
                 readTitle(update.getMessage().getText(), data, user, test);
                 break;
-            case "maxQuestionsNumber":
+            case MAX_QUESTION_NUMBER:
                 try {
                     int maxQuestionNumber = Integer.parseInt(update.getMessage().getText());
                     if (maxQuestionNumber <= 0 || maxQuestionNumber > 50) {
@@ -64,7 +65,7 @@ public class ReadTestInfoStrategy extends AbstractMessageStrategy {
         }
     }
 
-    private void readTitle(String title, Map<String, Object> data, User user, Test test) {
+    private void readTitle(String title, Map<DataType, Object> data, User user, Test test) {
         test.setTitle(title);
         testService.save(test);
         String boldMessage = "Введите количество отображаемых вопросов (от 1 до 50)";
@@ -76,18 +77,18 @@ public class ReadTestInfoStrategy extends AbstractMessageStrategy {
                                 new MessageEntity(TextType.UNDERLINE, 19, 12),
                                 new MessageEntity(TextType.ITALIC, boldMessage.length(), italicMessage.length())),
                         null);
-        data.put("next", "maxQuestionsNumber");
+        data.put(DataType.NEXT_CREATION_PHASE, CreationPhaseType.MAX_QUESTION_NUMBER);
         putStateToContext(user.getId(), data);
         telegramApiClient.sendMessage(params);
     }
 
-    private void readMaxQuestionsNumber(Integer maxQuestionsNumber, Map<String, Object> data, User user, Test test) {
+    private void readMaxQuestionsNumber(Integer maxQuestionsNumber, Map<DataType, Object> data, User user, Test test) {
         test.setMaxQuestionsNumber(maxQuestionsNumber);
         testService.save(test);
 
         MessageParams params = addingQuestionParams(test, user.getId());
-        data.remove("next");
-        data.computeIfAbsent(CHECK_0_QUESTIONS, k -> test.getUniqueTitle());
+        data.remove(DataType.NEXT_CREATION_PHASE);
+        data.computeIfAbsent(DataType.CHECK_0_QUESTIONS, k -> test.getUniqueTitle());
         putStateToContext(user.getId(), nextState, data);
         telegramApiClient.sendMessage(params);
     }

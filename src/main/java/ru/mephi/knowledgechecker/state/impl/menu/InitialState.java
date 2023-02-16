@@ -2,6 +2,7 @@ package ru.mephi.knowledgechecker.state.impl.menu;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import ru.mephi.knowledgechecker.common.DataType;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 import ru.mephi.knowledgechecker.dto.telegram.income.UserDto;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageParams;
@@ -29,7 +30,7 @@ public class InitialState extends AbstractBotState {
     }
 
     @Override
-    public void process(Update update, Map<String, Object> data) {
+    public void process(Update update, Map<DataType, Object> data) {
         UserDto userDto = update.getCallbackQuery() != null
                 ? update.getCallbackQuery().getFrom()
                 : update.getMessage().getFrom();

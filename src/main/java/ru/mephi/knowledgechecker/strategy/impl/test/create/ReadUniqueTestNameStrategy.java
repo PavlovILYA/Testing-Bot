@@ -3,6 +3,8 @@ package ru.mephi.knowledgechecker.strategy.impl.test.create;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+import ru.mephi.knowledgechecker.common.CreationPhaseType;
+import ru.mephi.knowledgechecker.common.DataType;
 import ru.mephi.knowledgechecker.common.TextType;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageEntity;
@@ -42,7 +44,7 @@ public class ReadUniqueTestNameStrategy extends AbstractMessageStrategy {
     }
 
     @Override
-    public void process(Update update, Map<String, Object> data) throws StrategyProcessException {
+    public void process(Update update, Map<DataType, Object> data) throws StrategyProcessException {
         String uniqueTestName = update.getMessage().getText();
         User user = userService.get(update.getMessage().getFrom().getId());
         if (testService.getByUniqueTitle(uniqueTestName) != null) {
@@ -67,8 +69,8 @@ public class ReadUniqueTestNameStrategy extends AbstractMessageStrategy {
                                 new MessageEntity(TextType.UNDERLINE, 16, 12)),
                         null);
         data.clear();
-        data.put("testId", test.getUniqueTitle());
-        data.put("next", "title");
+        data.put(DataType.TEST_ID, test.getUniqueTitle());
+        data.put(DataType.NEXT_CREATION_PHASE, CreationPhaseType.TITLE);
         putStateToContext(user.getId(), nextState, data);
         telegramApiClient.sendMessage(params);
     }

@@ -2,6 +2,7 @@ package ru.mephi.knowledgechecker.state;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import ru.mephi.knowledgechecker.common.DataType;
 import ru.mephi.knowledgechecker.dto.telegram.income.InvalidUpdateException;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 import ru.mephi.knowledgechecker.state.impl.menu.InitialState;
@@ -46,7 +47,7 @@ public class StateContext {
     }
 
     // todo поменять мапу на БД (точнее сохранить мапу для кэширования)
-    public void putState(Long userId, BotState state, Map<String, Object> data) {
+    public void putState(Long userId, BotState state, Map<DataType, Object> data) {
         if (!states.containsKey(userId)) {
             states.put(userId, new ExtendedState(state, data));
         } else {
@@ -57,7 +58,7 @@ public class StateContext {
         timestamps.put(userId, LocalDateTime.now());
     }
 
-    public void putState(Long userId, Map<String, Object> data) {
+    public void putState(Long userId, Map<DataType, Object> data) {
         ExtendedState extendedState = states.get(userId);
         extendedState.setData(data);
         timestamps.put(userId, LocalDateTime.now());

@@ -2,6 +2,8 @@ package ru.mephi.knowledgechecker.strategy.impl.test.solve;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import ru.mephi.knowledgechecker.common.DataType;
+import ru.mephi.knowledgechecker.common.QuestionType;
 import ru.mephi.knowledgechecker.common.TextType;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageEntity;
@@ -62,20 +64,20 @@ public class ShowQuestionStrategy extends AbstractMessageStrategy {
     }
 
     @Override
-    public void process(Update update, Map<String, Object> data) throws StrategyProcessException {
+    public void process(Update update, Map<DataType, Object> data) throws StrategyProcessException {
         Solving solving = solvingService.getByUserId(update.getMessage().getFrom().getId());
         String answerText = update.getMessage().getText();
         saveAnswer(solving, data, answerText);
         sendQuestion(solving, data, update);
     }
 
-    private void saveAnswer(Solving solving, Map<String, Object> data, String answerText) throws StrategyProcessException {
-        switch ((String) data.get("previousQuestionType")) {
-            case "open":
-                saveOpenAnswer(solving, answerText, data.get("solvingType").equals(DEMONSTRATION_ANSWER));
+    private void saveAnswer(Solving solving, Map<DataType, Object> data, String answerText) throws StrategyProcessException {
+        switch ((QuestionType) data.get(DataType.PREVIOUS_QUESTION_TYPE)) {
+            case OPEN:
+                saveOpenAnswer(solving, answerText, data.get(DataType.SOLVING_TYPE).equals(DEMONSTRATION_ANSWER));
                 break;
-            case "variable":
-                saveVariableAnswer(solving, answerText, data.get("solvingType").equals(DEMONSTRATION_ANSWER));
+            case VARIABLE:
+                saveVariableAnswer(solving, answerText, data.get(DataType.SOLVING_TYPE).equals(DEMONSTRATION_ANSWER));
                 break;
             default:
         }
@@ -153,7 +155,7 @@ public class ShowQuestionStrategy extends AbstractMessageStrategy {
         }
     }
 
-    public void sendQuestion(Solving solving, Map<String, Object> data, Update update) {
+    public void sendQuestion(Solving solving, Map<DataType, Object> data, Update update) {
         List<Long> variableQuestionIds = parseIds(solving.getVariableQuestionIds());
         List<Long> variableAnswerIds = parseIds(solving.getVariableAnswerIds());
         List<Long> openQuestionIds = parseIds(solving.getOpenQuestionIds());
@@ -162,16 +164,16 @@ public class ShowQuestionStrategy extends AbstractMessageStrategy {
 
         if (variableQuestionIds.size() == variableAnswerIds.size()) {
             if (openQuestionIds.size() == openAnswerIds.size()) {
-                data.remove("previousQuestionType");
+                data.remove(DataType.PREVIOUS_QUESTION_TYPE);
                 putStateToContext(solving.getUser().getId(), nextState, data);
                 generateReport(solving, data, update);
             } else {
-                data.put("previousQuestionType", "open");
+                data.put(DataType.PREVIOUS_QUESTION_TYPE, QuestionType.OPEN);
                 putStateToContext(solving.getUser().getId(), data);
                 sendOpenQuestion(solving, openQuestionIds, openAnswerIds, questionAmount, variableQuestionIds.size());
             }
         } else {
-            data.put("previousQuestionType", "variable");
+            data.put(DataType.PREVIOUS_QUESTION_TYPE, QuestionType.VARIABLE);
             putStateToContext(solving.getUser().getId(), data);
             sendVariableQuestion(solving, variableQuestionIds, variableAnswerIds, questionAmount);
         }
@@ -216,14 +218,14 @@ public class ShowQuestionStrategy extends AbstractMessageStrategy {
         telegramApiClient.sendMessage(params);
     }
 
-    private void generateReport(Solving solving, Map<String, Object> data, Update update) {
+    private void generateReport(Solving solving, Map<DataType, Object> data, Update update) {
         sendFinishCongrats(solving);
-        if (!data.get("solvingType").equals(DEMONSTRATION_ANSWER)) {
+        if (!data.get(DataType.SOLVING_TYPE).equals(DEMONSTRATION_ANSWER)) {
             sendVariableResults(solving);
             sendOpenResults(solving);
         }
         clearSolving(solving);
-        data.remove("solvingType");
+        data.remove(DataType.SOLVING_TYPE);
         try {
             toMainMenuStrategy.process(update, data);
         } catch (StrategyProcessException e) {

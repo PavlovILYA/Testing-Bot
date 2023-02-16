@@ -2,6 +2,7 @@ package ru.mephi.knowledgechecker.strategy.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import ru.mephi.knowledgechecker.common.DataType;
 import ru.mephi.knowledgechecker.common.TextType;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageEntity;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageParams;
@@ -27,11 +28,11 @@ public abstract class AbstractActionStrategy implements ActionStrategy {
     protected BotState nextState;
     protected final Queue<BotState> availableStates = new ConcurrentLinkedQueue<>();
 
-    protected void putStateToContext(Long userId, BotState state, Map<String, Object> data) {
+    protected void putStateToContext(Long userId, BotState state, Map<DataType, Object> data) {
         stateContext.putState(userId, state, data);
     }
 
-    protected void putStateToContext(Long userId, Map<String, Object> data) {
+    protected void putStateToContext(Long userId, Map<DataType, Object> data) {
         stateContext.putState(userId, data);
     }
 

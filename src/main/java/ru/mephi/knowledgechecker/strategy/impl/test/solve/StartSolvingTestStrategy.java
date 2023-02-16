@@ -2,6 +2,7 @@ package ru.mephi.knowledgechecker.strategy.impl.test.solve;
 
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+import ru.mephi.knowledgechecker.common.DataType;
 import ru.mephi.knowledgechecker.common.TextType;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageEntity;
@@ -55,9 +56,9 @@ public class StartSolvingTestStrategy extends AbstractCallbackQueryStrategy {
     }
 
     @Override
-    public void process(Update update, Map<String, Object> data) throws StrategyProcessException {
+    public void process(Update update, Map<DataType, Object> data) throws StrategyProcessException {
         User user = userService.get(update.getCallbackQuery().getFrom().getId());
-        Test test = testService.getByUniqueTitle((String) data.get("testUniqueTitle"));
+        Test test = testService.getByUniqueTitle((String) data.get(DataType.TEST_UNIQUE_TITLE));
         if (test.getMaxQuestionsNumber() == null ||
                 test.getVariableQuestions().size() + test.getOpenQuestions().size() == 0) {
             putStateToContext(user.getId(), publicTestListState, data);
@@ -76,8 +77,8 @@ public class StartSolvingTestStrategy extends AbstractCallbackQueryStrategy {
             return;
         }
         Solving solving = solvingService.generateQuestions(user, test);
-        data.remove("testUniqueTitle");
-        data.put("solvingType", update.getCallbackQuery().getData());
+        data.remove(DataType.TEST_UNIQUE_TITLE);
+        data.put(DataType.SOLVING_TYPE, update.getCallbackQuery().getData());
         putStateToContext(update.getCallbackQuery().getFrom().getId(), nextState, data);
         showQuestionStrategy.sendQuestion(solving, data, update);
     }

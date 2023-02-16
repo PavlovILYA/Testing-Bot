@@ -2,6 +2,7 @@ package ru.mephi.knowledgechecker.strategy.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import ru.mephi.knowledgechecker.common.DataType;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageParams;
 import ru.mephi.knowledgechecker.strategy.StrategyProcessException;
@@ -23,7 +24,7 @@ public class UnknownStrategy extends AbstractActionStrategy {
     }
 
     @Override
-    public void process(Update update, Map<String, Object> data) throws StrategyProcessException {
+    public void process(Update update, Map<DataType, Object> data) throws StrategyProcessException {
         Long userId = update.getCallbackQuery() != null
                 ? update.getCallbackQuery().getFrom().getId()
                 : update.getMessage().getFrom().getId();

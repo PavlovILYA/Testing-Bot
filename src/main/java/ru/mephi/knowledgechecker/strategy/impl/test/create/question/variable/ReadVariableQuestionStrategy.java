@@ -2,6 +2,8 @@ package ru.mephi.knowledgechecker.strategy.impl.test.create.question.variable;
 
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+import ru.mephi.knowledgechecker.common.CreationPhaseType;
+import ru.mephi.knowledgechecker.common.DataType;
 import ru.mephi.knowledgechecker.common.TextType;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageEntity;
@@ -50,21 +52,21 @@ public class ReadVariableQuestionStrategy extends AbstractMessageStrategy {
     }
 
     @Override
-    public void process(Update update, Map<String, Object> data) throws StrategyProcessException {
+    public void process(Update update, Map<DataType, Object> data) throws StrategyProcessException {
         User user = userService.get(update.getMessage().getFrom().getId());
-        Test test = testService.getByUniqueTitle((String) data.get("testId"));
-        switch ((String) data.get("next")) {
-            case "text":
+        Test test = testService.getByUniqueTitle((String) data.get(DataType.TEST_ID));
+        switch ((CreationPhaseType) data.get(DataType.NEXT_CREATION_PHASE)) {
+            case TEXT:
                 readText(update.getMessage().getText(), data, user, test);
                 break;
-            case "correctAnswer":
+            case CORRECT_ANSWER:
                 if (update.getMessage().getText().length() > 30) {
                     throw new StrategyProcessException(user.getId(),
                             "Максимальная длина вариативного ответа 30 символов, попробуйте еще раз");
                 }
                 readCorrectAnswer(update.getMessage().getText(), data, user);
                 break;
-            case "maxAnswerNumber":
+            case MAX_ANSWER_NUMBER:
                 try {
                     int maxAnswerNumber = Integer.parseInt(update.getMessage().getText());
                     if (maxAnswerNumber <= 0 || maxAnswerNumber > 9) {
@@ -80,7 +82,7 @@ public class ReadVariableQuestionStrategy extends AbstractMessageStrategy {
         }
     }
 
-    private void readText(String text, Map<String, Object> data, User user, Test test) {
+    private void readText(String text, Map<DataType, Object> data, User user, Test test) {
         VariableQuestion question = VariableQuestion.builder()
                 .text(text)
                 .test(test)
@@ -94,14 +96,14 @@ public class ReadVariableQuestionStrategy extends AbstractMessageStrategy {
                                 new MessageEntity(TextType.UNDERLINE, 8, 10),
                                 new MessageEntity(TextType.ITALIC, boldMessage.length(), italicMessage.length())),
                         null);
-        data.put("next", "correctAnswer");
-        data.put("questionId", question.getId());
+        data.put(DataType.NEXT_CREATION_PHASE, CreationPhaseType.CORRECT_ANSWER);
+        data.put(DataType.QUESTION_ID, question.getId());
         putStateToContext(user.getId(), data);
         telegramApiClient.sendMessage(params);
     }
 
-    private void readCorrectAnswer(String correctAnswerText, Map<String, Object> data, User user) throws StrategyProcessException {
-        VariableQuestion question = variableQuestionService.get((Long) data.get("questionId"));
+    private void readCorrectAnswer(String correctAnswerText, Map<DataType, Object> data, User user) throws StrategyProcessException {
+        VariableQuestion question = variableQuestionService.get((Long) data.get(DataType.QUESTION_ID));
         VariableAnswer answer = VariableAnswer.builder()
                 .text(correctAnswerText)
                 .build();
@@ -117,13 +119,13 @@ public class ReadVariableQuestionStrategy extends AbstractMessageStrategy {
         MessageParams params =
                 wrapMessageParams(user.getId(), boldMessage,
                         List.of(new MessageEntity(TextType.BOLD, 0, boldMessage.length())), null);
-        data.put("next", "maxAnswerNumber");
+        data.put(DataType.NEXT_CREATION_PHASE, CreationPhaseType.MAX_ANSWER_NUMBER);
         putStateToContext(user.getId(), data);
         telegramApiClient.sendMessage(params);
     }
 
-    private void readMaxAnswerNumber(Integer maxAnswerNumber, Map<String, Object> data, User user) {
-        VariableQuestion question = variableQuestionService.get((Long) data.get("questionId"));
+    private void readMaxAnswerNumber(Integer maxAnswerNumber, Map<DataType, Object> data, User user) {
+        VariableQuestion question = variableQuestionService.get((Long) data.get(DataType.QUESTION_ID));
         question.setMaxAnswerNumber(maxAnswerNumber + 1);
         question = variableQuestionService.save(question);
         String boldMessage = "Добавление неверного ответа";
@@ -136,7 +138,7 @@ public class ReadVariableQuestionStrategy extends AbstractMessageStrategy {
                                 new MessageEntity(TextType.UNDERLINE, 11, 9),
                                 new MessageEntity(TextType.ITALIC, boldMessage.length(), italicMessage.length())),
                         getAddWrongVariableAnswerInlineKeyboardMarkup());
-        data.remove("next");
+        data.remove(DataType.NEXT_CREATION_PHASE);
         putStateToContext(user.getId(), nextState, data);
         telegramApiClient.sendMessage(params);
     }

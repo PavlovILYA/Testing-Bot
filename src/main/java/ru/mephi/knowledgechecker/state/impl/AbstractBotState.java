@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Lazy;
+import ru.mephi.knowledgechecker.common.DataType;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 import ru.mephi.knowledgechecker.state.BotState;
 import ru.mephi.knowledgechecker.strategy.ActionStrategy;
@@ -22,7 +23,7 @@ public abstract class AbstractBotState implements BotState {
     protected final Queue<ActionStrategy> availableStrategies = new ConcurrentLinkedQueue<>();
 
     @Override
-    public void process(Update update, Map<String, Object> data) {
+    public void process(Update update, Map<DataType, Object> data) {
         for (ActionStrategy strategy : availableStrategies) {
             if (strategy.apply(update)) {
                 try {

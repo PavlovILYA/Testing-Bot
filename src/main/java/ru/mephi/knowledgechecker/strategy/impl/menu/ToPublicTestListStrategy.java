@@ -3,6 +3,7 @@ package ru.mephi.knowledgechecker.strategy.impl.menu;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+import ru.mephi.knowledgechecker.common.DataType;
 import ru.mephi.knowledgechecker.common.TextType;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageEntity;
@@ -41,7 +42,7 @@ public class ToPublicTestListStrategy extends AbstractActionStrategy {
     }
 
     @Override
-    public void process(Update update, Map<String, Object> data) throws StrategyProcessException {
+    public void process(Update update, Map<DataType, Object> data) throws StrategyProcessException {
         Long userId;
         if (update.getCallbackQuery() != null) {
             userId = update.getCallbackQuery().getFrom().getId();

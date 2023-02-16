@@ -3,6 +3,7 @@ package ru.mephi.knowledgechecker.strategy.impl.test.search;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+import ru.mephi.knowledgechecker.common.DataType;
 import ru.mephi.knowledgechecker.common.TextType;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageEntity;
@@ -31,7 +32,7 @@ public class AskForSearchQueryStrategy extends AbstractCallbackQueryStrategy {
     }
 
     @Override
-    public void process(Update update, Map<String, Object> data) throws StrategyProcessException {
+    public void process(Update update, Map<DataType, Object> data) throws StrategyProcessException {
         String boldMessage = "🔎️ Введите поисковой запрос\n\n";
         String italicMessage = "(Введите ключевое выражение, которое вероятнее всего содержится в названии теста)" +
                 "\n❗️ Чтобы объединить выборки по нескольким запросам, введите несколько ключевых выражений, " +

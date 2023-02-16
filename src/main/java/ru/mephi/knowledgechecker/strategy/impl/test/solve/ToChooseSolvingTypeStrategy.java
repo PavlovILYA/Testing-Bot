@@ -2,6 +2,7 @@ package ru.mephi.knowledgechecker.strategy.impl.test.solve;
 
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+import ru.mephi.knowledgechecker.common.DataType;
 import ru.mephi.knowledgechecker.common.TextType;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageEntity;
@@ -43,13 +44,13 @@ public class ToChooseSolvingTypeStrategy extends AbstractCallbackQueryStrategy {
     }
 
     @Override
-    public void process(Update update, Map<String, Object> data) throws StrategyProcessException {
+    public void process(Update update, Map<DataType, Object> data) throws StrategyProcessException {
         String message = "Выберите вариант прохождения теста";
         MessageParams params =
                 wrapMessageParams(update.getCallbackQuery().getFrom().getId(), message,
                         List.of(new MessageEntity(TextType.BOLD, 0, message.length())),
                         getTestSolvingTypesInlineKeyboardMarkup());
-        data.put("testUniqueTitle", update.getCallbackQuery().getData().split(":")[1]);
+        data.put(DataType.TEST_UNIQUE_TITLE, update.getCallbackQuery().getData().split(":")[1]);
         putStateToContext(update.getCallbackQuery().getFrom().getId(), nextState, data);
         telegramApiClient.sendMessage(params);
     }

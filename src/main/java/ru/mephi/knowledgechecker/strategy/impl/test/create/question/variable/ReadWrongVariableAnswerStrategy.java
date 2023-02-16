@@ -2,6 +2,7 @@ package ru.mephi.knowledgechecker.strategy.impl.test.create.question.variable;
 
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+import ru.mephi.knowledgechecker.common.DataType;
 import ru.mephi.knowledgechecker.common.TextType;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageEntity;
@@ -39,8 +40,8 @@ public class ReadWrongVariableAnswerStrategy extends AbstractMessageStrategy {
     }
 
     @Override
-    public void process(Update update, Map<String, Object> data) throws StrategyProcessException {
-        VariableQuestion question = variableQuestionService.get((Long) data.get("questionId"));
+    public void process(Update update, Map<DataType, Object> data) throws StrategyProcessException {
+        VariableQuestion question = variableQuestionService.get((Long) data.get(DataType.QUESTION_ID));
         if (question.getCorrectAnswer().getText().equals(update.getMessage().getText())) {
             throw new StrategyProcessException(update.getMessage().getFrom().getId(),
                     "Это правильный вариант ответа, попробуйте еще раз ввести пример неверного");
