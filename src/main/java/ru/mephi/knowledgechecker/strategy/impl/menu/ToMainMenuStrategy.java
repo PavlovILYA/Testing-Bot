@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import ru.mephi.knowledgechecker.common.Command;
+import ru.mephi.knowledgechecker.common.TextType;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageEntity;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageParams;
@@ -59,13 +60,14 @@ public class ToMainMenuStrategy extends AbstractActionStrategy {
                 ? update.getCallbackQuery().getFrom().getId()
                 : update.getMessage().getFrom().getId();
         putStateToContext(userId, nextState, data);
-        sendStartMenu(userId, "🔽️\nГЛАВНОЕ МЕНЮ ⤵️");
+        sendStartMenu(userId);
     }
 
-    private void sendStartMenu(Long chatId, String text) {
+    private void sendStartMenu(Long chatId) {
+        String text = "🔽️\nГЛАВНОЕ МЕНЮ ⤵️";
         MessageParams params =
                 wrapMessageParams(chatId, text,
-                        List.of(new MessageEntity("bold", 0, text.length())),
+                        List.of(new MessageEntity(TextType.BOLD, 0, text.length())),
                         getStartReplyKeyboardMarkup());
         telegramApiClient.sendMessage(params);
     }

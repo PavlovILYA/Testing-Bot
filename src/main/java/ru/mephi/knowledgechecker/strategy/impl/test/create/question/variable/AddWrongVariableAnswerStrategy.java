@@ -2,6 +2,7 @@ package ru.mephi.knowledgechecker.strategy.impl.test.create.question.variable;
 
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+import ru.mephi.knowledgechecker.common.TextType;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageEntity;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageParams;
@@ -32,9 +33,9 @@ public class AddWrongVariableAnswerStrategy extends AbstractCallbackQueryStrateg
         String italicMessage = "\n\nПредпочтительно вводить короткие варианты ответа: A, B, etc.";
         MessageParams params =
                 wrapMessageParams(update.getCallbackQuery().getFrom().getId(), boldMessage + italicMessage,
-                        List.of(new MessageEntity("bold", 0, boldMessage.length()),
-                                new MessageEntity("underline", 8, 12),
-                                new MessageEntity("italic", boldMessage.length(), italicMessage.length())),
+                        List.of(new MessageEntity(TextType.BOLD, 0, boldMessage.length()),
+                                new MessageEntity(TextType.UNDERLINE, 8, 12),
+                                new MessageEntity(TextType.ITALIC, boldMessage.length(), italicMessage.length())),
                         null);
         putStateToContext(update.getCallbackQuery().getFrom().getId(), nextState, data);
         telegramApiClient.sendMessage(params);

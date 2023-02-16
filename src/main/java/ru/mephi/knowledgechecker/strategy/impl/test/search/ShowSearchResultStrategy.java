@@ -3,6 +3,7 @@ package ru.mephi.knowledgechecker.strategy.impl.test.search;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+import ru.mephi.knowledgechecker.common.TextType;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageEntity;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageParams;
@@ -63,14 +64,14 @@ public class ShowSearchResultStrategy extends AbstractMessageStrategy {
         String message = "По данному запросу ничего не найдено 🤷🏼‍";
         MessageParams params =
                 wrapMessageParams(userId, message,
-                        List.of(new MessageEntity("bold", 0, message.length())),
+                        List.of(new MessageEntity(TextType.BOLD, 0, message.length())),
                         null);
         telegramApiClient.sendMessage(params);
 
         User user = userService.get(userId);
         String text = "🔽\nГЛАВНОЕ МЕНЮ\n⬇️️\nПУБЛИЧНЫЕ ТЕСТЫ";
         params =
-                wrapMessageParams(userId, text, List.of(new MessageEntity("bold", 0, text.length())),
+                wrapMessageParams(userId, text, List.of(new MessageEntity(TextType.BOLD, 0, text.length())),
                         getPublicTestListInlineKeyboardMarkup(user));
         telegramApiClient.sendMessage(params);
     }
@@ -79,7 +80,7 @@ public class ShowSearchResultStrategy extends AbstractMessageStrategy {
         String message = "🕵🏻‍ Результаты поиска:";
         MessageParams params =
                 wrapMessageParams(userId, message,
-                        List.of(new MessageEntity("bold", 0, message.length())),
+                        List.of(new MessageEntity(TextType.BOLD, 0, message.length())),
                         getInlineKeyboardMarkup(testTitles));
         putStateToContext(userId, nextState, data);
         telegramApiClient.sendMessage(params);

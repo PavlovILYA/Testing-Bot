@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import ru.mephi.knowledgechecker.common.TextType;
 
 @Data
 @AllArgsConstructor
@@ -15,8 +16,8 @@ public class MessageEntity {
     private Integer length;
     private String language;
 
-    public MessageEntity(String type, Integer offset, Integer length) {
-        this.type = type;
+    public MessageEntity(TextType type, Integer offset, Integer length) {
+        this.type = type.name().toLowerCase();
         this.offset = offset;
         this.length = length;
     }

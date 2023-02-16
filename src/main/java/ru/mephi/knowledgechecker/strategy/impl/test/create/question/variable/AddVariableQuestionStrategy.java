@@ -2,6 +2,7 @@ package ru.mephi.knowledgechecker.strategy.impl.test.create.question.variable;
 
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+import ru.mephi.knowledgechecker.common.TextType;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageEntity;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageParams;
@@ -44,8 +45,8 @@ public class AddVariableQuestionStrategy extends AbstractCallbackQueryStrategy {
         //String boldAndUnderlineMessage = "\nМаксимальная длина варианта ответа – 30 символов";
         MessageParams params =
                 wrapMessageParams(user.getId(), boldMessage + italicMessage,
-                        List.of(new MessageEntity("bold", 0, boldMessage.length()),
-                                new MessageEntity("italic", boldMessage.length(), italicMessage.length())),
+                        List.of(new MessageEntity(TextType.BOLD, 0, boldMessage.length()),
+                                new MessageEntity(TextType.ITALIC, boldMessage.length(), italicMessage.length())),
                         null);
         data.put("next", "text");
         putStateToContext(user.getId(), nextState, data);

@@ -3,6 +3,7 @@ package ru.mephi.knowledgechecker.strategy.impl.test.search;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+import ru.mephi.knowledgechecker.common.TextType;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageEntity;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageParams;
@@ -36,8 +37,8 @@ public class AskForSearchQueryStrategy extends AbstractCallbackQueryStrategy {
                 "разделенных точкой с запятой";
         MessageParams params =
                 wrapMessageParams(update.getCallbackQuery().getFrom().getId(), boldMessage + italicMessage,
-                        List.of(new MessageEntity("bold", 0, boldMessage.length()),
-                                new MessageEntity("italic", boldMessage.length(), italicMessage.length())),
+                        List.of(new MessageEntity(TextType.BOLD, 0, boldMessage.length()),
+                                new MessageEntity(TextType.ITALIC, boldMessage.length(), italicMessage.length())),
                         null);
         putStateToContext(update.getCallbackQuery().getFrom().getId(), nextState, data);
         telegramApiClient.sendMessage(params);

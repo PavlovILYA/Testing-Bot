@@ -3,13 +3,14 @@ package ru.mephi.knowledgechecker.strategy.impl.menu;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+import ru.mephi.knowledgechecker.common.Constants;
+import ru.mephi.knowledgechecker.common.TextType;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageEntity;
-import ru.mephi.knowledgechecker.dto.telegram.outcome.keyboard.KeyboardMarkup;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageParams;
+import ru.mephi.knowledgechecker.dto.telegram.outcome.keyboard.KeyboardMarkup;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.keyboard.inline.InlineKeyboardButton;
 import ru.mephi.knowledgechecker.state.impl.menu.AdminMenuState;
-import ru.mephi.knowledgechecker.common.Constants;
 import ru.mephi.knowledgechecker.strategy.impl.AbstractMessageStrategy;
 
 import java.util.ArrayList;
@@ -37,7 +38,7 @@ public class ToAdminMenuStrategy extends AbstractMessageStrategy {
         Long userId = update.getMessage().getChat().getId();
         String text = "🔽\nГЛАВНОЕ МЕНЮ\n⬇️\nАДМИНИСТРАТОРСКОЕ МЕНЮ";
         MessageParams params =
-                wrapMessageParams(userId, text, List.of(new MessageEntity("bold", 0, text.length())),
+                wrapMessageParams(userId, text, List.of(new MessageEntity(TextType.BOLD, 0, text.length())),
                         getInlineKeyboardMarkup());
         putStateToContext(userId, nextState, data);
         telegramApiClient.sendMessage(params);

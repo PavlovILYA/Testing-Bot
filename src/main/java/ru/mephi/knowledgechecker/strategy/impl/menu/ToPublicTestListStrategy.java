@@ -3,6 +3,7 @@ package ru.mephi.knowledgechecker.strategy.impl.menu;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+import ru.mephi.knowledgechecker.common.TextType;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageEntity;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageParams;
@@ -49,7 +50,7 @@ public class ToPublicTestListStrategy extends AbstractActionStrategy {
         User user = userService.get(userId);
         String text = "🔽\nГЛАВНОЕ МЕНЮ\n⬇️️\nПУБЛИЧНЫЕ ТЕСТЫ";
         MessageParams params =
-                wrapMessageParams(userId, text, List.of(new MessageEntity("bold", 0, text.length())),
+                wrapMessageParams(userId, text, List.of(new MessageEntity(TextType.BOLD, 0, text.length())),
                         getPublicTestListInlineKeyboardMarkup(user));
         putStateToContext(userId, nextState, data);
         telegramApiClient.sendMessage(params);

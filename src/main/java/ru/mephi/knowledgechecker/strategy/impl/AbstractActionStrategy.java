@@ -2,6 +2,7 @@ package ru.mephi.knowledgechecker.strategy.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import ru.mephi.knowledgechecker.common.TextType;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageEntity;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageParams;
 import ru.mephi.knowledgechecker.httpclient.TelegramApiClient;
@@ -40,8 +41,8 @@ public abstract class AbstractActionStrategy implements ActionStrategy {
         }
         MessageParams params =
                 wrapMessageParams(userId, boldMessage + message,
-                        List.of(new MessageEntity("bold", 0, boldMessage.length()),
-                                new MessageEntity("italic", boldMessage.length(), message.length())),
+                        List.of(new MessageEntity(TextType.BOLD, 0, boldMessage.length()),
+                                new MessageEntity(TextType.ITALIC, boldMessage.length(), message.length())),
                         null);
         telegramApiClient.sendMessage(params);
         // todo: обновить keyboard?

@@ -3,6 +3,7 @@ package ru.mephi.knowledgechecker.strategy.impl.test.create;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+import ru.mephi.knowledgechecker.common.TextType;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageEntity;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageParams;
@@ -63,8 +64,8 @@ public class ReadUniqueTestNameStrategy extends AbstractMessageStrategy {
         String message = "Введите полное (неуникальное) название теста";
         MessageParams params =
                 wrapMessageParams(user.getId(), message,
-                        List.of(new MessageEntity("bold", 0, message.length()),
-                                new MessageEntity("underline", 16, 12)),
+                        List.of(new MessageEntity(TextType.BOLD, 0, message.length()),
+                                new MessageEntity(TextType.UNDERLINE, 16, 12)),
                         null);
         data.clear();
         data.put("testId", test.getUniqueTitle());

@@ -2,6 +2,7 @@ package ru.mephi.knowledgechecker.strategy.impl.test.solve;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import ru.mephi.knowledgechecker.common.TextType;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageEntity;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageParams;
@@ -101,13 +102,13 @@ public class ShowQuestionStrategy extends AbstractMessageStrategy {
             solving.setVariableAnswerResults(concatIt(solving.getVariableAnswerResults(), 1L));
             if (showAnswer) {
                 telegramApiClient.sendMessage(wrapMessageParams(solving.getUser().getId(), "✅",
-                        List.of(new MessageEntity("spoiler", 0, 1)), null));
+                        List.of(new MessageEntity(TextType.SPOILER, 0, 1)), null));
             }
         } else {
             solving.setVariableAnswerResults(concatIt(solving.getVariableAnswerResults(), 0L));
             if (showAnswer) {
                 telegramApiClient.sendMessage(wrapMessageParams(solving.getUser().getId(), "❌",
-                        List.of(new MessageEntity("spoiler", 0, 1)), null));
+                        List.of(new MessageEntity(TextType.SPOILER, 0, 1)), null));
             }
         }
 
@@ -148,7 +149,7 @@ public class ShowQuestionStrategy extends AbstractMessageStrategy {
 
         if (showAnswer) {
             telegramApiClient.sendMessage(wrapMessageParams(solving.getUser().getId(), question.getCorrectAnswer(),
-                    List.of(new MessageEntity("spoiler", 0, question.getCorrectAnswer().length())), null));
+                    List.of(new MessageEntity(TextType.SPOILER, 0, question.getCorrectAnswer().length())), null));
         }
     }
 
@@ -189,8 +190,8 @@ public class ShowQuestionStrategy extends AbstractMessageStrategy {
         String message = "❓ Вопрос № " + (variableAnswerIds.size() + 1) + " (из " + questionAmount + ")\n\n";
         MessageParams params =
                 wrapMessageParams(solving.getUser().getId(), message + question.getText(),
-                        List.of(new MessageEntity("bold", 0, message.length()),
-                                new MessageEntity("code", message.length(), question.getText().length())),
+                        List.of(new MessageEntity(TextType.BOLD, 0, message.length()),
+                                new MessageEntity(TextType.CODE, message.length(), question.getText().length())),
                         getVariableAnswerKeyboardMarkup(question));
         telegramApiClient.sendMessage(params);
     }
@@ -207,9 +208,9 @@ public class ShowQuestionStrategy extends AbstractMessageStrategy {
         String italicMessage = "💬 Дайте развернутый ответ\n\n";
         MessageParams params =
                 wrapMessageParams(solving.getUser().getId(), boldMessage + italicMessage + question.getText(),
-                        List.of(new MessageEntity("bold", 0, boldMessage.length()),
-                                new MessageEntity("italic", boldMessage.length(), italicMessage.length()),
-                                new MessageEntity("code", boldMessage.length() + italicMessage.length(),
+                        List.of(new MessageEntity(TextType.BOLD, 0, boldMessage.length()),
+                                new MessageEntity(TextType.ITALIC, boldMessage.length(), italicMessage.length()),
+                                new MessageEntity(TextType.CODE, boldMessage.length() + italicMessage.length(),
                                         question.getText().length())),
                         null);
         telegramApiClient.sendMessage(params);
@@ -235,8 +236,8 @@ public class ShowQuestionStrategy extends AbstractMessageStrategy {
                         .toLowerCase();
         MessageParams params =
                 wrapMessageParams(solving.getUser().getId(), boldMessage + codeMessage,
-                        List.of(new MessageEntity("bold", 0, boldMessage.length()),
-                                new MessageEntity("code", boldMessage.length(), codeMessage.length())),
+                        List.of(new MessageEntity(TextType.BOLD, 0, boldMessage.length()),
+                                new MessageEntity(TextType.CODE, boldMessage.length(), codeMessage.length())),
                         null);
         telegramApiClient.sendMessage(params);
     }
@@ -252,9 +253,9 @@ public class ShowQuestionStrategy extends AbstractMessageStrategy {
         String spoilerMessage = "\nОтветы: " + solving.getVariableAnswerResults();
         MessageParams params =
                 wrapMessageParams(solving.getUser().getId(), boldMessage + codeMessage + spoilerMessage,
-                        List.of(new MessageEntity("bold", 0, boldMessage.length()),
-                                new MessageEntity("code", boldMessage.length(), codeMessage.length()),
-                                new MessageEntity("spoiler", boldMessage.length() + codeMessage.length(),
+                        List.of(new MessageEntity(TextType.BOLD, 0, boldMessage.length()),
+                                new MessageEntity(TextType.CODE, boldMessage.length(), codeMessage.length()),
+                                new MessageEntity(TextType.SPOILER, boldMessage.length() + codeMessage.length(),
                                         spoilerMessage.length())),
                         null);
         telegramApiClient.sendMessage(params);
@@ -276,18 +277,18 @@ public class ShowQuestionStrategy extends AbstractMessageStrategy {
                     + boldMessage3 + question.getCorrectAnswer();
             MessageParams params =
                     wrapMessageParams(solving.getUser().getId(), message,
-                            List.of(new MessageEntity("bold", 0, boldMessage1.length()),
-                                    new MessageEntity("code", boldMessage1.length(), question.getText().length()),
-                                    new MessageEntity("bold",
+                            List.of(new MessageEntity(TextType.BOLD, 0, boldMessage1.length()),
+                                    new MessageEntity(TextType.CODE, boldMessage1.length(), question.getText().length()),
+                                    new MessageEntity(TextType.BOLD,
                                             boldMessage1.length() + question.getText().length(),
                                             boldMessage2.length()),
-                                    new MessageEntity("code",
+                                    new MessageEntity(TextType.CODE,
                                             boldMessage1.length() + question.getText().length() + boldMessage2.length(),
                                             answer.getText().length()),
-                                    new MessageEntity("bold",
+                                    new MessageEntity(TextType.BOLD,
                                             message.length() - boldMessage3.length() - question.getCorrectAnswer().length(),
                                             boldMessage3.length()),
-                                    new MessageEntity("spoiler",
+                                    new MessageEntity(TextType.SPOILER,
                                             message.length() - question.getCorrectAnswer().length(),
                                             question.getCorrectAnswer().length())),
                             null);

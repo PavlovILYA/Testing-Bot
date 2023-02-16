@@ -2,6 +2,7 @@ package ru.mephi.knowledgechecker.strategy.impl.test.create.question.open;
 
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+import ru.mephi.knowledgechecker.common.TextType;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageEntity;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageParams;
@@ -38,7 +39,7 @@ public class AddOpenQuestionStrategy extends AbstractCallbackQueryStrategy {
         String message = "Введите содержание вопроса";
         MessageParams params =
                 wrapMessageParams(user.getId(), message,
-                        List.of(new MessageEntity("bold", 0, message.length())),
+                        List.of(new MessageEntity(TextType.BOLD, 0, message.length())),
                         null);
         data.put("next", "text");
         putStateToContext(user.getId(), nextState, data);

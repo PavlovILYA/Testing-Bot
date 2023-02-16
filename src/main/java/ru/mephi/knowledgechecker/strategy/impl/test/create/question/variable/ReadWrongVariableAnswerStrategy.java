@@ -2,6 +2,7 @@ package ru.mephi.knowledgechecker.strategy.impl.test.create.question.variable;
 
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+import ru.mephi.knowledgechecker.common.TextType;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageEntity;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageParams;
@@ -70,9 +71,9 @@ public class ReadWrongVariableAnswerStrategy extends AbstractMessageStrategy {
                 "Максимальное количество отображаемых неверных вопросов: " + (question.getMaxAnswerNumber() - 1);
         MessageParams params =
                 wrapMessageParams(update.getMessage().getFrom().getId(), boldMessage + italicMessage,
-                        List.of(new MessageEntity("bold", 0, boldMessage.length()),
-                                new MessageEntity("underline", 11, 9),
-                                new MessageEntity("italic", boldMessage.length(), italicMessage.length())),
+                        List.of(new MessageEntity(TextType.BOLD, 0, boldMessage.length()),
+                                new MessageEntity(TextType.UNDERLINE, 11, 9),
+                                new MessageEntity(TextType.ITALIC, boldMessage.length(), italicMessage.length())),
                         getAddWrongVariableAnswerInlineKeyboardMarkup());
         putStateToContext(update.getMessage().getFrom().getId(), nextState, data);
         telegramApiClient.sendMessage(params);

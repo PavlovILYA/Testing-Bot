@@ -2,6 +2,7 @@ package ru.mephi.knowledgechecker.strategy.impl.test.create.question.open;
 
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+import ru.mephi.knowledgechecker.common.TextType;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageEntity;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageParams;
@@ -17,8 +18,8 @@ import ru.mephi.knowledgechecker.strategy.impl.AbstractMessageStrategy;
 import java.util.List;
 import java.util.Map;
 
+import static ru.mephi.knowledgechecker.common.CommonMessageParams.addingQuestionParams;
 import static ru.mephi.knowledgechecker.common.Constants.CHECK_0_QUESTIONS;
-import static ru.mephi.knowledgechecker.common.KeyboardMarkups.getAddQuestionInlineKeyboardMarkup;
 import static ru.mephi.knowledgechecker.common.ParamsWrapper.wrapMessageParams;
 
 @Component
@@ -66,8 +67,8 @@ public class ReadOpenQuestionInfoStrategy extends AbstractMessageStrategy {
         String message = "Введите правильный ответ";
         MessageParams params =
                 wrapMessageParams(user.getId(), message,
-                        List.of(new MessageEntity("bold", 0, message.length()),
-                                new MessageEntity("underline", 8, 10)),
+                        List.of(new MessageEntity(TextType.BOLD, 0, message.length()),
+                                new MessageEntity(TextType.UNDERLINE, 8, 10)),
                         null);
         data.put("next", "correctAnswer");
         data.put("questionId", question.getId());
@@ -79,21 +80,10 @@ public class ReadOpenQuestionInfoStrategy extends AbstractMessageStrategy {
         OpenQuestion question = openQuestionService.get((Long) data.get("questionId"));
         question.setCorrectAnswer(correctAnswer);
         openQuestionService.save(question);
-        int questionCount = test.getVariableQuestions().size();
-        questionCount += test.getOpenQuestions().size();
-        String boldMessage = "Добавление вопроса";
-        String codeMessage =
-                "\n\nМаксимальное количество отображаемых вопросов: " + test.getMaxQuestionsNumber()  + "\n" +
-                "Количество сохраненных вопросов: " + questionCount;
-        MessageParams params =
-                wrapMessageParams(user.getId(), boldMessage + codeMessage,
-                        List.of(new MessageEntity("bold", 0, boldMessage.length()),
-                                new MessageEntity("italic", boldMessage.length(), codeMessage.length())),
-                        getAddQuestionInlineKeyboardMarkup());
+
+        MessageParams params = addingQuestionParams(test, user.getId());
         data.remove("next");
-        if (data.get(CHECK_0_QUESTIONS) == null) {
-            data.put(CHECK_0_QUESTIONS, test.getUniqueTitle());
-        }
+        data.computeIfAbsent(CHECK_0_QUESTIONS, k -> test.getUniqueTitle());
         putStateToContext(user.getId(), nextState, data);
         telegramApiClient.sendMessage(params);
     }

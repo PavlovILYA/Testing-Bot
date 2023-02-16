@@ -2,6 +2,7 @@ package ru.mephi.knowledgechecker.strategy.impl.test.create.question.variable;
 
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+import ru.mephi.knowledgechecker.common.TextType;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageEntity;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageParams;
@@ -89,9 +90,9 @@ public class ReadVariableQuestionStrategy extends AbstractMessageStrategy {
         String italicMessage = "\n\nПредпочтительно вводить короткие варианты ответа: A, B, etc.";
         MessageParams params =
                 wrapMessageParams(user.getId(), boldMessage + italicMessage,
-                        List.of(new MessageEntity("bold", 0, boldMessage.length()),
-                                new MessageEntity("underline", 8, 10),
-                                new MessageEntity("italic", boldMessage.length(), italicMessage.length())),
+                        List.of(new MessageEntity(TextType.BOLD, 0, boldMessage.length()),
+                                new MessageEntity(TextType.UNDERLINE, 8, 10),
+                                new MessageEntity(TextType.ITALIC, boldMessage.length(), italicMessage.length())),
                         null);
         data.put("next", "correctAnswer");
         data.put("questionId", question.getId());
@@ -115,7 +116,7 @@ public class ReadVariableQuestionStrategy extends AbstractMessageStrategy {
         String boldMessage = "Введите максимальное количество неверных ответов (от 1 до 9)";
         MessageParams params =
                 wrapMessageParams(user.getId(), boldMessage,
-                        List.of(new MessageEntity("bold", 0, boldMessage.length())), null);
+                        List.of(new MessageEntity(TextType.BOLD, 0, boldMessage.length())), null);
         data.put("next", "maxAnswerNumber");
         putStateToContext(user.getId(), data);
         telegramApiClient.sendMessage(params);
@@ -131,9 +132,9 @@ public class ReadVariableQuestionStrategy extends AbstractMessageStrategy {
                 "Максимальное количество отображаемых неверных вопросов: " + (question.getMaxAnswerNumber() - 1);
         MessageParams params =
                 wrapMessageParams(user.getId(), boldMessage + italicMessage,
-                        List.of(new MessageEntity("bold", 0, boldMessage.length()),
-                                new MessageEntity("underline", 11, 9),
-                                new MessageEntity("italic", boldMessage.length(), italicMessage.length())),
+                        List.of(new MessageEntity(TextType.BOLD, 0, boldMessage.length()),
+                                new MessageEntity(TextType.UNDERLINE, 11, 9),
+                                new MessageEntity(TextType.ITALIC, boldMessage.length(), italicMessage.length())),
                         getAddWrongVariableAnswerInlineKeyboardMarkup());
         data.remove("next");
         putStateToContext(user.getId(), nextState, data);

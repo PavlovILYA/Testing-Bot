@@ -2,6 +2,7 @@ package ru.mephi.knowledgechecker.strategy.impl.test.solve;
 
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+import ru.mephi.knowledgechecker.common.TextType;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageEntity;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageParams;
@@ -62,13 +63,13 @@ public class StartSolvingTestStrategy extends AbstractCallbackQueryStrategy {
             String message = "Тест составлен автором некорректно 🆘";
             MessageParams params =
                     wrapMessageParams(user.getId(), message,
-                            List.of(new MessageEntity("bold", 0, message.length())),
+                            List.of(new MessageEntity(TextType.BOLD, 0, message.length())),
                             null);
             telegramApiClient.sendMessage(params);
 
             String text = "🔽\nГЛАВНОЕ МЕНЮ\n⬇️️\nПУБЛИЧНЫЕ ТЕСТЫ";
             params =
-                    wrapMessageParams(user.getId(), text, List.of(new MessageEntity("bold", 0, text.length())),
+                    wrapMessageParams(user.getId(), text, List.of(new MessageEntity(TextType.BOLD, 0, text.length())),
                             getPublicTestListInlineKeyboardMarkup(user));
             telegramApiClient.sendMessage(params);
             return;
