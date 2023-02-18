@@ -10,7 +10,7 @@ import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageParams;
 import ru.mephi.knowledgechecker.model.user.User;
 import ru.mephi.knowledgechecker.state.impl.menu.PublicTestListState;
 import ru.mephi.knowledgechecker.strategy.StrategyProcessException;
-import ru.mephi.knowledgechecker.strategy.impl.AbstractActionStrategy;
+import ru.mephi.knowledgechecker.strategy.impl.AbstractCallbackQueryStrategy;
 
 import java.util.List;
 
@@ -20,7 +20,7 @@ import static ru.mephi.knowledgechecker.common.ParamsWrapper.wrapMessageParams;
 
 @Slf4j
 @Component
-public class ToPublicTestListStrategy extends AbstractActionStrategy {
+public class ToPublicTestListStrategy extends AbstractCallbackQueryStrategy {
 
     public ToPublicTestListStrategy(@Lazy PublicTestListState nextState) {
         this.nextState = nextState;
@@ -28,11 +28,8 @@ public class ToPublicTestListStrategy extends AbstractActionStrategy {
 
     @Override
     public boolean apply(Update update) {
-        return update.getCallbackQuery() != null
-                && update.getCallbackQuery().getData().equals(PUBLIC_TEST_LIST)
-                ||
-                update.getMessage() != null
-                && update.getMessage().getText().equals(PUBLIC_TEST_LIST);
+        return super.apply(update)
+                && update.getCallbackQuery().getData().equals(PUBLIC_TEST_LIST);
     }
 
     @Override

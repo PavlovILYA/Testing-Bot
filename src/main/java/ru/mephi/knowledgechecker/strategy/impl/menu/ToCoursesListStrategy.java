@@ -13,7 +13,7 @@ import ru.mephi.knowledgechecker.dto.telegram.outcome.keyboard.inline.InlineKeyb
 import ru.mephi.knowledgechecker.model.user.User;
 import ru.mephi.knowledgechecker.state.impl.menu.CoursesListState;
 import ru.mephi.knowledgechecker.strategy.StrategyProcessException;
-import ru.mephi.knowledgechecker.strategy.impl.AbstractMessageStrategy;
+import ru.mephi.knowledgechecker.strategy.impl.AbstractCallbackQueryStrategy;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +23,7 @@ import static ru.mephi.knowledgechecker.common.ParamsWrapper.wrapMessageParams;
 
 @Slf4j
 @Component
-public class ToCoursesListStrategy extends AbstractMessageStrategy {
+public class ToCoursesListStrategy extends AbstractCallbackQueryStrategy {
     public ToCoursesListStrategy(@Lazy CoursesListState nextState) {
         this.nextState = nextState;
     }
@@ -31,7 +31,7 @@ public class ToCoursesListStrategy extends AbstractMessageStrategy {
     @Override
     public boolean apply(Update update) {
         return super.apply(update)
-                && update.getMessage().getText().equals(Constants.COURSES_LIST);
+                && update.getCallbackQuery().getData().equals(Constants.COURSES_LIST);
     }
 
     @Override

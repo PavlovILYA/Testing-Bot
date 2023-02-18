@@ -13,7 +13,7 @@ import ru.mephi.knowledgechecker.dto.telegram.outcome.keyboard.inline.InlineKeyb
 import ru.mephi.knowledgechecker.model.user.User;
 import ru.mephi.knowledgechecker.state.impl.menu.AdminMenuState;
 import ru.mephi.knowledgechecker.strategy.StrategyProcessException;
-import ru.mephi.knowledgechecker.strategy.impl.AbstractMessageStrategy;
+import ru.mephi.knowledgechecker.strategy.impl.AbstractCallbackQueryStrategy;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +23,7 @@ import static ru.mephi.knowledgechecker.common.ParamsWrapper.wrapMessageParams;
 
 @Slf4j
 @Component
-public class ToAdminMenuStrategy extends AbstractMessageStrategy {
+public class ToAdminMenuStrategy extends AbstractCallbackQueryStrategy {
     public ToAdminMenuStrategy(@Lazy AdminMenuState nextState) {
         this.nextState = nextState;
     }
@@ -31,7 +31,7 @@ public class ToAdminMenuStrategy extends AbstractMessageStrategy {
     @Override
     public boolean apply(Update update) {
         return super.apply(update)
-                && update.getMessage().getText().equals(Constants.ADMIN_MENU);
+                && update.getCallbackQuery().getData().equals(Constants.ADMIN_MENU);
     }
 
     @Override
