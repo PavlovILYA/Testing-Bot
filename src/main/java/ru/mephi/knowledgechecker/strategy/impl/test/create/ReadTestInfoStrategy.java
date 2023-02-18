@@ -3,21 +3,19 @@ package ru.mephi.knowledgechecker.strategy.impl.test.create;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import ru.mephi.knowledgechecker.common.CreationPhaseType;
-import ru.mephi.knowledgechecker.common.DataType;
 import ru.mephi.knowledgechecker.common.TextType;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageEntity;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageParams;
 import ru.mephi.knowledgechecker.model.test.Test;
+import ru.mephi.knowledgechecker.model.user.CurrentData;
 import ru.mephi.knowledgechecker.model.user.User;
 import ru.mephi.knowledgechecker.service.TestService;
-import ru.mephi.knowledgechecker.service.UserService;
 import ru.mephi.knowledgechecker.state.impl.test.create.question.QuestionAddingState;
 import ru.mephi.knowledgechecker.strategy.StrategyProcessException;
 import ru.mephi.knowledgechecker.strategy.impl.AbstractMessageStrategy;
 
 import java.util.List;
-import java.util.Map;
 
 import static ru.mephi.knowledgechecker.common.CommonMessageParams.addingQuestionParams;
 import static ru.mephi.knowledgechecker.common.ParamsWrapper.wrapMessageParams;
@@ -25,12 +23,10 @@ import static ru.mephi.knowledgechecker.common.ParamsWrapper.wrapMessageParams;
 @Component
 public class ReadTestInfoStrategy extends AbstractMessageStrategy {
     private final TestService testService;
-    private final UserService userService;
 
-    public ReadTestInfoStrategy(TestService testService, UserService userService,
+    public ReadTestInfoStrategy(TestService testService,
                                 @Lazy QuestionAddingState questionAddingState) {
         this.testService = testService;
-        this.userService = userService;
         this.nextState = questionAddingState;
     }
 
@@ -40,13 +36,13 @@ public class ReadTestInfoStrategy extends AbstractMessageStrategy {
     }
 
     @Override
-    public void process(Update update, Map<DataType, Object> data) throws StrategyProcessException {
-        User user = userService.get(update.getMessage().getFrom().getId());
-        Test test = testService.getByUniqueTitle((String) data.get(DataType.TEST_ID));
-        CreationPhaseType next = (CreationPhaseType) data.get(DataType.NEXT_CREATION_PHASE);
-        switch (next) {
+    public void process(User user, Update update) throws StrategyProcessException {
+        CurrentData data = user.getData();
+        Test test = data.getTest();
+        CreationPhaseType nextPhase = data.getNextPhase();
+        switch (nextPhase) {
             case TITLE:
-                readTitle(update.getMessage().getText(), data, user, test);
+                readTitle(data, test, update.getMessage().getText());
                 break;
             case MAX_QUESTION_NUMBER:
                 try {
@@ -54,7 +50,7 @@ public class ReadTestInfoStrategy extends AbstractMessageStrategy {
                     if (maxQuestionNumber <= 0 || maxQuestionNumber > 50) {
                         throw new NumberFormatException();
                     }
-                    readMaxQuestionsNumber(maxQuestionNumber, data, user, test);
+                    readMaxQuestionsNumber(data, test, maxQuestionNumber);
                 } catch (NumberFormatException e) {
                     throw new StrategyProcessException(user.getId(),
                             "Неверный формат, попробуйте еще раз:\n" +
@@ -65,31 +61,33 @@ public class ReadTestInfoStrategy extends AbstractMessageStrategy {
         }
     }
 
-    private void readTitle(String title, Map<DataType, Object> data, User user, Test test) {
+    private void readTitle(CurrentData data, Test test, String title) {
         test.setTitle(title);
-        testService.save(test);
+        test = testService.save(test);
+        data.setTest(test);
+        data.setNextPhase(CreationPhaseType.MAX_QUESTION_NUMBER);
+        saveToContext(data);
+
         String boldMessage = "Введите количество отображаемых вопросов (от 1 до 50)";
         String italicMessage =
                 "\n\n(Вопросов можно будет создать больше, тогда будет браться случайная выборка)";
-        MessageParams params =
-                wrapMessageParams(user.getId(), boldMessage + italicMessage,
-                        List.of(new MessageEntity(TextType.BOLD, 0, boldMessage.length()),
-                                new MessageEntity(TextType.UNDERLINE, 19, 12),
-                                new MessageEntity(TextType.ITALIC, boldMessage.length(), italicMessage.length())),
-                        null);
-        data.put(DataType.NEXT_CREATION_PHASE, CreationPhaseType.MAX_QUESTION_NUMBER);
-        putStateToContext(user.getId(), data);
+        MessageParams params = wrapMessageParams(data.getUser().getId(), boldMessage + italicMessage,
+                List.of(new MessageEntity(TextType.BOLD, 0, boldMessage.length()),
+                        new MessageEntity(TextType.UNDERLINE, 19, 12),
+                        new MessageEntity(TextType.ITALIC, boldMessage.length(), italicMessage.length())),
+                null);
         telegramApiClient.sendMessage(params);
     }
 
-    private void readMaxQuestionsNumber(Integer maxQuestionsNumber, Map<DataType, Object> data, User user, Test test) {
+    private void readMaxQuestionsNumber(CurrentData data, Test test, Integer maxQuestionsNumber) {
         test.setMaxQuestionsNumber(maxQuestionsNumber);
-        testService.save(test);
+        test = testService.save(test);
+        data.setTest(test);
+        data.setNextPhase(null);
+        data.setNeedCheck(true);
+        saveToContext(nextState, data);
 
-        MessageParams params = addingQuestionParams(test, user.getId());
-        data.remove(DataType.NEXT_CREATION_PHASE);
-        data.computeIfAbsent(DataType.CHECK_0_QUESTIONS, k -> test.getUniqueTitle());
-        putStateToContext(user.getId(), nextState, data);
+        MessageParams params = addingQuestionParams(test, data.getUser().getId());
         telegramApiClient.sendMessage(params);
     }
 }

@@ -3,17 +3,16 @@ package ru.mephi.knowledgechecker.strategy.impl.test.search;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
-import ru.mephi.knowledgechecker.common.DataType;
 import ru.mephi.knowledgechecker.common.TextType;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageEntity;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageParams;
+import ru.mephi.knowledgechecker.model.user.User;
 import ru.mephi.knowledgechecker.state.impl.test.search.TestSearchAttemptState;
 import ru.mephi.knowledgechecker.strategy.StrategyProcessException;
 import ru.mephi.knowledgechecker.strategy.impl.AbstractCallbackQueryStrategy;
 
 import java.util.List;
-import java.util.Map;
 
 import static ru.mephi.knowledgechecker.common.Constants.FIND_PUBLIC_TEST;
 import static ru.mephi.knowledgechecker.common.ParamsWrapper.wrapMessageParams;
@@ -32,17 +31,17 @@ public class AskForSearchQueryStrategy extends AbstractCallbackQueryStrategy {
     }
 
     @Override
-    public void process(Update update, Map<DataType, Object> data) throws StrategyProcessException {
+    public void process(User user, Update update) throws StrategyProcessException {
+        saveToContext(user.getId(), nextState);
+
         String boldMessage = "🔎️ Введите поисковой запрос\n\n";
         String italicMessage = "(Введите ключевое выражение, которое вероятнее всего содержится в названии теста)" +
                 "\n❗️ Чтобы объединить выборки по нескольким запросам, введите несколько ключевых выражений, " +
                 "разделенных точкой с запятой";
-        MessageParams params =
-                wrapMessageParams(update.getCallbackQuery().getFrom().getId(), boldMessage + italicMessage,
-                        List.of(new MessageEntity(TextType.BOLD, 0, boldMessage.length()),
-                                new MessageEntity(TextType.ITALIC, boldMessage.length(), italicMessage.length())),
-                        null);
-        putStateToContext(update.getCallbackQuery().getFrom().getId(), nextState, data);
+        MessageParams params = wrapMessageParams(user.getId(), boldMessage + italicMessage,
+                List.of(new MessageEntity(TextType.BOLD, 0, boldMessage.length()),
+                        new MessageEntity(TextType.ITALIC, boldMessage.length(), italicMessage.length())),
+                null);
         telegramApiClient.sendMessage(params);
     }
 }

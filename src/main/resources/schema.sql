@@ -1,18 +1,20 @@
--- DROP table solving;
--- DROP table users_tests;
--- DROP table open_answers;
--- DROP table open_questions;
--- DROP table variable_questions_answers;
--- DROP table variable_questions;
--- DROP table variable_answers;
--- DROP table tests;
--- DROP table users;
+-- DROP TABLE current_data
+-- DROP TABLE solving;
+-- DROP TABLE users_tests;
+-- DROP TABLE open_answers;
+-- DROP TABLE open_questions;
+-- DROP TABLE variable_questions_answers;
+-- DROP TABLE variable_questions;
+-- DROP TABLE variable_answers;
+-- DROP TABLE tests;
+-- DROP TABLE users;
 
 CREATE TABLE IF NOT EXISTS users (
     id BIGINT UNIQUE, -- from tg chat
     first_name VARCHAR(255),
     last_name VARCHAR(255),
     username VARCHAR(255) UNIQUE,
+    state VARCHAR(500),
     PRIMARY KEY (id)
 );
 
@@ -103,7 +105,8 @@ CREATE TABLE IF NOT EXISTS solving (
     variable_question_ids VARCHAR(1000),
     variable_answer_ids VARCHAR(1000),
     variable_answer_results VARCHAR(1000),
-    started_at timestamp,
+    started_at TIMESTAMP,
+    type VARCHAR(50),
     PRIMARY KEY (id),
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (test_id) REFERENCES tests(id) ON DELETE CASCADE
@@ -112,16 +115,25 @@ CREATE TABLE IF NOT EXISTS solving (
 CREATE INDEX IF NOT EXISTS solving_user_id
     ON solving(user_id);
 
--- CREATE OR REPLACE FUNCTION regexp_match(v_text in varchar, v_regexp in varchar) returns boolean
---     language plpgsql strict immutable
--- as
--- $$
--- begin
---     return v_text ~* v_regexp;
--- end
--- $$;
+CREATE TABLE IF NOT EXISTS current_data (
+    id BIGINT GENERATED ALWAYS AS IDENTITY UNIQUE,
+    user_id BIGINT UNIQUE,
+    next_phase VARCHAR(500),
+    test_id BIGINT, -- TEST_ID, TEST_UNIQUE_TITLE
+    need_check BOOLEAN, -- CHECK_0_QUESTIONS
+    open_question_id BIGINT,
+    variable_question_id BIGINT, -- QUESTION_ID
+    previous_question_type VARCHAR(10), -- QUESTION_ID
+    -- solving_type VARCHAR(30),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (test_id) REFERENCES tests(id) ON DELETE SET NULL,
+    FOREIGN KEY (open_question_id) REFERENCES open_questions(id) ON DELETE SET NULL,
+    FOREIGN KEY (variable_question_id) REFERENCES variable_questions(id) ON DELETE SET NULL,
+    PRIMARY KEY (id)
+);
 
--- DROP FUNCTION regexp_match(varchar, varchar);
+CREATE INDEX IF NOT EXISTS current_data_user_id
+    ON current_data(user_id);
 
 CREATE OR REPLACE FUNCTION regexp_match(varchar, varchar) RETURNS boolean
     AS 'select $1 ~* $2;'

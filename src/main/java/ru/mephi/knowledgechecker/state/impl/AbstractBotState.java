@@ -4,13 +4,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Lazy;
-import ru.mephi.knowledgechecker.common.DataType;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
+import ru.mephi.knowledgechecker.model.user.User;
 import ru.mephi.knowledgechecker.state.BotState;
 import ru.mephi.knowledgechecker.strategy.ActionStrategy;
 import ru.mephi.knowledgechecker.strategy.StrategyProcessException;
 
-import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -23,12 +22,12 @@ public abstract class AbstractBotState implements BotState {
     protected final Queue<ActionStrategy> availableStrategies = new ConcurrentLinkedQueue<>();
 
     @Override
-    public void process(Update update, Map<DataType, Object> data) {
+    public void process(User user, Update update) {
         for (ActionStrategy strategy : availableStrategies) {
             if (strategy.apply(update)) {
                 try {
                     log.info("USE STRATEGY: {}", strategy.getClass().getName());
-                    strategy.process(update, data);
+                    strategy.process(user, update);
                 } catch (StrategyProcessException e) {
                     strategy.analyzeException(e);
                 }
@@ -37,7 +36,7 @@ public abstract class AbstractBotState implements BotState {
         }
         try {
             log.info("USE STRATEGY: {}", unknownStrategy.getClass().getName());
-            unknownStrategy.process(update, data);
+            unknownStrategy.process(user, update);
         } catch (StrategyProcessException e) {
             unknownStrategy.analyzeException(e);
         }

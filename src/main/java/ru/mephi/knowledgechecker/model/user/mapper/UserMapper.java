@@ -2,6 +2,7 @@ package ru.mephi.knowledgechecker.model.user.mapper;
 
 import ru.mephi.knowledgechecker.dto.telegram.income.UserDto;
 import ru.mephi.knowledgechecker.model.user.User;
+import ru.mephi.knowledgechecker.state.impl.InitialState;
 
 // todo: use mapstruct
 public class UserMapper {
@@ -11,6 +12,7 @@ public class UserMapper {
                 .firstName(userDto.getFirstName())
                 .lastName(userDto.getLastName())
                 .username(userDto.getUsername())
+                .state(mapStateToBeanName(InitialState.class))
                 .build();
     }
 
@@ -21,5 +23,10 @@ public class UserMapper {
                 .lastName(user.getLastName())
                 .username(user.getUsername())
                 .build();
+    }
+
+    public static String mapStateToBeanName(Class stateClass) {
+        String className = stateClass.getSimpleName().split("\\$")[0];
+        return className.substring(0, 1).toLowerCase() + className.substring(1);
     }
 }

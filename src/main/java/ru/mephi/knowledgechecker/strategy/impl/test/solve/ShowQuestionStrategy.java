@@ -2,7 +2,6 @@ package ru.mephi.knowledgechecker.strategy.impl.test.solve;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import ru.mephi.knowledgechecker.common.DataType;
 import ru.mephi.knowledgechecker.common.QuestionType;
 import ru.mephi.knowledgechecker.common.TextType;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
@@ -14,6 +13,9 @@ import ru.mephi.knowledgechecker.model.answer.VariableAnswer;
 import ru.mephi.knowledgechecker.model.question.OpenQuestion;
 import ru.mephi.knowledgechecker.model.question.VariableQuestion;
 import ru.mephi.knowledgechecker.model.solving.Solving;
+import ru.mephi.knowledgechecker.model.solving.SolvingType;
+import ru.mephi.knowledgechecker.model.user.CurrentData;
+import ru.mephi.knowledgechecker.model.user.User;
 import ru.mephi.knowledgechecker.service.OpenAnswerService;
 import ru.mephi.knowledgechecker.service.OpenQuestionService;
 import ru.mephi.knowledgechecker.service.SolvingService;
@@ -25,10 +27,12 @@ import ru.mephi.knowledgechecker.strategy.impl.menu.ToMainMenuStrategy;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static ru.mephi.knowledgechecker.common.Constants.DEMONSTRATION_ANSWER;
 import static ru.mephi.knowledgechecker.common.KeyboardMarkups.getVariableAnswerKeyboardMarkup;
 import static ru.mephi.knowledgechecker.common.ParamsWrapper.wrapMessageParams;
 
@@ -64,26 +68,27 @@ public class ShowQuestionStrategy extends AbstractMessageStrategy {
     }
 
     @Override
-    public void process(Update update, Map<DataType, Object> data) throws StrategyProcessException {
-        Solving solving = solvingService.getByUserId(update.getMessage().getFrom().getId());
+    public void process(User user, Update update) throws StrategyProcessException {
+        Solving solving = solvingService.getByUserId(user.getId());
         String answerText = update.getMessage().getText();
+        CurrentData data = user.getData();
         saveAnswer(solving, data, answerText);
         sendQuestion(solving, data, update);
     }
 
-    private void saveAnswer(Solving solving, Map<DataType, Object> data, String answerText) throws StrategyProcessException {
-        switch ((QuestionType) data.get(DataType.PREVIOUS_QUESTION_TYPE)) {
+    private void saveAnswer(Solving solving, CurrentData data, String answerText) throws StrategyProcessException {
+        switch (data.getPreviousQuestionType()) {
             case OPEN:
-                saveOpenAnswer(solving, answerText, data.get(DataType.SOLVING_TYPE).equals(DEMONSTRATION_ANSWER));
+                saveOpenAnswer(solving, answerText);
                 break;
             case VARIABLE:
-                saveVariableAnswer(solving, answerText, data.get(DataType.SOLVING_TYPE).equals(DEMONSTRATION_ANSWER));
+                saveVariableAnswer(solving, answerText);
                 break;
             default:
         }
     }
 
-    private void saveVariableAnswer(Solving solving, String answerText, boolean showAnswer) throws StrategyProcessException {
+    private void saveVariableAnswer(Solving solving, String answerText) throws StrategyProcessException {
         VariableAnswer answer = variableAnswerService.getByText(answerText);
         if (answer == null) {
             throw new StrategyProcessException(solving.getUser().getId(), "Неверный формат ответа\n" +
@@ -100,18 +105,18 @@ public class ShowQuestionStrategy extends AbstractMessageStrategy {
                 .findFirst().orElse(null);
         assert question != null;
 
+        String result = "❔";
         if (question.getCorrectAnswer().equals(answer)) {
             solving.setVariableAnswerResults(concatIt(solving.getVariableAnswerResults(), 1L));
-            if (showAnswer) {
-                telegramApiClient.sendMessage(wrapMessageParams(solving.getUser().getId(), "✅",
-                        List.of(new MessageEntity(TextType.SPOILER, 0, 1)), null));
-            }
+            result = "✅";
         } else {
             solving.setVariableAnswerResults(concatIt(solving.getVariableAnswerResults(), 0L));
-            if (showAnswer) {
-                telegramApiClient.sendMessage(wrapMessageParams(solving.getUser().getId(), "❌",
-                        List.of(new MessageEntity(TextType.SPOILER, 0, 1)), null));
-            }
+            result = "❌";
+        }
+        if (solving.getType() == SolvingType.INSTANT_DEMONSTRATION_ANSWER) {
+            telegramApiClient.sendMessage(wrapMessageParams(solving.getUser().getId(), result,
+                    List.of(new MessageEntity(TextType.SPOILER, 0, 1)),
+                    null));
         }
 
         solving.setVariableAnswerIds(concatIt(solving.getVariableAnswerIds(), answer.getId()));
@@ -125,7 +130,7 @@ public class ShowQuestionStrategy extends AbstractMessageStrategy {
         return previously + ";" + nextOne;
     }
 
-    private void saveOpenAnswer(Solving solving, String answerText, boolean showAnswer) {
+    private void saveOpenAnswer(Solving solving, String answerText) {
         List<Long> openQuestionIds = parseIds(solving.getOpenQuestionIds());
         List<Long> openAnswerIds = parseIds(solving.getOpenAnswerIds());
         Long questionId = openQuestionIds.get(openAnswerIds.size());
@@ -149,13 +154,14 @@ public class ShowQuestionStrategy extends AbstractMessageStrategy {
         solving.setOpenAnswerIds(concatIt(solving.getOpenAnswerIds(), answer.getId().getQuestionId()));
         solvingService.save(solving);
 
-        if (showAnswer) {
+        if (solving.getType() == SolvingType.INSTANT_DEMONSTRATION_ANSWER) {
             telegramApiClient.sendMessage(wrapMessageParams(solving.getUser().getId(), question.getCorrectAnswer(),
-                    List.of(new MessageEntity(TextType.SPOILER, 0, question.getCorrectAnswer().length())), null));
+                    List.of(new MessageEntity(TextType.SPOILER, 0, question.getCorrectAnswer().length())),
+                    null));
         }
     }
 
-    public void sendQuestion(Solving solving, Map<DataType, Object> data, Update update) {
+    public void sendQuestion(Solving solving, CurrentData data, Update update) {
         List<Long> variableQuestionIds = parseIds(solving.getVariableQuestionIds());
         List<Long> variableAnswerIds = parseIds(solving.getVariableAnswerIds());
         List<Long> openQuestionIds = parseIds(solving.getOpenQuestionIds());
@@ -164,17 +170,17 @@ public class ShowQuestionStrategy extends AbstractMessageStrategy {
 
         if (variableQuestionIds.size() == variableAnswerIds.size()) {
             if (openQuestionIds.size() == openAnswerIds.size()) {
-                data.remove(DataType.PREVIOUS_QUESTION_TYPE);
-                putStateToContext(solving.getUser().getId(), nextState, data);
+                data.setPreviousQuestionType(null);
+                saveToContext(nextState, data);
                 generateReport(solving, data, update);
             } else {
-                data.put(DataType.PREVIOUS_QUESTION_TYPE, QuestionType.OPEN);
-                putStateToContext(solving.getUser().getId(), data);
+                data.setPreviousQuestionType(QuestionType.OPEN);
+                saveToContext(data);
                 sendOpenQuestion(solving, openQuestionIds, openAnswerIds, questionAmount, variableQuestionIds.size());
             }
         } else {
-            data.put(DataType.PREVIOUS_QUESTION_TYPE, QuestionType.VARIABLE);
-            putStateToContext(solving.getUser().getId(), data);
+            data.setPreviousQuestionType(QuestionType.VARIABLE);
+            saveToContext(data);
             sendVariableQuestion(solving, variableQuestionIds, variableAnswerIds, questionAmount);
         }
     }
@@ -190,11 +196,10 @@ public class ShowQuestionStrategy extends AbstractMessageStrategy {
                 .findFirst().orElse(null);
         assert question != null;
         String message = "❓ Вопрос № " + (variableAnswerIds.size() + 1) + " (из " + questionAmount + ")\n\n";
-        MessageParams params =
-                wrapMessageParams(solving.getUser().getId(), message + question.getText(),
-                        List.of(new MessageEntity(TextType.BOLD, 0, message.length()),
-                                new MessageEntity(TextType.CODE, message.length(), question.getText().length())),
-                        getVariableAnswerKeyboardMarkup(question));
+        MessageParams params = wrapMessageParams(solving.getUser().getId(), message + question.getText(),
+                List.of(new MessageEntity(TextType.BOLD, 0, message.length()),
+                        new MessageEntity(TextType.CODE, message.length(), question.getText().length())),
+                getVariableAnswerKeyboardMarkup(question));
         telegramApiClient.sendMessage(params);
     }
 
@@ -208,26 +213,25 @@ public class ShowQuestionStrategy extends AbstractMessageStrategy {
         assert question != null;
         String boldMessage = "❓ Вопрос № " + (offset + openAnswerIds.size() + 1) + " (из " + questionAmount + ")\n";
         String italicMessage = "💬 Дайте развернутый ответ\n\n";
-        MessageParams params =
-                wrapMessageParams(solving.getUser().getId(), boldMessage + italicMessage + question.getText(),
-                        List.of(new MessageEntity(TextType.BOLD, 0, boldMessage.length()),
-                                new MessageEntity(TextType.ITALIC, boldMessage.length(), italicMessage.length()),
-                                new MessageEntity(TextType.CODE, boldMessage.length() + italicMessage.length(),
-                                        question.getText().length())),
-                        null);
+        MessageParams params = wrapMessageParams(solving.getUser().getId(),
+                boldMessage + italicMessage + question.getText(),
+                List.of(new MessageEntity(TextType.BOLD, 0, boldMessage.length()),
+                        new MessageEntity(TextType.ITALIC, boldMessage.length(), italicMessage.length()),
+                        new MessageEntity(TextType.CODE, boldMessage.length() + italicMessage.length(),
+                                question.getText().length())),
+                null);
         telegramApiClient.sendMessage(params);
     }
 
-    private void generateReport(Solving solving, Map<DataType, Object> data, Update update) {
+    private void generateReport(Solving solving, CurrentData data, Update update) {
         sendFinishCongrats(solving);
-        if (!data.get(DataType.SOLVING_TYPE).equals(DEMONSTRATION_ANSWER)) {
+        if (solving.getType() == SolvingType.REPORT_GENERATING_AT_THE_END) {
             sendVariableResults(solving);
             sendOpenResults(solving);
         }
         clearSolving(solving);
-        data.remove(DataType.SOLVING_TYPE);
         try {
-            toMainMenuStrategy.process(update, data);
+            toMainMenuStrategy.process(data.getUser(), update);
         } catch (StrategyProcessException e) {
             toMainMenuStrategy.analyzeException(e);
         }
@@ -240,11 +244,10 @@ public class ShowQuestionStrategy extends AbstractMessageStrategy {
                         .substring(2)
                         .replaceAll("(\\d[HMS])(?!$)", "$1 ")
                         .toLowerCase();
-        MessageParams params =
-                wrapMessageParams(solving.getUser().getId(), boldMessage + codeMessage,
-                        List.of(new MessageEntity(TextType.BOLD, 0, boldMessage.length()),
-                                new MessageEntity(TextType.CODE, boldMessage.length(), codeMessage.length())),
-                        null);
+        MessageParams params = wrapMessageParams(solving.getUser().getId(), boldMessage + codeMessage,
+                List.of(new MessageEntity(TextType.BOLD, 0, boldMessage.length()),
+                        new MessageEntity(TextType.CODE, boldMessage.length(), codeMessage.length())),
+                null);
         telegramApiClient.sendMessage(params);
     }
 
@@ -257,13 +260,13 @@ public class ShowQuestionStrategy extends AbstractMessageStrategy {
         String boldMessage = "Вопросы с готовыми ответами:\n";
         String codeMessage = "✅ " + correctCount + "/" + allCount + " [" + ((double) correctCount / allCount * 100) + "%]";
         String spoilerMessage = "\nОтветы: " + solving.getVariableAnswerResults();
-        MessageParams params =
-                wrapMessageParams(solving.getUser().getId(), boldMessage + codeMessage + spoilerMessage,
-                        List.of(new MessageEntity(TextType.BOLD, 0, boldMessage.length()),
-                                new MessageEntity(TextType.CODE, boldMessage.length(), codeMessage.length()),
-                                new MessageEntity(TextType.SPOILER, boldMessage.length() + codeMessage.length(),
-                                        spoilerMessage.length())),
-                        null);
+        MessageParams params = wrapMessageParams(solving.getUser().getId(),
+                boldMessage + codeMessage + spoilerMessage,
+                List.of(new MessageEntity(TextType.BOLD, 0, boldMessage.length()),
+                        new MessageEntity(TextType.CODE, boldMessage.length(), codeMessage.length()),
+                        new MessageEntity(TextType.SPOILER, boldMessage.length() + codeMessage.length(),
+                                spoilerMessage.length())),
+                null);
         telegramApiClient.sendMessage(params);
     }
 
@@ -281,23 +284,22 @@ public class ShowQuestionStrategy extends AbstractMessageStrategy {
             String boldMessage3 = "\n️✅ Правильный ответ:\n";
             String message = boldMessage1 + question.getText() + boldMessage2 + answer.getText()
                     + boldMessage3 + question.getCorrectAnswer();
-            MessageParams params =
-                    wrapMessageParams(solving.getUser().getId(), message,
-                            List.of(new MessageEntity(TextType.BOLD, 0, boldMessage1.length()),
-                                    new MessageEntity(TextType.CODE, boldMessage1.length(), question.getText().length()),
-                                    new MessageEntity(TextType.BOLD,
-                                            boldMessage1.length() + question.getText().length(),
-                                            boldMessage2.length()),
-                                    new MessageEntity(TextType.CODE,
-                                            boldMessage1.length() + question.getText().length() + boldMessage2.length(),
-                                            answer.getText().length()),
-                                    new MessageEntity(TextType.BOLD,
-                                            message.length() - boldMessage3.length() - question.getCorrectAnswer().length(),
-                                            boldMessage3.length()),
-                                    new MessageEntity(TextType.SPOILER,
-                                            message.length() - question.getCorrectAnswer().length(),
-                                            question.getCorrectAnswer().length())),
-                            null);
+            MessageParams params = wrapMessageParams(solving.getUser().getId(), message,
+                    List.of(new MessageEntity(TextType.BOLD, 0, boldMessage1.length()),
+                            new MessageEntity(TextType.CODE, boldMessage1.length(), question.getText().length()),
+                            new MessageEntity(TextType.BOLD,
+                                    boldMessage1.length() + question.getText().length(),
+                                    boldMessage2.length()),
+                            new MessageEntity(TextType.CODE,
+                                    boldMessage1.length() + question.getText().length() + boldMessage2.length(),
+                                    answer.getText().length()),
+                            new MessageEntity(TextType.BOLD,
+                                    message.length() - boldMessage3.length() - question.getCorrectAnswer().length(),
+                                    boldMessage3.length()),
+                            new MessageEntity(TextType.SPOILER,
+                                    message.length() - question.getCorrectAnswer().length(),
+                                    question.getCorrectAnswer().length())),
+                    null);
             telegramApiClient.sendMessage(params);
         }
     }

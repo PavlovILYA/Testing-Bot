@@ -1,10 +1,8 @@
 package ru.mephi.knowledgechecker.state;
 
-import ru.mephi.knowledgechecker.common.DataType;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
-
-import java.util.Map;
+import ru.mephi.knowledgechecker.model.user.User;
 
 public interface BotState {
-    void process(Update update, Map<DataType, Object> data);
+    void process(User user, Update update);
 }

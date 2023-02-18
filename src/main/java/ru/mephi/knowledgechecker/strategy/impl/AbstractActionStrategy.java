@@ -2,20 +2,17 @@ package ru.mephi.knowledgechecker.strategy.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
-import ru.mephi.knowledgechecker.common.DataType;
 import ru.mephi.knowledgechecker.common.TextType;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageEntity;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageParams;
 import ru.mephi.knowledgechecker.httpclient.TelegramApiClient;
+import ru.mephi.knowledgechecker.model.user.CurrentData;
 import ru.mephi.knowledgechecker.state.BotState;
 import ru.mephi.knowledgechecker.state.StateContext;
 import ru.mephi.knowledgechecker.strategy.ActionStrategy;
 import ru.mephi.knowledgechecker.strategy.StrategyProcessException;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static ru.mephi.knowledgechecker.common.ParamsWrapper.wrapMessageParams;
 
@@ -26,14 +23,17 @@ public abstract class AbstractActionStrategy implements ActionStrategy {
     @Autowired
     protected TelegramApiClient telegramApiClient;
     protected BotState nextState;
-    protected final Queue<BotState> availableStates = new ConcurrentLinkedQueue<>();
 
-    protected void putStateToContext(Long userId, BotState state, Map<DataType, Object> data) {
-        stateContext.putState(userId, state, data);
+    protected void saveToContext(BotState state, CurrentData data) {
+        stateContext.putStateAndSaveUserData(state, data);
     }
 
-    protected void putStateToContext(Long userId, Map<DataType, Object> data) {
-        stateContext.putState(userId, data);
+    protected void saveToContext(CurrentData data) {
+        stateContext.saveUserData(data);
+    }
+
+    protected void saveToContext(Long userId, BotState state) {
+        stateContext.putState(userId, state);
     }
 
     @Override

@@ -4,20 +4,19 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import ru.mephi.knowledgechecker.common.Constants;
-import ru.mephi.knowledgechecker.common.DataType;
 import ru.mephi.knowledgechecker.common.TextType;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageEntity;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageParams;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.keyboard.KeyboardMarkup;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.keyboard.inline.InlineKeyboardButton;
+import ru.mephi.knowledgechecker.model.user.User;
 import ru.mephi.knowledgechecker.state.impl.menu.AdminMenuState;
 import ru.mephi.knowledgechecker.strategy.StrategyProcessException;
 import ru.mephi.knowledgechecker.strategy.impl.AbstractMessageStrategy;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import static ru.mephi.knowledgechecker.common.ParamsWrapper.wrapInlineKeyboardMarkup;
 import static ru.mephi.knowledgechecker.common.ParamsWrapper.wrapMessageParams;
@@ -36,13 +35,13 @@ public class ToAdminMenuStrategy extends AbstractMessageStrategy {
     }
 
     @Override
-    public void process(Update update, Map<DataType, Object> data) throws StrategyProcessException {
-        Long userId = update.getMessage().getChat().getId();
+    public void process(User user, Update update) throws StrategyProcessException {
+        saveToContext(user.getId(), nextState);
+
         String text = "🔽\nГЛАВНОЕ МЕНЮ\n⬇️\nАДМИНИСТРАТОРСКОЕ МЕНЮ";
-        MessageParams params =
-                wrapMessageParams(userId, text, List.of(new MessageEntity(TextType.BOLD, 0, text.length())),
-                        getInlineKeyboardMarkup());
-        putStateToContext(userId, nextState, data);
+        MessageParams params = wrapMessageParams(user.getId(), text,
+                List.of(new MessageEntity(TextType.BOLD, 0, text.length())),
+                getInlineKeyboardMarkup());
         telegramApiClient.sendMessage(params);
     }
 

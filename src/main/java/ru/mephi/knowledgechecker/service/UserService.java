@@ -20,9 +20,15 @@ public class UserService {
         return user;
     }
 
-    public UserDto save(UserDto userDto) {
+    public User save(UserDto userDto) {
         User user = userRepository.save(UserMapper.toUser(userDto));
         log.info("Saved user: {}", user);
-        return UserMapper.toDto(user);
+        return user;
+    }
+
+    public User save(User user) {
+        user = userRepository.save(user);
+        log.info("Saved user: {}", user);
+        return user;
     }
 }

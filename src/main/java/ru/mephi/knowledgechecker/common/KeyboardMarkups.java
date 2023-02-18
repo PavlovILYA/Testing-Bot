@@ -5,6 +5,7 @@ import ru.mephi.knowledgechecker.dto.telegram.outcome.keyboard.inline.InlineKeyb
 import ru.mephi.knowledgechecker.dto.telegram.outcome.keyboard.reply.KeyboardButton;
 import ru.mephi.knowledgechecker.model.answer.VariableAnswer;
 import ru.mephi.knowledgechecker.model.question.VariableQuestion;
+import ru.mephi.knowledgechecker.model.solving.SolvingType;
 import ru.mephi.knowledgechecker.model.test.Test;
 import ru.mephi.knowledgechecker.model.user.User;
 
@@ -69,12 +70,12 @@ public class KeyboardMarkups {
     public static KeyboardMarkup getTestSolvingTypesInlineKeyboardMarkup() {
         List<List<InlineKeyboardButton>> markup = new ArrayList<>();
         markup.add(List.of(InlineKeyboardButton.builder()
-                .text(DEMONSTRATION_ANSWER)
-                .callbackData(DEMONSTRATION_ANSWER)
+                .text(SolvingType.INSTANT_DEMONSTRATION_ANSWER.getDescription())
+                .callbackData(SolvingType.INSTANT_DEMONSTRATION_ANSWER.name())
                 .build()));
         markup.add(List.of(InlineKeyboardButton.builder()
-                .text(REPORT_GENERATING)
-                .callbackData(REPORT_GENERATING)
+                .text(SolvingType.REPORT_GENERATING_AT_THE_END.getDescription())
+                .callbackData(SolvingType.REPORT_GENERATING_AT_THE_END.name())
                 .build()));
         return wrapInlineKeyboardMarkup(markup);
     }

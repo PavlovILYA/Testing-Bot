@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import ru.mephi.knowledgechecker.model.question.OpenQuestion;
 import ru.mephi.knowledgechecker.model.question.VariableQuestion;
 import ru.mephi.knowledgechecker.model.solving.Solving;
+import ru.mephi.knowledgechecker.model.solving.SolvingType;
 import ru.mephi.knowledgechecker.model.test.Test;
 import ru.mephi.knowledgechecker.model.user.User;
 import ru.mephi.knowledgechecker.repository.SolvingRepository;
@@ -40,7 +41,7 @@ public class SolvingService {
         solvingRepository.delete(solving);
     }
 
-    public Solving generateQuestions(User user, Test test) {
+    public Solving generateQuestions(User user, Test test, SolvingType solvingType) {
         int amount = test.getMaxQuestionsNumber();
         int allOpenAmount = test.getOpenQuestions().size();
         int allVariableAmount = test.getVariableQuestions().size();
@@ -63,6 +64,7 @@ public class SolvingService {
                 .variableAnswerIds("")
                 .variableAnswerResults("")
                 .startedAt(LocalDateTime.now())
+                .type(solvingType)
                 .build();
 
         solving = solvingRepository.save(solving);

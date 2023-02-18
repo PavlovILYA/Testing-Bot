@@ -1,66 +1,78 @@
 package ru.mephi.knowledgechecker.state;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import ru.mephi.knowledgechecker.common.DataType;
-import ru.mephi.knowledgechecker.dto.telegram.income.InvalidUpdateException;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
-import ru.mephi.knowledgechecker.state.impl.menu.InitialState;
+import ru.mephi.knowledgechecker.dto.telegram.income.UserDto;
+import ru.mephi.knowledgechecker.model.user.CurrentData;
+import ru.mephi.knowledgechecker.model.user.User;
+import ru.mephi.knowledgechecker.service.CurrentDataService;
+import ru.mephi.knowledgechecker.service.UserService;
 
-import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
+
+import static ru.mephi.knowledgechecker.model.user.mapper.UserMapper.mapStateToBeanName;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class StateContext {
-    private final InitialState initialState;
-    private final ConcurrentMap<Long, ExtendedState> states = new ConcurrentHashMap<>();
-    private final ConcurrentMap<Long, LocalDateTime> timestamps = new ConcurrentHashMap<>();
 
-    public StateContext(InitialState initialState) {
-        this.initialState = initialState;
-    }
+//    private final ConcurrentMap<String, BotState> states = new ConcurrentHashMap<>();
+    @Autowired
+    private final Map<String, BotState> states = new ConcurrentHashMap<>();
+    private final UserService userService;
+    private final CurrentDataService dataService;
 
     public void process(Update update) {
-        try {
-            Long userId = update.getUserId();
-            ExtendedState currentState = getState(userId);
-            log.info("CURRENT STATE: {}", currentState.getState().getClass().getName());
-            log.info("CURRENT DATA: {}", currentState.getData());
-            currentState.getState().process(update, currentState.getData());
-        } catch (InvalidUpdateException e) {
-            log.warn(e.getMessage());
-        }
+        User user = getUser(update);
+        log.info("STATES: {}", states);
+        states.get(user.getState()).process(user, update);
+        log.info("CURRENT USER (STATE, DATA) after process:\n{}", user);
     }
 
-    // todo поменять мапу на БД (точнее сохранить мапу для кэширования)
-    public ExtendedState getState(Long userId) {
-        if (!states.containsKey(userId)) {
-            // checkDB(); // todo потом тут еще в базу надо лезть проверять..
-            putState(userId, initialState, new HashMap<>());
-            return getState(userId);
+    private User getUser(Update update) {
+        Long userId = update.getUserId();
+        User user = userService.get(userId);
+        if (user == null) {
+            user = saveUser(update);
         }
-        return states.get(userId);
+        return user;
     }
 
-    // todo поменять мапу на БД (точнее сохранить мапу для кэширования)
-    public void putState(Long userId, BotState state, Map<DataType, Object> data) {
-        if (!states.containsKey(userId)) {
-            states.put(userId, new ExtendedState(state, data));
-        } else {
-            ExtendedState extendedState = states.get(userId);
-            extendedState.setState(state);
-            extendedState.setData(data);
-        }
-        timestamps.put(userId, LocalDateTime.now());
+    private User saveUser(Update update) {
+        UserDto userDto = update.getCallbackQuery() != null
+                ? update.getCallbackQuery().getFrom()
+                : update.getMessage().getFrom();
+        User user = userService.save(userDto);
+        CurrentData data = dataService.createForUser(user);
+        user.setData(data);
+//        userService.save(userDto);
+        user = userService.get(user.getId());
+        log.info("👤 Пользователь зарегистрирован:\n{}", user);
+        return user;
     }
 
-    public void putState(Long userId, Map<DataType, Object> data) {
-        ExtendedState extendedState = states.get(userId);
-        extendedState.setData(data);
-        timestamps.put(userId, LocalDateTime.now());
+    public void putState(Long userId, BotState state) {
+        User user = userService.get(userId);
+        user.setState(mapStateToBeanName(state.getClass()));
+        userService.save(user);
+    }
+
+    public void saveUserData(CurrentData data) {
+        dataService.update(data);
+    }
+
+    public void putStateAndSaveUserData(BotState state, CurrentData data) {
+        data = dataService.update(data);
+        User user = userService.get(data.getUser().getId());
+        log.info("||||||| USER before: {}", user);
+        user.setData(data);
+        log.info("||||||| USER after: {}", user);
+        user.setState(mapStateToBeanName(state.getClass()));
+        userService.save(user);
     }
 }

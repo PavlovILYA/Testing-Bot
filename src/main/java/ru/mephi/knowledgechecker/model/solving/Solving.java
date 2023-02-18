@@ -32,4 +32,6 @@ public class Solving {
     private String variableAnswerIds;
     private String variableAnswerResults;
     private LocalDateTime startedAt;
+    @Enumerated(EnumType.STRING)
+    private SolvingType type;
 }

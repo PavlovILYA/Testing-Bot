@@ -2,20 +2,19 @@ package ru.mephi.knowledgechecker.strategy.impl.test.create;
 
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
-import ru.mephi.knowledgechecker.common.DataType;
 import ru.mephi.knowledgechecker.common.TextType;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageEntity;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageParams;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.keyboard.KeyboardMarkup;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.keyboard.inline.InlineKeyboardButton;
+import ru.mephi.knowledgechecker.model.user.User;
 import ru.mephi.knowledgechecker.state.impl.test.create.TestCreatingState;
 import ru.mephi.knowledgechecker.strategy.StrategyProcessException;
 import ru.mephi.knowledgechecker.strategy.impl.AbstractCallbackQueryStrategy;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import static ru.mephi.knowledgechecker.common.Constants.CREATE_PUBLIC_TEST;
 import static ru.mephi.knowledgechecker.common.Constants.PUBLIC_TEST_LIST;
@@ -35,15 +34,14 @@ public class ToTestCreatingStrategy extends AbstractCallbackQueryStrategy {
     }
 
     @Override
-    public void process(Update update, Map<DataType, Object> data) throws StrategyProcessException {
-        Long userId = update.getCallbackQuery().getFrom().getId();
+    public void process(User user, Update update) throws StrategyProcessException {
+        saveToContext(user.getId(), nextState);
+
         String message = "Введите уникальное название теста (максимум 30 символов)";
-        MessageParams params =
-                wrapMessageParams(userId, message,
-                        List.of(new MessageEntity(TextType.BOLD, 0, message.length()),
-                                new MessageEntity(TextType.UNDERLINE, 8, 10)),
-                        getInlineKeyboardMarkup());
-        putStateToContext(userId, nextState, data);
+        MessageParams params = wrapMessageParams(user.getId(), message,
+                List.of(new MessageEntity(TextType.BOLD, 0, message.length()),
+                        new MessageEntity(TextType.UNDERLINE, 8, 10)),
+                getInlineKeyboardMarkup());
         telegramApiClient.sendMessage(params);
     }
 
