@@ -3,7 +3,6 @@ package ru.mephi.knowledgechecker.strategy.impl.menu;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
-import ru.mephi.knowledgechecker.common.Constants;
 import ru.mephi.knowledgechecker.common.TextType;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageEntity;
@@ -18,6 +17,8 @@ import ru.mephi.knowledgechecker.strategy.impl.AbstractCallbackQueryStrategy;
 import java.util.ArrayList;
 import java.util.List;
 
+import static ru.mephi.knowledgechecker.common.CallbackDataType.*;
+import static ru.mephi.knowledgechecker.common.MenuTitleType.ADMIN_MENU;
 import static ru.mephi.knowledgechecker.common.ParamsWrapper.wrapInlineKeyboardMarkup;
 import static ru.mephi.knowledgechecker.common.ParamsWrapper.wrapMessageParams;
 
@@ -31,14 +32,13 @@ public class ToAdminMenuStrategy extends AbstractCallbackQueryStrategy {
     @Override
     public boolean apply(Update update) {
         return super.apply(update)
-                && update.getCallbackQuery().getData().equals(Constants.ADMIN_MENU);
+                && update.getCallbackQuery().getData().equals(TO_ADMIN_MENU.name());
     }
 
     @Override
     public void process(CurrentData data, Update update) throws StrategyProcessException {
-        String text = "🔽\nГЛАВНОЕ МЕНЮ\n⬇️\nАДМИНИСТРАТОРСКОЕ МЕНЮ";
-        SendMessageParams params = wrapMessageParams(data.getUser().getId(), text,
-                List.of(new MessageEntity(TextType.BOLD, 0, text.length())),
+        SendMessageParams params = wrapMessageParams(data.getUser().getId(), ADMIN_MENU.getTitle(),
+                List.of(new MessageEntity(TextType.BOLD, 0, ADMIN_MENU.getTitle().length())),
                 getInlineKeyboardMarkup());
         data.setState(nextState);
         sendMenuAndSave(params, data);
@@ -48,12 +48,12 @@ public class ToAdminMenuStrategy extends AbstractCallbackQueryStrategy {
         List<List<InlineKeyboardButton>> markup = new ArrayList<>();
         List<InlineKeyboardButton> menu = new ArrayList<>();
         menu.add(InlineKeyboardButton.builder()
-                .text("⬅️")
-                .callbackData(Constants.TO_MAIN_MENU)
+                .text(TO_MAIN_MENU.getDescription())
+                .callbackData(TO_MAIN_MENU.name())
                 .build());
         menu.add(InlineKeyboardButton.builder()
-                .text("Создать курс")
-                .callbackData(Constants.CREATE_COURSE)
+                .text(CREATE_COURSE.getDescription())
+                .callbackData(CREATE_COURSE.name())
                 .build());
         markup.add(menu);
 
@@ -62,7 +62,7 @@ public class ToAdminMenuStrategy extends AbstractCallbackQueryStrategy {
 //        for (test : tests) {
 //            publicTests.add(InlineKeyboardButton.builder()
 //                    .text(test.getName())
-//                    .callbackData(PUBLIC_TEST_PREFIX + ":" + test.getId())
+//                    .callbackData(PUBLIC_TEST_PREFIX + COLON + test.getId())
 //                    .build());
 //        }
 //        markup.add(two);

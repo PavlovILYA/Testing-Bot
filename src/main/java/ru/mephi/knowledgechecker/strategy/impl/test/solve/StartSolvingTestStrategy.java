@@ -20,6 +20,7 @@ import ru.mephi.knowledgechecker.strategy.impl.AbstractCallbackQueryStrategy;
 import java.util.List;
 
 import static ru.mephi.knowledgechecker.common.KeyboardMarkups.getPublicTestListInlineKeyboardMarkup;
+import static ru.mephi.knowledgechecker.common.MenuTitleType.PUBLIC_TEST_LIST;
 import static ru.mephi.knowledgechecker.common.ParamsWrapper.wrapMessageParams;
 
 @Component
@@ -60,9 +61,8 @@ public class StartSolvingTestStrategy extends AbstractCallbackQueryStrategy {
                     .build();
             telegramApiClient.answerCallbackQuery(popup);
 
-            String message = "🔽\nГЛАВНОЕ МЕНЮ\n⬇️️\nПУБЛИЧНЫЕ ТЕСТЫ";
-            SendMessageParams params = wrapMessageParams(data.getUser().getId(), message,
-                    List.of(new MessageEntity(TextType.BOLD, 0, message.length())),
+            SendMessageParams params = wrapMessageParams(data.getUser().getId(), PUBLIC_TEST_LIST.getTitle(),
+                    List.of(new MessageEntity(TextType.BOLD, 0, PUBLIC_TEST_LIST.getTitle().length())),
                     getPublicTestListInlineKeyboardMarkup(data.getUser()));
             data.setState(publicTestListState);
             sendMenuAndSave(params, data);

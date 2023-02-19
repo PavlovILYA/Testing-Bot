@@ -10,8 +10,8 @@ import ru.mephi.knowledgechecker.state.impl.test.create.question.QuestionAddingS
 import ru.mephi.knowledgechecker.strategy.StrategyProcessException;
 import ru.mephi.knowledgechecker.strategy.impl.AbstractCallbackQueryStrategy;
 
+import static ru.mephi.knowledgechecker.common.CallbackDataType.TO_QUESTION_ADDING;
 import static ru.mephi.knowledgechecker.common.CommonMessageParams.addingQuestionParams;
-import static ru.mephi.knowledgechecker.common.Constants.TO_QUESTION_ADDING;
 
 @Component
 public class ToQuestionAddingStrategy extends AbstractCallbackQueryStrategy {
@@ -23,7 +23,7 @@ public class ToQuestionAddingStrategy extends AbstractCallbackQueryStrategy {
     @Override
     public boolean apply(Update update) {
         return super.apply(update)
-                && update.getCallbackQuery().getData().equals(TO_QUESTION_ADDING);
+                && update.getCallbackQuery().getData().equals(TO_QUESTION_ADDING.name());
     }
 
     @Override

@@ -14,7 +14,7 @@ import ru.mephi.knowledgechecker.strategy.impl.AbstractCallbackQueryStrategy;
 
 import java.util.List;
 
-import static ru.mephi.knowledgechecker.common.Constants.FIND_PUBLIC_TEST;
+import static ru.mephi.knowledgechecker.common.CallbackDataType.FIND_PUBLIC_TEST;
 import static ru.mephi.knowledgechecker.common.ParamsWrapper.wrapMessageParams;
 
 @Slf4j
@@ -27,7 +27,7 @@ public class AskForSearchQueryStrategy extends AbstractCallbackQueryStrategy {
     @Override
     public boolean apply(Update update) {
         return super.apply(update)
-                && (update.getCallbackQuery().getData().equals(FIND_PUBLIC_TEST));
+                && (update.getCallbackQuery().getData().equals(FIND_PUBLIC_TEST.name()));
     }
 
     @Override

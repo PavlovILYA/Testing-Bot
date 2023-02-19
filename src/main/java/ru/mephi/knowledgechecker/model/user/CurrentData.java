@@ -2,7 +2,7 @@ package ru.mephi.knowledgechecker.model.user;
 
 import lombok.*;
 import ru.mephi.knowledgechecker.common.CreationPhaseType;
-import ru.mephi.knowledgechecker.common.QuestionType;
+import ru.mephi.knowledgechecker.model.question.QuestionType;
 import ru.mephi.knowledgechecker.model.question.OpenQuestion;
 import ru.mephi.knowledgechecker.model.question.VariableQuestion;
 import ru.mephi.knowledgechecker.model.test.Test;

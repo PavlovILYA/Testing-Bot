@@ -19,6 +19,7 @@ import ru.mephi.knowledgechecker.strategy.impl.AbstractMessageStrategy;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+import static ru.mephi.knowledgechecker.common.Constants.COLON;
 import static ru.mephi.knowledgechecker.common.Constants.PUBLIC_TEST_PREFIX;
 import static ru.mephi.knowledgechecker.common.ParamsWrapper.wrapMessageParams;
 
@@ -45,7 +46,7 @@ public class ReadUniqueTestNameStrategy extends AbstractMessageStrategy {
             throw new StrategyProcessException(data.getUser().getId(),
                     "Тест с таким названием уже существует, попробуйте еще раз");
         }
-        if ((uniqueTestName + ":" + PUBLIC_TEST_PREFIX).getBytes(StandardCharsets.UTF_8).length > 64) {
+        if ((uniqueTestName + COLON + PUBLIC_TEST_PREFIX).getBytes(StandardCharsets.UTF_8).length > 64) {
             throw new StrategyProcessException(data.getUser().getId(),
                     "Длина уникального названия теста больше 30, попробуйте еще раз");
         }

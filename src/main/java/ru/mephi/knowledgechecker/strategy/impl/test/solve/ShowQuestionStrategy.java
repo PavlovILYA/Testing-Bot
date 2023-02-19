@@ -2,7 +2,7 @@ package ru.mephi.knowledgechecker.strategy.impl.test.solve;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import ru.mephi.knowledgechecker.common.QuestionType;
+import ru.mephi.knowledgechecker.model.question.QuestionType;
 import ru.mephi.knowledgechecker.common.TextType;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageEntity;
@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static ru.mephi.knowledgechecker.common.Constants.SEMICOLON;
 import static ru.mephi.knowledgechecker.common.KeyboardMarkups.getVariableAnswerKeyboardMarkup;
 import static ru.mephi.knowledgechecker.common.ParamsWrapper.wrapMessageParams;
 
@@ -126,7 +127,7 @@ public class ShowQuestionStrategy extends AbstractMessageStrategy {
         if (previously.length() == 0) {
             return nextOne.toString();
         }
-        return previously + ";" + nextOne;
+        return previously + SEMICOLON + nextOne;
     }
 
     private void saveOpenAnswer(Solving solving, String answerText) {
@@ -312,7 +313,7 @@ public class ShowQuestionStrategy extends AbstractMessageStrategy {
 
     private List<Long> parseIds(String string) {
         try {
-            return Arrays.stream(string.split(";"))
+            return Arrays.stream(string.split(SEMICOLON))
                     .map(Long::parseLong)
                     .collect(Collectors.toList());
         } catch (NumberFormatException e) {

@@ -18,6 +18,8 @@ import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static ru.mephi.knowledgechecker.common.Constants.SEMICOLON;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -78,11 +80,11 @@ public class SolvingService {
                 .collect(Collectors.toList());
         Collections.shuffle(ids, new Random());
         if (allAmount - amount <= 0) {
-            return String.join(";", ids);
+            return String.join(SEMICOLON, ids);
         }
         for (int i = 0; i < allAmount - amount; i++) {
             ids.remove(ids.size() - 1);
         }
-        return String.join(";", ids);
+        return String.join(SEMICOLON, ids);
     }
 }

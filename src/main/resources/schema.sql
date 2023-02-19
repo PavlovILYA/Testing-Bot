@@ -119,11 +119,11 @@ CREATE TABLE IF NOT EXISTS current_data (
     user_id BIGINT UNIQUE,
     state VARCHAR(500),
     next_phase VARCHAR(500),
-    test_id BIGINT, -- TEST_ID, TEST_UNIQUE_TITLE
-    need_check BOOLEAN, -- CHECK_0_QUESTIONS
+    test_id BIGINT,
+    need_check BOOLEAN,
     open_question_id BIGINT,
-    variable_question_id BIGINT, -- QUESTION_ID
-    previous_question_type VARCHAR(10), -- QUESTION_ID
+    variable_question_id BIGINT,
+    previous_question_type VARCHAR(10),
     last_message_id BIGINT,
     menu_message_id BIGINT,
     clear_reply_message_id BIGINT,

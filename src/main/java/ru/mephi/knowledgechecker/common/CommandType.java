@@ -1,11 +1,11 @@
 package ru.mephi.knowledgechecker.common;
 
-public enum Command {
+public enum CommandType {
     START("/start");
 
     private final String name;
 
-    Command(String name) {
+    CommandType(String name) {
         this.name = name;
     }
 

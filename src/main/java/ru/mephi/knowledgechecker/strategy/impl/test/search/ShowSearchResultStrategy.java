@@ -19,9 +19,10 @@ import ru.mephi.knowledgechecker.strategy.impl.AbstractMessageStrategy;
 import java.util.ArrayList;
 import java.util.List;
 
-import static ru.mephi.knowledgechecker.common.Constants.PUBLIC_TEST_LIST;
-import static ru.mephi.knowledgechecker.common.Constants.PUBLIC_TEST_PREFIX;
+import static ru.mephi.knowledgechecker.common.CallbackDataType.TO_PUBLIC_TEST_LIST;
+import static ru.mephi.knowledgechecker.common.Constants.*;
 import static ru.mephi.knowledgechecker.common.KeyboardMarkups.getPublicTestListInlineKeyboardMarkup;
+import static ru.mephi.knowledgechecker.common.MenuTitleType.PUBLIC_TEST_LIST;
 import static ru.mephi.knowledgechecker.common.ParamsWrapper.wrapInlineKeyboardMarkup;
 import static ru.mephi.knowledgechecker.common.ParamsWrapper.wrapMessageParams;
 
@@ -46,7 +47,7 @@ public class ShowSearchResultStrategy extends AbstractMessageStrategy {
 
     @Override
     public void process(CurrentData data, Update update) throws StrategyProcessException {
-        String keyWords = update.getMessage().getText().replaceAll(";", "|");
+        String keyWords = update.getMessage().getText().replaceAll(SEMICOLON, "|");
         List<String> testTitles = testService.findTests(keyWords, data.getUser().getId());
         if (testTitles.size() != 0) {
             sendResults(data, testTitles);
@@ -62,9 +63,8 @@ public class ShowSearchResultStrategy extends AbstractMessageStrategy {
                 null);
         telegramApiClient.sendMessage(params);
 
-        message = "🔽\nГЛАВНОЕ МЕНЮ\n⬇️️\nПУБЛИЧНЫЕ ТЕСТЫ";
-        params = wrapMessageParams(data.getUser().getId(), message,
-                List.of(new MessageEntity(TextType.BOLD, 0, message.length())),
+        params = wrapMessageParams(data.getUser().getId(), PUBLIC_TEST_LIST.getTitle(),
+                List.of(new MessageEntity(TextType.BOLD, 0, PUBLIC_TEST_LIST.getTitle().length())),
                 getPublicTestListInlineKeyboardMarkup(data.getUser()));
         data.setState(publicTestListState);
         sendMenuAndSave(params, data);
@@ -83,7 +83,7 @@ public class ShowSearchResultStrategy extends AbstractMessageStrategy {
         List<List<InlineKeyboardButton>> markup = new ArrayList<>();
         List<InlineKeyboardButton> back = List.of(InlineKeyboardButton.builder()
                 .text("⬅️")
-                .callbackData(PUBLIC_TEST_LIST)
+                .callbackData(TO_PUBLIC_TEST_LIST.name())
                 .build());
         markup.add(back);
 
@@ -91,7 +91,7 @@ public class ShowSearchResultStrategy extends AbstractMessageStrategy {
             List<InlineKeyboardButton> testList = new ArrayList<>();
             testList.add(InlineKeyboardButton.builder()
                     .text("📌 " + title)
-                    .callbackData(PUBLIC_TEST_PREFIX + ":" + title)
+                    .callbackData(PUBLIC_TEST_PREFIX + COLON + title)
                     .build());
             markup.add(testList);
         }

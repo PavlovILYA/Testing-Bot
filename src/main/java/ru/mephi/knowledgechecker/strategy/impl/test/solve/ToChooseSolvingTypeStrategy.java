@@ -16,6 +16,7 @@ import ru.mephi.knowledgechecker.strategy.impl.AbstractCallbackQueryStrategy;
 
 import java.util.List;
 
+import static ru.mephi.knowledgechecker.common.Constants.COLON;
 import static ru.mephi.knowledgechecker.common.Constants.PUBLIC_TEST_PREFIX;
 import static ru.mephi.knowledgechecker.common.KeyboardMarkups.getTestSolvingTypesInlineKeyboardMarkup;
 import static ru.mephi.knowledgechecker.common.ParamsWrapper.wrapMessageParams;
@@ -32,11 +33,11 @@ public class ToChooseSolvingTypeStrategy extends AbstractCallbackQueryStrategy {
 
     @Override
     public boolean apply(Update update) {
-        if (!super.apply(update) || !update.getCallbackQuery().getData().split(":")[0].equals(PUBLIC_TEST_PREFIX)) {
+        if (!super.apply(update) || !update.getCallbackQuery().getData().split(COLON)[0].equals(PUBLIC_TEST_PREFIX)) {
             return false;
         }
 
-        String uniqueTitle = update.getCallbackQuery().getData().split(":")[1];
+        String uniqueTitle = update.getCallbackQuery().getData().split(COLON)[1];
         Test test = testService.getByUniqueTitle(uniqueTitle);
         return test != null
                 && test.getTestType().equals(TestType.PUBLIC);
@@ -44,7 +45,7 @@ public class ToChooseSolvingTypeStrategy extends AbstractCallbackQueryStrategy {
 
     @Override
     public void process(CurrentData data, Update update) throws StrategyProcessException {
-        String uniqueTitle = update.getCallbackQuery().getData().split(":")[1];
+        String uniqueTitle = update.getCallbackQuery().getData().split(COLON)[1];
         Test test = testService.getByUniqueTitle(uniqueTitle);
         data.setTest(test);
 

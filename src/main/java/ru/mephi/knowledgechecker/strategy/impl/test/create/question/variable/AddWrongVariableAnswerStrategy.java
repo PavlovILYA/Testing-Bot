@@ -13,7 +13,7 @@ import ru.mephi.knowledgechecker.strategy.impl.AbstractCallbackQueryStrategy;
 
 import java.util.List;
 
-import static ru.mephi.knowledgechecker.common.Constants.ADD_WRONG_VARIABLE_ANSWER;
+import static ru.mephi.knowledgechecker.common.CallbackDataType.ADD_WRONG_VARIABLE_ANSWER;
 import static ru.mephi.knowledgechecker.common.ParamsWrapper.wrapMessageParams;
 
 @Component
@@ -26,7 +26,7 @@ public class AddWrongVariableAnswerStrategy extends AbstractCallbackQueryStrateg
     @Override
     public boolean apply(Update update) {
         return super.apply(update)
-                && update.getCallbackQuery().getData().equals(ADD_WRONG_VARIABLE_ANSWER);
+                && update.getCallbackQuery().getData().equals(ADD_WRONG_VARIABLE_ANSWER.name());
     }
 
     @Override

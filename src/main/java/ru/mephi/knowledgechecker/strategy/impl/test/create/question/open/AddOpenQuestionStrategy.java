@@ -14,7 +14,7 @@ import ru.mephi.knowledgechecker.strategy.impl.AbstractCallbackQueryStrategy;
 
 import java.util.List;
 
-import static ru.mephi.knowledgechecker.common.Constants.ADD_OPEN_QUESTION;
+import static ru.mephi.knowledgechecker.common.CallbackDataType.ADD_OPEN_QUESTION;
 import static ru.mephi.knowledgechecker.common.ParamsWrapper.wrapMessageParams;
 
 @Component
@@ -27,7 +27,7 @@ public class AddOpenQuestionStrategy extends AbstractCallbackQueryStrategy {
     @Override
     public boolean apply(Update update) {
         return super.apply(update)
-                && update.getCallbackQuery().getData().equals(ADD_OPEN_QUESTION);
+                && update.getCallbackQuery().getData().equals(ADD_OPEN_QUESTION.name());
     }
 
     @Override

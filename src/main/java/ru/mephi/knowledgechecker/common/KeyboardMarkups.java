@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static ru.mephi.knowledgechecker.common.CallbackDataType.*;
 import static ru.mephi.knowledgechecker.common.Constants.*;
 import static ru.mephi.knowledgechecker.common.ParamsWrapper.wrapInlineKeyboardMarkup;
 import static ru.mephi.knowledgechecker.common.ParamsWrapper.wrapReplyKeyboardMarkup;
@@ -22,16 +23,16 @@ public class KeyboardMarkups {
     public static KeyboardMarkup getStartKeyboardMarkup() {
         List<List<InlineKeyboardButton>> markup = new ArrayList<>();
         markup.add(List.of(InlineKeyboardButton.builder()
-                .text(PUBLIC_TEST_LIST)
-                .callbackData(PUBLIC_TEST_LIST)
+                .text(TO_PUBLIC_TEST_LIST.getDescription())
+                .callbackData(TO_PUBLIC_TEST_LIST.name())
                 .build()));
         markup.add(List.of(InlineKeyboardButton.builder()
-                .text(COURSES_LIST)
-                .callbackData(COURSES_LIST)
+                .text(TO_COURSES_LIST.getDescription())
+                .callbackData(TO_COURSES_LIST.name())
                 .build()));
         markup.add(List.of(InlineKeyboardButton.builder()
-                .text(ADMIN_MENU)
-                .callbackData(ADMIN_MENU)
+                .text(TO_ADMIN_MENU.getDescription())
+                .callbackData(TO_ADMIN_MENU.name())
                 .build()));
         return wrapInlineKeyboardMarkup(markup);
     }
@@ -40,16 +41,16 @@ public class KeyboardMarkups {
         List<List<InlineKeyboardButton>> markup = new ArrayList<>();
         List<InlineKeyboardButton> menu = new ArrayList<>();
         menu.add(InlineKeyboardButton.builder()
-                .text("С вариантами")
-                .callbackData(ADD_VARIABLE_QUESTION)
+                .text(ADD_VARIABLE_QUESTION.getDescription())
+                .callbackData(ADD_VARIABLE_QUESTION.name())
                 .build());
         menu.add(InlineKeyboardButton.builder()
-                .text("Открытый")
-                .callbackData(ADD_OPEN_QUESTION)
+                .text(ADD_OPEN_QUESTION.getDescription())
+                .callbackData(ADD_OPEN_QUESTION.name())
                 .build());
         menu.add(InlineKeyboardButton.builder()
                 .text("✅️")
-                .callbackData(PUBLIC_TEST_LIST)
+                .callbackData(TO_PUBLIC_TEST_LIST.name())
                 .build());
         markup.add(menu);
         return wrapInlineKeyboardMarkup(markup);
@@ -59,12 +60,12 @@ public class KeyboardMarkups {
         List<List<InlineKeyboardButton>> markup = new ArrayList<>();
         List<InlineKeyboardButton> menu = new ArrayList<>();
         menu.add(InlineKeyboardButton.builder()
-                .text("Добавить")
-                .callbackData(ADD_WRONG_VARIABLE_ANSWER)
+                .text(ADD_WRONG_VARIABLE_ANSWER.getDescription())
+                .callbackData(ADD_WRONG_VARIABLE_ANSWER.name())
                 .build());
         menu.add(InlineKeyboardButton.builder()
                 .text("✅️")
-                .callbackData(TO_QUESTION_ADDING)
+                .callbackData(TO_QUESTION_ADDING.name())
                 .build());
         markup.add(menu);
         return wrapInlineKeyboardMarkup(markup);
@@ -124,16 +125,16 @@ public class KeyboardMarkups {
         List<List<InlineKeyboardButton>> markup = new ArrayList<>();
         List<InlineKeyboardButton> menu = new ArrayList<>();
         menu.add(InlineKeyboardButton.builder()
-                .text("⬅️")
-                .callbackData(Constants.TO_MAIN_MENU)
+                .text(TO_MAIN_MENU.getDescription())
+                .callbackData(TO_MAIN_MENU.name())
                 .build());
         menu.add(InlineKeyboardButton.builder()
-                .text("📝 Создать тест")
-                .callbackData(Constants.CREATE_PUBLIC_TEST)
+                .text(CREATE_PUBLIC_TEST.getDescription())
+                .callbackData(CREATE_PUBLIC_TEST.name())
                 .build());
         menu.add(InlineKeyboardButton.builder()
-                .text("🔎️ Найти тест")
-                .callbackData(Constants.FIND_PUBLIC_TEST)
+                .text(FIND_PUBLIC_TEST.getDescription())
+                .callbackData(FIND_PUBLIC_TEST.name())
                 .build());
         markup.add(menu);
 
@@ -141,7 +142,7 @@ public class KeyboardMarkups {
             List<InlineKeyboardButton> testList = new ArrayList<>();
             testList.add(InlineKeyboardButton.builder()
                     .text("📌 " + test.getUniqueTitle())
-                    .callbackData(PUBLIC_TEST_PREFIX + ":" + test.getUniqueTitle())
+                    .callbackData(PUBLIC_TEST_PREFIX + COLON + test.getUniqueTitle())
                     .build());
             markup.add(testList);
         }

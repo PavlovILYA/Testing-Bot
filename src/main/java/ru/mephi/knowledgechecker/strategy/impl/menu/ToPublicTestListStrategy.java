@@ -15,8 +15,9 @@ import ru.mephi.knowledgechecker.strategy.impl.AbstractCallbackQueryStrategy;
 
 import java.util.List;
 
-import static ru.mephi.knowledgechecker.common.Constants.PUBLIC_TEST_LIST;
+import static ru.mephi.knowledgechecker.common.CallbackDataType.TO_PUBLIC_TEST_LIST;
 import static ru.mephi.knowledgechecker.common.KeyboardMarkups.getPublicTestListInlineKeyboardMarkup;
+import static ru.mephi.knowledgechecker.common.MenuTitleType.PUBLIC_TEST_LIST;
 import static ru.mephi.knowledgechecker.common.ParamsWrapper.wrapMessageParams;
 
 @Slf4j
@@ -30,7 +31,7 @@ public class ToPublicTestListStrategy extends AbstractCallbackQueryStrategy {
     @Override
     public boolean apply(Update update) {
         return super.apply(update)
-                && update.getCallbackQuery().getData().equals(PUBLIC_TEST_LIST);
+                && update.getCallbackQuery().getData().equals(TO_PUBLIC_TEST_LIST.name());
     }
 
     @Override
@@ -46,9 +47,8 @@ public class ToPublicTestListStrategy extends AbstractCallbackQueryStrategy {
         }
         data.setTest(null);
 
-        String text = "🔽\nГЛАВНОЕ МЕНЮ\n⬇️️\nПУБЛИЧНЫЕ ТЕСТЫ";
-        SendMessageParams params = wrapMessageParams(data.getUser().getId(), text,
-                List.of(new MessageEntity(TextType.BOLD, 0, text.length())),
+        SendMessageParams params = wrapMessageParams(data.getUser().getId(), PUBLIC_TEST_LIST.getTitle(),
+                List.of(new MessageEntity(TextType.BOLD, 0, PUBLIC_TEST_LIST.getTitle().length())),
                 getPublicTestListInlineKeyboardMarkup(data.getUser()));
         data.setState(nextState);
         sendMenuAndSave(params, data);

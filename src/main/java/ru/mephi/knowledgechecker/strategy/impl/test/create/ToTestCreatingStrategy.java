@@ -16,8 +16,8 @@ import ru.mephi.knowledgechecker.strategy.impl.AbstractCallbackQueryStrategy;
 import java.util.ArrayList;
 import java.util.List;
 
-import static ru.mephi.knowledgechecker.common.Constants.CREATE_PUBLIC_TEST;
-import static ru.mephi.knowledgechecker.common.Constants.PUBLIC_TEST_LIST;
+import static ru.mephi.knowledgechecker.common.CallbackDataType.CREATE_PUBLIC_TEST;
+import static ru.mephi.knowledgechecker.common.CallbackDataType.TO_PUBLIC_TEST_LIST;
 import static ru.mephi.knowledgechecker.common.ParamsWrapper.wrapInlineKeyboardMarkup;
 import static ru.mephi.knowledgechecker.common.ParamsWrapper.wrapMessageParams;
 
@@ -30,7 +30,7 @@ public class ToTestCreatingStrategy extends AbstractCallbackQueryStrategy {
     @Override
     public boolean apply(Update update) {
         return super.apply(update)
-                && update.getCallbackQuery().getData().equals(CREATE_PUBLIC_TEST);
+                && update.getCallbackQuery().getData().equals(CREATE_PUBLIC_TEST.name());
     }
 
     @Override
@@ -50,7 +50,7 @@ public class ToTestCreatingStrategy extends AbstractCallbackQueryStrategy {
         List<InlineKeyboardButton> menu = new ArrayList<>();
         menu.add(InlineKeyboardButton.builder()
                 .text("⬅️")
-                .callbackData(PUBLIC_TEST_LIST)
+                .callbackData(TO_PUBLIC_TEST_LIST.name())
                 .build());
         markup.add(menu);
         return wrapInlineKeyboardMarkup(markup);
