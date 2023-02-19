@@ -5,10 +5,7 @@ import org.springframework.context.annotation.Lazy;
 import ru.mephi.knowledgechecker.common.TextType;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageEntity;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.keyboard.inline.InlineKeyboardMarkup;
-import ru.mephi.knowledgechecker.dto.telegram.outcome.params.DeleteMessageParams;
-import ru.mephi.knowledgechecker.dto.telegram.outcome.params.EditMessageReplyMarkupParams;
-import ru.mephi.knowledgechecker.dto.telegram.outcome.params.EditMessageTextParams;
-import ru.mephi.knowledgechecker.dto.telegram.outcome.params.SendMessageParams;
+import ru.mephi.knowledgechecker.dto.telegram.outcome.params.*;
 import ru.mephi.knowledgechecker.httpclient.TelegramApiClient;
 import ru.mephi.knowledgechecker.model.user.CurrentData;
 import ru.mephi.knowledgechecker.state.BotState;
@@ -41,22 +38,29 @@ public abstract class AbstractActionStrategy implements ActionStrategy {
     }
 
     @Override
-    public void analyzeException(StrategyProcessException exception) {
-        sendError(exception.getUserId(), exception.getMessage());
+    public void analyzeException(StrategyProcessException e) {
+        sendError(e.getUserId(), e.getMessage(), e.getCallbackQueryId());
     }
 
-    protected void sendError(long userId, String message) {
+    protected void sendError(long userId, String message, String callbackQueryId) {
         String boldMessage = "Ошибка 🥴";
-        if (!message.isBlank()) {
-            boldMessage += "\n\n";
+        if (callbackQueryId != null && message.length() <= 200) {
+            SendPopupParams params = SendPopupParams.builder()
+                    .callbackQueryId(callbackQueryId)
+                    .text(boldMessage + "\n" + message)
+                    .showAlert(true)
+                    .build();
+            telegramApiClient.answerCallbackQuery(params);
+        } else {
+            if (!message.isBlank()) {
+                boldMessage += "\n\n";
+            }
+            SendMessageParams params = wrapMessageParams(userId, boldMessage + message,
+                    List.of(new MessageEntity(TextType.BOLD, 0, boldMessage.length()),
+                            new MessageEntity(TextType.ITALIC, boldMessage.length(), message.length())),
+                    null);
+            telegramApiClient.sendMessage(params);
         }
-        SendMessageParams params =
-                wrapMessageParams(userId, boldMessage + message,
-                        List.of(new MessageEntity(TextType.BOLD, 0, boldMessage.length()),
-                                new MessageEntity(TextType.ITALIC, boldMessage.length(), message.length())),
-                        null);
-        telegramApiClient.sendMessage(params);
-        // todo: обновить keyboard?
     }
 
     protected void sendMenuAndSave(SendMessageParams params, BotState nextState, CurrentData data) {
@@ -80,7 +84,6 @@ public abstract class AbstractActionStrategy implements ActionStrategy {
                 .build()
         );
         data.setMenuMessageId(null);
-//        saveToContext(nextState, data);
     }
 
     protected void sendMessageAndSave(SendMessageParams params, BotState nextState, CurrentData data) {

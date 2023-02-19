@@ -54,7 +54,8 @@ public class ToMainMenuStrategy extends AbstractActionStrategy {
             Test test = testService.getByUniqueTitle(uniqueTitle);
             if (test.getOpenQuestions().size() + test.getVariableQuestions().size() == 0) {
                 throw new StrategyProcessException(user.getId(),
-                        "Необходимо добавить как минимум один вопрос");
+                        "Необходимо добавить как минимум один вопрос",
+                        update.getCallbackQuery().getId());
             }
             data.setNeedCheck(false);
         }

@@ -7,10 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import ru.mephi.knowledgechecker.dto.telegram.income.Response;
-import ru.mephi.knowledgechecker.dto.telegram.outcome.params.DeleteMessageParams;
-import ru.mephi.knowledgechecker.dto.telegram.outcome.params.EditMessageReplyMarkupParams;
-import ru.mephi.knowledgechecker.dto.telegram.outcome.params.EditMessageTextParams;
-import ru.mephi.knowledgechecker.dto.telegram.outcome.params.SendMessageParams;
+import ru.mephi.knowledgechecker.dto.telegram.outcome.params.*;
 
 @Slf4j
 @Service
@@ -47,5 +44,11 @@ public class TelegramApiClient {
         ResponseEntity<String> response = restTemplate
                 .postForEntity(telegramApi + "/deleteMessage", params, String.class);
         log.info("Response from TG: {}", response.getBody());
+    }
+
+    public void answerCallbackQuery(SendPopupParams params) {
+        log.info("[To Telegram API] send popup: {}", params);
+        ResponseEntity<Object> response = restTemplate
+                .postForEntity(telegramApi + "/answerCallbackQuery", params, Object.class);
     }
 }

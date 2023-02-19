@@ -33,8 +33,9 @@ public class ToQuestionAddingStrategy extends AbstractCallbackQueryStrategy {
         if (data.getVariableQuestion() != null) {
             VariableQuestion lastQuestion = data.getVariableQuestion();
             if (lastQuestion.getWrongAnswers().size() == 0) {
-                throw new StrategyProcessException(update.getCallbackQuery().getFrom().getId(),
-                        "Необходимо добавить хотя бы один неправильный вариант ответа");
+                throw new StrategyProcessException(user.getId(),
+                        "Необходимо добавить хотя бы один неправильный вариант ответа",
+                        update.getCallbackQuery().getId());
             }
         }
 

@@ -43,11 +43,11 @@ public class ReadUniqueTestNameStrategy extends AbstractMessageStrategy {
     public void process(User user, Update update) throws StrategyProcessException {
         String uniqueTestName = update.getMessage().getText();
         if (testService.getByUniqueTitle(uniqueTestName) != null) {
-            throw new StrategyProcessException(update.getMessage().getFrom().getId(),
+            throw new StrategyProcessException(user.getId(),
                     "Тест с таким названием уже существует, попробуйте еще раз");
         }
         if ((uniqueTestName + ":" + PUBLIC_TEST_PREFIX).getBytes(StandardCharsets.UTF_8).length > 64) {
-            throw new StrategyProcessException(update.getMessage().getFrom().getId(),
+            throw new StrategyProcessException(user.getId(),
                     "Длина уникального названия теста больше 30, попробуйте еще раз");
         }
 
