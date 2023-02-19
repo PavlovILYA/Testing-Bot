@@ -2,9 +2,7 @@ package ru.mephi.knowledgechecker.strategy.impl.test.create.question.variable;
 
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
-import ru.mephi.knowledgechecker.common.TextType;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
-import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageEntity;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.params.SendMessageParams;
 import ru.mephi.knowledgechecker.model.answer.VariableAnswer;
 import ru.mephi.knowledgechecker.model.question.VariableQuestion;
@@ -15,10 +13,7 @@ import ru.mephi.knowledgechecker.state.impl.test.create.question.variable.WrongV
 import ru.mephi.knowledgechecker.strategy.StrategyProcessException;
 import ru.mephi.knowledgechecker.strategy.impl.AbstractMessageStrategy;
 
-import java.util.List;
-
-import static ru.mephi.knowledgechecker.common.KeyboardMarkups.getAddWrongVariableAnswerInlineKeyboardMarkup;
-import static ru.mephi.knowledgechecker.common.ParamsWrapper.wrapMessageParams;
+import static ru.mephi.knowledgechecker.common.CommonMessageParams.addingWrongAnswerParams;
 
 @Component
 public class ReadWrongVariableAnswerStrategy extends AbstractMessageStrategy {
@@ -66,15 +61,7 @@ public class ReadWrongVariableAnswerStrategy extends AbstractMessageStrategy {
                     "Этот вариант ответа Вы уже использовали для этого вопроса, попробуйте еще раз");
         }
 
-        String boldMessage = "Добавление неверного ответа";
-        String italicMessage =
-                "\n\nНа данный момент добавлено " + question.getWrongAnswers().size() + " неверных ответов\n" +
-                "Максимальное количество отображаемых неверных вопросов: " + (question.getMaxAnswerNumber() - 1);
-        SendMessageParams params = wrapMessageParams(data.getUser().getId(), boldMessage + italicMessage,
-                List.of(new MessageEntity(TextType.BOLD, 0, boldMessage.length()),
-                        new MessageEntity(TextType.UNDERLINE, 11, 9),
-                        new MessageEntity(TextType.ITALIC, boldMessage.length(), italicMessage.length())),
-                getAddWrongVariableAnswerInlineKeyboardMarkup());
+        SendMessageParams params = addingWrongAnswerParams(question, data.getUser().getId());
         data.setState(nextState);
         sendMessageAndSave(params, data);
     }

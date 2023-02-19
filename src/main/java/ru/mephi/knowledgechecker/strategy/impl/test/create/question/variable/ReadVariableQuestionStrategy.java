@@ -19,7 +19,7 @@ import ru.mephi.knowledgechecker.strategy.impl.AbstractMessageStrategy;
 
 import java.util.List;
 
-import static ru.mephi.knowledgechecker.common.KeyboardMarkups.getAddWrongVariableAnswerInlineKeyboardMarkup;
+import static ru.mephi.knowledgechecker.common.CommonMessageParams.addingWrongAnswerParams;
 import static ru.mephi.knowledgechecker.common.ParamsWrapper.wrapMessageParams;
 
 @Component
@@ -120,15 +120,7 @@ public class ReadVariableQuestionStrategy extends AbstractMessageStrategy {
         data.setVariableQuestion(question);
         data.setNextPhase(null);
 
-        String boldMessage = "Добавление неверного ответа";
-        String italicMessage =
-                "\n\nНа данный момент добавлено " + question.getWrongAnswers().size() + " неверных ответов\n" +
-                "Максимальное количество отображаемых неверных вопросов: " + (question.getMaxAnswerNumber() - 1);
-        SendMessageParams params = wrapMessageParams(data.getUser().getId(), boldMessage + italicMessage,
-                List.of(new MessageEntity(TextType.BOLD, 0, boldMessage.length()),
-                        new MessageEntity(TextType.UNDERLINE, 11, 9),
-                        new MessageEntity(TextType.ITALIC, boldMessage.length(), italicMessage.length())),
-                getAddWrongVariableAnswerInlineKeyboardMarkup());
+        SendMessageParams params = addingWrongAnswerParams(question, data.getUser().getId());
         data.setState(nextState);
         sendMessageAndSave(params, data);
     }

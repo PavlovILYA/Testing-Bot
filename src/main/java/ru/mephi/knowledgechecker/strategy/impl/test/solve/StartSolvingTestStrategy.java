@@ -6,6 +6,7 @@ import ru.mephi.knowledgechecker.common.TextType;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageEntity;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.params.SendMessageParams;
+import ru.mephi.knowledgechecker.dto.telegram.outcome.params.SendPopupParams;
 import ru.mephi.knowledgechecker.model.solving.Solving;
 import ru.mephi.knowledgechecker.model.solving.SolvingType;
 import ru.mephi.knowledgechecker.model.test.Test;
@@ -52,14 +53,15 @@ public class StartSolvingTestStrategy extends AbstractCallbackQueryStrategy {
                 test.getVariableQuestions().size() + test.getOpenQuestions().size() == 0) {
             data.setTest(null);
 
-            String message = "Тест составлен автором некорректно 🆘";
-            SendMessageParams params = wrapMessageParams(data.getUser().getId(), message,
-                    List.of(new MessageEntity(TextType.BOLD, 0, message.length())),
-                    null);
-            telegramApiClient.sendMessage(params);
+            SendPopupParams popup = SendPopupParams.builder()
+                    .callbackQueryId(update.getCallbackQuery().getId())
+                    .text("Тест составлен автором некорректно 🆘")
+                    .showAlert(true)
+                    .build();
+            telegramApiClient.answerCallbackQuery(popup);
 
-            message = "🔽\nГЛАВНОЕ МЕНЮ\n⬇️️\nПУБЛИЧНЫЕ ТЕСТЫ";
-            params = wrapMessageParams(data.getUser().getId(), message,
+            String message = "🔽\nГЛАВНОЕ МЕНЮ\n⬇️️\nПУБЛИЧНЫЕ ТЕСТЫ";
+            SendMessageParams params = wrapMessageParams(data.getUser().getId(), message,
                     List.of(new MessageEntity(TextType.BOLD, 0, message.length())),
                     getPublicTestListInlineKeyboardMarkup(data.getUser()));
             data.setState(publicTestListState);
