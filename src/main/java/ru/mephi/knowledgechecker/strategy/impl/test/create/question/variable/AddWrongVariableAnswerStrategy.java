@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 import ru.mephi.knowledgechecker.common.TextType;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageEntity;
-import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageParams;
+import ru.mephi.knowledgechecker.dto.telegram.outcome.params.SendMessageParams;
 import ru.mephi.knowledgechecker.model.user.User;
 import ru.mephi.knowledgechecker.state.impl.test.create.question.variable.WrongVariableAnswerInfoReadingState;
 import ru.mephi.knowledgechecker.strategy.StrategyProcessException;
@@ -31,15 +31,13 @@ public class AddWrongVariableAnswerStrategy extends AbstractCallbackQueryStrateg
 
     @Override
     public void process(User user, Update update) throws StrategyProcessException {
-        saveToContext(user.getId(), nextState);
-
         String boldMessage = "Введите неправильный ответ (максимум 30 символов)";
         String italicMessage = "\n\nПредпочтительно вводить короткие варианты ответа: A, B, etc.";
-        MessageParams params = wrapMessageParams(user.getId(), boldMessage + italicMessage,
+        SendMessageParams params = wrapMessageParams(user.getId(), boldMessage + italicMessage,
                 List.of(new MessageEntity(TextType.BOLD, 0, boldMessage.length()),
                         new MessageEntity(TextType.UNDERLINE, 8, 12),
                         new MessageEntity(TextType.ITALIC, boldMessage.length(), italicMessage.length())),
                 null);
-        telegramApiClient.sendMessage(params);
+        sendMessageAndSave(params, nextState, user.getData());
     }
 }

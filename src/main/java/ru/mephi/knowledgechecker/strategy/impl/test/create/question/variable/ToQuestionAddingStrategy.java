@@ -3,7 +3,7 @@ package ru.mephi.knowledgechecker.strategy.impl.test.create.question.variable;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
-import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageParams;
+import ru.mephi.knowledgechecker.dto.telegram.outcome.params.SendMessageParams;
 import ru.mephi.knowledgechecker.model.question.VariableQuestion;
 import ru.mephi.knowledgechecker.model.user.CurrentData;
 import ru.mephi.knowledgechecker.model.user.User;
@@ -41,9 +41,8 @@ public class ToQuestionAddingStrategy extends AbstractCallbackQueryStrategy {
         data.setNextPhase(null);
         data.setVariableQuestion(null);
         data.setNeedCheck(true);
-        saveToContext(nextState, data);
 
-        MessageParams params = addingQuestionParams(data.getTest(), user.getId());
-        telegramApiClient.sendMessage(params);
+        SendMessageParams params = addingQuestionParams(data.getTest(), user.getId());
+        sendMessageAndSave(params, nextState, data);
     }
 }

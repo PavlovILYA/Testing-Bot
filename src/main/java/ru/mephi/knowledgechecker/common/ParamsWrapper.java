@@ -2,7 +2,7 @@ package ru.mephi.knowledgechecker.common;
 
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageEntity;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.keyboard.KeyboardMarkup;
-import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageParams;
+import ru.mephi.knowledgechecker.dto.telegram.outcome.params.SendMessageParams;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.keyboard.inline.InlineKeyboardButton;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.keyboard.inline.InlineKeyboardMarkup;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.keyboard.reply.KeyboardButton;
@@ -11,21 +11,21 @@ import ru.mephi.knowledgechecker.dto.telegram.outcome.keyboard.reply.ReplyKeyboa
 import java.util.List;
 
 public class ParamsWrapper {
-    public static MessageParams wrapMessageParams(Long chatId,
-                                                  String text,
-                                                  KeyboardMarkup keyboardMarkup) {
-        return MessageParams.builder()
+    public static SendMessageParams wrapMessageParams(Long chatId,
+                                                      String text,
+                                                      KeyboardMarkup keyboardMarkup) {
+        return SendMessageParams.builder()
                 .chatId(chatId)
                 .text(text)
                 .replyMarkup(keyboardMarkup)
                 .build();
     }
 
-    public static MessageParams wrapMessageParams(Long chatId,
-                                                  String text,
-                                                  List<MessageEntity> entities,
-                                                  KeyboardMarkup keyboardMarkup) {
-        return MessageParams.builder()
+    public static SendMessageParams wrapMessageParams(Long chatId,
+                                                      String text,
+                                                      List<MessageEntity> entities,
+                                                      KeyboardMarkup keyboardMarkup) {
+        return SendMessageParams.builder()
                 .chatId(chatId)
                 .text(text)
                 .entities(entities)

@@ -38,4 +38,7 @@ public class CurrentData {
     private VariableQuestion variableQuestion;
     @Enumerated(EnumType.STRING)
     private QuestionType previousQuestionType;
+    private Long lastMessageId;
+    private Long menuMessageId;
+    private Long clearReplyMessageId;
 }

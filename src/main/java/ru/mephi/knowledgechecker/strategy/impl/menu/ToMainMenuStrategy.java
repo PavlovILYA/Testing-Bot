@@ -7,7 +7,7 @@ import ru.mephi.knowledgechecker.common.Command;
 import ru.mephi.knowledgechecker.common.TextType;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageEntity;
-import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageParams;
+import ru.mephi.knowledgechecker.dto.telegram.outcome.params.SendMessageParams;
 import ru.mephi.knowledgechecker.model.test.Test;
 import ru.mephi.knowledgechecker.model.user.CurrentData;
 import ru.mephi.knowledgechecker.model.user.User;
@@ -59,16 +59,11 @@ public class ToMainMenuStrategy extends AbstractActionStrategy {
             data.setNeedCheck(false);
         }
         data.setTest(null);
-        saveToContext(nextState, data);
 
-        sendStartMenu(user.getId());
-    }
-
-    private void sendStartMenu(Long chatId) {
         String text = "🔽️\nГЛАВНОЕ МЕНЮ ⤵️";
-        MessageParams params = wrapMessageParams(chatId, text,
+        SendMessageParams params = wrapMessageParams(user.getId(), text,
                 List.of(new MessageEntity(TextType.BOLD, 0, text.length())),
                 getStartReplyKeyboardMarkup());
-        telegramApiClient.sendMessage(params);
+        sendMenuAndSave(params, nextState, data);
     }
 }

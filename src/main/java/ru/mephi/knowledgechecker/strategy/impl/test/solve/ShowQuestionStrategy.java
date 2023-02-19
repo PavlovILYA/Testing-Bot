@@ -6,7 +6,7 @@ import ru.mephi.knowledgechecker.common.QuestionType;
 import ru.mephi.knowledgechecker.common.TextType;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageEntity;
-import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageParams;
+import ru.mephi.knowledgechecker.dto.telegram.outcome.params.SendMessageParams;
 import ru.mephi.knowledgechecker.model.answer.OpenAnswer;
 import ru.mephi.knowledgechecker.model.answer.OpenAnswerKey;
 import ru.mephi.knowledgechecker.model.answer.VariableAnswer;
@@ -196,7 +196,7 @@ public class ShowQuestionStrategy extends AbstractMessageStrategy {
                 .findFirst().orElse(null);
         assert question != null;
         String message = "❓ Вопрос № " + (variableAnswerIds.size() + 1) + " (из " + questionAmount + ")\n\n";
-        MessageParams params = wrapMessageParams(solving.getUser().getId(), message + question.getText(),
+        SendMessageParams params = wrapMessageParams(solving.getUser().getId(), message + question.getText(),
                 List.of(new MessageEntity(TextType.BOLD, 0, message.length()),
                         new MessageEntity(TextType.CODE, message.length(), question.getText().length())),
                 getVariableAnswerKeyboardMarkup(question));
@@ -213,7 +213,7 @@ public class ShowQuestionStrategy extends AbstractMessageStrategy {
         assert question != null;
         String boldMessage = "❓ Вопрос № " + (offset + openAnswerIds.size() + 1) + " (из " + questionAmount + ")\n";
         String italicMessage = "💬 Дайте развернутый ответ\n\n";
-        MessageParams params = wrapMessageParams(solving.getUser().getId(),
+        SendMessageParams params = wrapMessageParams(solving.getUser().getId(),
                 boldMessage + italicMessage + question.getText(),
                 List.of(new MessageEntity(TextType.BOLD, 0, boldMessage.length()),
                         new MessageEntity(TextType.ITALIC, boldMessage.length(), italicMessage.length()),
@@ -244,7 +244,7 @@ public class ShowQuestionStrategy extends AbstractMessageStrategy {
                         .substring(2)
                         .replaceAll("(\\d[HMS])(?!$)", "$1 ")
                         .toLowerCase();
-        MessageParams params = wrapMessageParams(solving.getUser().getId(), boldMessage + codeMessage,
+        SendMessageParams params = wrapMessageParams(solving.getUser().getId(), boldMessage + codeMessage,
                 List.of(new MessageEntity(TextType.BOLD, 0, boldMessage.length()),
                         new MessageEntity(TextType.CODE, boldMessage.length(), codeMessage.length())),
                 null);
@@ -260,7 +260,7 @@ public class ShowQuestionStrategy extends AbstractMessageStrategy {
         String boldMessage = "Вопросы с готовыми ответами:\n";
         String codeMessage = "✅ " + correctCount + "/" + allCount + " [" + ((double) correctCount / allCount * 100) + "%]";
         String spoilerMessage = "\nОтветы: " + solving.getVariableAnswerResults();
-        MessageParams params = wrapMessageParams(solving.getUser().getId(),
+        SendMessageParams params = wrapMessageParams(solving.getUser().getId(),
                 boldMessage + codeMessage + spoilerMessage,
                 List.of(new MessageEntity(TextType.BOLD, 0, boldMessage.length()),
                         new MessageEntity(TextType.CODE, boldMessage.length(), codeMessage.length()),
@@ -284,7 +284,7 @@ public class ShowQuestionStrategy extends AbstractMessageStrategy {
             String boldMessage3 = "\n️✅ Правильный ответ:\n";
             String message = boldMessage1 + question.getText() + boldMessage2 + answer.getText()
                     + boldMessage3 + question.getCorrectAnswer();
-            MessageParams params = wrapMessageParams(solving.getUser().getId(), message,
+            SendMessageParams params = wrapMessageParams(solving.getUser().getId(), message,
                     List.of(new MessageEntity(TextType.BOLD, 0, boldMessage1.length()),
                             new MessageEntity(TextType.CODE, boldMessage1.length(), question.getText().length()),
                             new MessageEntity(TextType.BOLD,

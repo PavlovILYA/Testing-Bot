@@ -7,7 +7,7 @@ import ru.mephi.knowledgechecker.common.CreationPhaseType;
 import ru.mephi.knowledgechecker.common.TextType;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageEntity;
-import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageParams;
+import ru.mephi.knowledgechecker.dto.telegram.outcome.params.SendMessageParams;
 import ru.mephi.knowledgechecker.model.test.Test;
 import ru.mephi.knowledgechecker.model.test.TestType;
 import ru.mephi.knowledgechecker.model.user.CurrentData;
@@ -61,13 +61,12 @@ public class ReadUniqueTestNameStrategy extends AbstractMessageStrategy {
         CurrentData data = user.getData();
         data.setTest(test);
         data.setNextPhase(CreationPhaseType.TITLE);
-        saveToContext(nextState, data);
 
         String message = "Введите полное (неуникальное) название теста";
-        MessageParams params = wrapMessageParams(user.getId(), message,
+        SendMessageParams params = wrapMessageParams(user.getId(), message,
                 List.of(new MessageEntity(TextType.BOLD, 0, message.length()),
                         new MessageEntity(TextType.UNDERLINE, 16, 12)),
                 null);
-        telegramApiClient.sendMessage(params);
+        sendMessageAndSave(params, nextState, data);
     }
 }

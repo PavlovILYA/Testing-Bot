@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 import ru.mephi.knowledgechecker.common.TextType;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageEntity;
-import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageParams;
+import ru.mephi.knowledgechecker.dto.telegram.outcome.params.SendMessageParams;
 import ru.mephi.knowledgechecker.model.answer.VariableAnswer;
 import ru.mephi.knowledgechecker.model.question.VariableQuestion;
 import ru.mephi.knowledgechecker.model.user.CurrentData;
@@ -67,17 +67,16 @@ public class ReadWrongVariableAnswerStrategy extends AbstractMessageStrategy {
             throw new StrategyProcessException(user.getId(),
                     "Этот вариант ответа Вы уже использовали для этого вопроса, попробуйте еще раз");
         }
-        saveToContext(nextState, data);
 
         String boldMessage = "Добавление неверного ответа";
         String italicMessage =
                 "\n\nНа данный момент добавлено " + question.getWrongAnswers().size() + " неверных ответов\n" +
                 "Максимальное количество отображаемых неверных вопросов: " + (question.getMaxAnswerNumber() - 1);
-        MessageParams params = wrapMessageParams(user.getId(), boldMessage + italicMessage,
+        SendMessageParams params = wrapMessageParams(user.getId(), boldMessage + italicMessage,
                 List.of(new MessageEntity(TextType.BOLD, 0, boldMessage.length()),
                         new MessageEntity(TextType.UNDERLINE, 11, 9),
                         new MessageEntity(TextType.ITALIC, boldMessage.length(), italicMessage.length())),
                 getAddWrongVariableAnswerInlineKeyboardMarkup());
-        telegramApiClient.sendMessage(params);
+        sendMessageAndSave(params, nextState, data);
     }
 }

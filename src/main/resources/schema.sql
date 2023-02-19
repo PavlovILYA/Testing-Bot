@@ -1,4 +1,4 @@
--- DROP TABLE current_data
+-- DROP TABLE current_data;
 -- DROP TABLE solving;
 -- DROP TABLE users_tests;
 -- DROP TABLE open_answers;
@@ -124,7 +124,9 @@ CREATE TABLE IF NOT EXISTS current_data (
     open_question_id BIGINT,
     variable_question_id BIGINT, -- QUESTION_ID
     previous_question_type VARCHAR(10), -- QUESTION_ID
-    -- solving_type VARCHAR(30),
+    last_message_id BIGINT,
+    menu_message_id BIGINT,
+    clear_reply_message_id BIGINT,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (test_id) REFERENCES tests(id) ON DELETE SET NULL,
     FOREIGN KEY (open_question_id) REFERENCES open_questions(id) ON DELETE SET NULL,

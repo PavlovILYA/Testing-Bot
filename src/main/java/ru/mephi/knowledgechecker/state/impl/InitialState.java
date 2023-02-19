@@ -3,7 +3,7 @@ package ru.mephi.knowledgechecker.state.impl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
-import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageParams;
+import ru.mephi.knowledgechecker.dto.telegram.outcome.params.SendMessageParams;
 import ru.mephi.knowledgechecker.httpclient.TelegramApiClient;
 import ru.mephi.knowledgechecker.model.user.User;
 import ru.mephi.knowledgechecker.strategy.impl.menu.ToMainMenuStrategy;
@@ -25,7 +25,7 @@ public class InitialState extends AbstractBotState {
     @Override
     public void process(User user, Update update) {
         log.info("👤 Пользователь {} ({}) зарегистрирован!", user.getFirstName(), user.getUsername());
-        MessageParams params = wrapMessageParams(user.getId(), "👤 Пользователь " + user.getFirstName()
+        SendMessageParams params = wrapMessageParams(user.getId(), "👤 Пользователь " + user.getFirstName()
                 + "(" + user.getUsername() + ") зарегистрирован!", null);
         telegramApiClient.sendMessage(params);
         super.process(user, update);

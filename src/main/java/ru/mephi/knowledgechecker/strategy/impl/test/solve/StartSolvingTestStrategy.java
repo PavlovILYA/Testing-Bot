@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 import ru.mephi.knowledgechecker.common.TextType;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageEntity;
-import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageParams;
+import ru.mephi.knowledgechecker.dto.telegram.outcome.params.SendMessageParams;
 import ru.mephi.knowledgechecker.model.solving.Solving;
 import ru.mephi.knowledgechecker.model.solving.SolvingType;
 import ru.mephi.knowledgechecker.model.test.Test;
@@ -53,10 +53,9 @@ public class StartSolvingTestStrategy extends AbstractCallbackQueryStrategy {
         if (test.getMaxQuestionsNumber() == null ||
                 test.getVariableQuestions().size() + test.getOpenQuestions().size() == 0) {
             data.setTest(null);
-            saveToContext(publicTestListState, data);
 
             String message = "Тест составлен автором некорректно 🆘";
-            MessageParams params = wrapMessageParams(user.getId(), message,
+            SendMessageParams params = wrapMessageParams(user.getId(), message,
                     List.of(new MessageEntity(TextType.BOLD, 0, message.length())),
                     null);
             telegramApiClient.sendMessage(params);
@@ -65,13 +64,14 @@ public class StartSolvingTestStrategy extends AbstractCallbackQueryStrategy {
             params = wrapMessageParams(user.getId(), message,
                     List.of(new MessageEntity(TextType.BOLD, 0, message.length())),
                     getPublicTestListInlineKeyboardMarkup(user));
-            telegramApiClient.sendMessage(params);
+            sendMenuAndSave(params, publicTestListState, user.getData());
             return;
         }
 
         Solving solving = solvingService.generateQuestions(user, test,
                 SolvingType.valueOf(update.getCallbackQuery().getData()));
         data.setTest(null);
+        clearReply(data);
         saveToContext(nextState, data);
         showQuestionStrategy.sendQuestion(solving, data, update);
     }

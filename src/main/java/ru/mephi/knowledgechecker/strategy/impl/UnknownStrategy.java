@@ -3,7 +3,7 @@ package ru.mephi.knowledgechecker.strategy.impl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
-import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageParams;
+import ru.mephi.knowledgechecker.dto.telegram.outcome.params.SendMessageParams;
 import ru.mephi.knowledgechecker.model.user.User;
 import ru.mephi.knowledgechecker.strategy.StrategyProcessException;
 
@@ -23,7 +23,7 @@ public class UnknownStrategy extends AbstractActionStrategy {
 
     @Override
     public void process(User user, Update update) throws StrategyProcessException {
-        MessageParams params = wrapMessageParams(user.getId(), NOT_IMPLEMENTED_MESSAGE, null);
+        SendMessageParams params = wrapMessageParams(user.getId(), NOT_IMPLEMENTED_MESSAGE, null);
         telegramApiClient.sendMessage(params);
     }
 }

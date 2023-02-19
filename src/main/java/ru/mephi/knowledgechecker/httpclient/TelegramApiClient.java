@@ -6,7 +6,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import ru.mephi.knowledgechecker.dto.telegram.income.Message;
+import ru.mephi.knowledgechecker.dto.telegram.income.Response;
+import ru.mephi.knowledgechecker.dto.telegram.outcome.params.DeleteMessageParams;
+import ru.mephi.knowledgechecker.dto.telegram.outcome.params.EditMessageReplyMarkupParams;
+import ru.mephi.knowledgechecker.dto.telegram.outcome.params.EditMessageTextParams;
+import ru.mephi.knowledgechecker.dto.telegram.outcome.params.SendMessageParams;
 
 @Slf4j
 @Service
@@ -16,9 +20,32 @@ public class TelegramApiClient {
     @Value(("${telegram.api}"))
     private String telegramApi;
 
-    public void sendMessage(Object sendMessageParams) {
-        log.info("send to Telegram API: {}", sendMessageParams);
-        ResponseEntity<Message> responseSendMessage = restTemplate
-                .postForEntity(telegramApi + "/sendMessage", sendMessageParams, Message.class);
+    public Long sendMessage(SendMessageParams params) {
+        log.info("[To Telegram API] send message: {}", params);
+        ResponseEntity<Response> response = restTemplate
+                .postForEntity(telegramApi + "/sendMessage", params, Response.class);
+        log.info("Response from TG: {}", response.getBody().getResult());
+        return response.getBody().getResult().getId();
+    }
+
+    public Long editMessageText(EditMessageTextParams params) {
+        log.info("[To Telegram API] edit message text: {}", params);
+        ResponseEntity<Response> response = restTemplate
+                .postForEntity(telegramApi + "/editMessageText", params, Response.class);
+        log.info("Response from TG: {}", response.getBody().getResult());
+        return response.getBody().getResult().getId();
+    }
+
+    public void editMessageReplyMarkup(EditMessageReplyMarkupParams params) {
+        log.info("[To Telegram API] edit buttons: {}", params);
+        ResponseEntity<Object> response = restTemplate
+                .postForEntity(telegramApi + "/editMessageReplyMarkup", params, Object.class);
+    }
+
+    public void deleteMessage(DeleteMessageParams params) {
+        log.info("[To Telegram API] delete message: {}", params);
+        ResponseEntity<String> response = restTemplate
+                .postForEntity(telegramApi + "/deleteMessage", params, String.class);
+        log.info("Response from TG: {}", response.getBody());
     }
 }

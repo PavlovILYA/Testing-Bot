@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import ru.mephi.knowledgechecker.common.TextType;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageEntity;
-import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageParams;
+import ru.mephi.knowledgechecker.dto.telegram.outcome.params.SendMessageParams;
 import ru.mephi.knowledgechecker.model.user.User;
 import ru.mephi.knowledgechecker.state.impl.test.search.TestSearchAttemptState;
 import ru.mephi.knowledgechecker.strategy.StrategyProcessException;
@@ -32,16 +32,15 @@ public class AskForSearchQueryStrategy extends AbstractCallbackQueryStrategy {
 
     @Override
     public void process(User user, Update update) throws StrategyProcessException {
-        saveToContext(user.getId(), nextState);
-
         String boldMessage = "🔎️ Введите поисковой запрос\n\n";
         String italicMessage = "(Введите ключевое выражение, которое вероятнее всего содержится в названии теста)" +
                 "\n❗️ Чтобы объединить выборки по нескольким запросам, введите несколько ключевых выражений, " +
                 "разделенных точкой с запятой";
-        MessageParams params = wrapMessageParams(user.getId(), boldMessage + italicMessage,
+        SendMessageParams params = wrapMessageParams(user.getId(), boldMessage + italicMessage,
                 List.of(new MessageEntity(TextType.BOLD, 0, boldMessage.length()),
                         new MessageEntity(TextType.ITALIC, boldMessage.length(), italicMessage.length())),
                 null);
-        telegramApiClient.sendMessage(params);
+        deleteMenu(user.getData());
+        sendMessageAndSave(params, nextState, user.getData());
     }
 }

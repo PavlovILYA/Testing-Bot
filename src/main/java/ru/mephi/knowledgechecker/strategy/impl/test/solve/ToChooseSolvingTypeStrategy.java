@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 import ru.mephi.knowledgechecker.common.TextType;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageEntity;
-import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageParams;
+import ru.mephi.knowledgechecker.dto.telegram.outcome.params.SendMessageParams;
 import ru.mephi.knowledgechecker.model.test.Test;
 import ru.mephi.knowledgechecker.model.test.TestType;
 import ru.mephi.knowledgechecker.model.user.CurrentData;
@@ -50,12 +50,12 @@ public class ToChooseSolvingTypeStrategy extends AbstractCallbackQueryStrategy {
 
         CurrentData data = user.getData();
         data.setTest(test);
-        saveToContext(nextState, data);
 
         String message = "Выберите вариант прохождения теста";
-        MessageParams params = wrapMessageParams(user.getId(), message,
+        SendMessageParams params = wrapMessageParams(user.getId(), message,
                 List.of(new MessageEntity(TextType.BOLD, 0, message.length())),
                 getTestSolvingTypesInlineKeyboardMarkup());
-        telegramApiClient.sendMessage(params);
+        deleteMenu(user.getData());
+        sendMessageAndSave(params, nextState, data);
     }
 }

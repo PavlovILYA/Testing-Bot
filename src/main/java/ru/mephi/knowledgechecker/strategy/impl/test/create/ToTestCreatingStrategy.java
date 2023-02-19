@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 import ru.mephi.knowledgechecker.common.TextType;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageEntity;
-import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageParams;
+import ru.mephi.knowledgechecker.dto.telegram.outcome.params.SendMessageParams;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.keyboard.KeyboardMarkup;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.keyboard.inline.InlineKeyboardButton;
 import ru.mephi.knowledgechecker.model.user.User;
@@ -35,14 +35,13 @@ public class ToTestCreatingStrategy extends AbstractCallbackQueryStrategy {
 
     @Override
     public void process(User user, Update update) throws StrategyProcessException {
-        saveToContext(user.getId(), nextState);
-
         String message = "Введите уникальное название теста (максимум 30 символов)";
-        MessageParams params = wrapMessageParams(user.getId(), message,
+        SendMessageParams params = wrapMessageParams(user.getId(), message,
                 List.of(new MessageEntity(TextType.BOLD, 0, message.length()),
                         new MessageEntity(TextType.UNDERLINE, 8, 10)),
                 getInlineKeyboardMarkup());
-        telegramApiClient.sendMessage(params);
+        deleteMenu(user.getData());
+        sendMessageAndSave(params, nextState, user.getData());
     }
 
     private KeyboardMarkup getInlineKeyboardMarkup() {

@@ -6,7 +6,7 @@ import ru.mephi.knowledgechecker.common.CreationPhaseType;
 import ru.mephi.knowledgechecker.common.TextType;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageEntity;
-import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageParams;
+import ru.mephi.knowledgechecker.dto.telegram.outcome.params.SendMessageParams;
 import ru.mephi.knowledgechecker.model.test.Test;
 import ru.mephi.knowledgechecker.model.user.CurrentData;
 import ru.mephi.knowledgechecker.model.user.User;
@@ -66,17 +66,16 @@ public class ReadTestInfoStrategy extends AbstractMessageStrategy {
         test = testService.save(test);
         data.setTest(test);
         data.setNextPhase(CreationPhaseType.MAX_QUESTION_NUMBER);
-        saveToContext(data);
 
         String boldMessage = "Введите количество отображаемых вопросов (от 1 до 50)";
         String italicMessage =
                 "\n\n(Вопросов можно будет создать больше, тогда будет браться случайная выборка)";
-        MessageParams params = wrapMessageParams(data.getUser().getId(), boldMessage + italicMessage,
+        SendMessageParams params = wrapMessageParams(data.getUser().getId(), boldMessage + italicMessage,
                 List.of(new MessageEntity(TextType.BOLD, 0, boldMessage.length()),
                         new MessageEntity(TextType.UNDERLINE, 19, 12),
                         new MessageEntity(TextType.ITALIC, boldMessage.length(), italicMessage.length())),
                 null);
-        telegramApiClient.sendMessage(params);
+        sendMessageAndSave(params, data);
     }
 
     private void readMaxQuestionsNumber(CurrentData data, Test test, Integer maxQuestionsNumber) {
@@ -85,9 +84,8 @@ public class ReadTestInfoStrategy extends AbstractMessageStrategy {
         data.setTest(test);
         data.setNextPhase(null);
         data.setNeedCheck(true);
-        saveToContext(nextState, data);
 
-        MessageParams params = addingQuestionParams(test, data.getUser().getId());
-        telegramApiClient.sendMessage(params);
+        SendMessageParams params = addingQuestionParams(test, data.getUser().getId());
+        sendMessageAndSave(params, nextState, data);
     }
 }

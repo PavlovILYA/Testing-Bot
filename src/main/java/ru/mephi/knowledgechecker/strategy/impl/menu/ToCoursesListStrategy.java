@@ -7,9 +7,9 @@ import ru.mephi.knowledgechecker.common.Constants;
 import ru.mephi.knowledgechecker.common.TextType;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageEntity;
-import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageParams;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.keyboard.KeyboardMarkup;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.keyboard.inline.InlineKeyboardButton;
+import ru.mephi.knowledgechecker.dto.telegram.outcome.params.SendMessageParams;
 import ru.mephi.knowledgechecker.model.user.User;
 import ru.mephi.knowledgechecker.state.impl.menu.CoursesListState;
 import ru.mephi.knowledgechecker.strategy.StrategyProcessException;
@@ -36,13 +36,11 @@ public class ToCoursesListStrategy extends AbstractCallbackQueryStrategy {
 
     @Override
     public void process(User user, Update update) throws StrategyProcessException {
-        saveToContext(user.getId(), nextState);
-
         String text = "🔽\nГЛАВНОЕ МЕНЮ\n⬇️\n️КУРСЫ";
-        MessageParams params = wrapMessageParams(user.getId(), text,
+        SendMessageParams params = wrapMessageParams(user.getId(), text,
                 List.of(new MessageEntity(TextType.BOLD, 0, text.length())),
                 getInlineKeyboardMarkup());
-        telegramApiClient.sendMessage(params);
+        sendMenuAndSave(params, nextState, user.getData());
     }
 
     private KeyboardMarkup getInlineKeyboardMarkup() {

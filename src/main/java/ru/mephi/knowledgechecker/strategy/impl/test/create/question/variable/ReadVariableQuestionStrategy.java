@@ -6,7 +6,7 @@ import ru.mephi.knowledgechecker.common.CreationPhaseType;
 import ru.mephi.knowledgechecker.common.TextType;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageEntity;
-import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageParams;
+import ru.mephi.knowledgechecker.dto.telegram.outcome.params.SendMessageParams;
 import ru.mephi.knowledgechecker.model.answer.VariableAnswer;
 import ru.mephi.knowledgechecker.model.question.VariableQuestion;
 import ru.mephi.knowledgechecker.model.test.Test;
@@ -81,16 +81,15 @@ public class ReadVariableQuestionStrategy extends AbstractMessageStrategy {
         question = variableQuestionService.save(question);
         data.setVariableQuestion(question);
         data.setNextPhase(CreationPhaseType.CORRECT_ANSWER);
-        saveToContext(data);
 
         String boldMessage = "Введите правильный ответ (максимум 30 символов)";
         String italicMessage = "\n\nПредпочтительно вводить короткие варианты ответа: A, B, etc.";
-        MessageParams params = wrapMessageParams(data.getUser().getId(), boldMessage + italicMessage,
+        SendMessageParams params = wrapMessageParams(data.getUser().getId(), boldMessage + italicMessage,
                 List.of(new MessageEntity(TextType.BOLD, 0, boldMessage.length()),
                         new MessageEntity(TextType.UNDERLINE, 8, 10),
                         new MessageEntity(TextType.ITALIC, boldMessage.length(), italicMessage.length())),
                 null);
-        telegramApiClient.sendMessage(params);
+        sendMessageAndSave(params, data);
     }
 
     private void readCorrectAnswer(CurrentData data, String correctAnswerText) throws StrategyProcessException {
@@ -108,13 +107,12 @@ public class ReadVariableQuestionStrategy extends AbstractMessageStrategy {
         question = variableQuestionService.save(question);
         data.setVariableQuestion(question);
         data.setNextPhase(CreationPhaseType.MAX_ANSWER_NUMBER);
-        saveToContext(data);
 
         String boldMessage = "Введите максимальное количество неверных ответов (от 1 до 9)";
-        MessageParams params = wrapMessageParams(data.getUser().getId(), boldMessage,
+        SendMessageParams params = wrapMessageParams(data.getUser().getId(), boldMessage,
                 List.of(new MessageEntity(TextType.BOLD, 0, boldMessage.length())),
                 null);
-        telegramApiClient.sendMessage(params);
+        sendMessageAndSave(params, data);
     }
 
     private void readMaxAnswerNumber(CurrentData data, Integer maxAnswerNumber) {
@@ -123,17 +121,16 @@ public class ReadVariableQuestionStrategy extends AbstractMessageStrategy {
         question = variableQuestionService.save(question);
         data.setVariableQuestion(question);
         data.setNextPhase(null);
-        saveToContext(nextState, data);
 
         String boldMessage = "Добавление неверного ответа";
         String italicMessage =
                 "\n\nНа данный момент добавлено " + question.getWrongAnswers().size() + " неверных ответов\n" +
                 "Максимальное количество отображаемых неверных вопросов: " + (question.getMaxAnswerNumber() - 1);
-        MessageParams params = wrapMessageParams(data.getUser().getId(), boldMessage + italicMessage,
+        SendMessageParams params = wrapMessageParams(data.getUser().getId(), boldMessage + italicMessage,
                 List.of(new MessageEntity(TextType.BOLD, 0, boldMessage.length()),
                         new MessageEntity(TextType.UNDERLINE, 11, 9),
                         new MessageEntity(TextType.ITALIC, boldMessage.length(), italicMessage.length())),
                 getAddWrongVariableAnswerInlineKeyboardMarkup());
-        telegramApiClient.sendMessage(params);
+        sendMessageAndSave(params, nextState, data);
     }
 }

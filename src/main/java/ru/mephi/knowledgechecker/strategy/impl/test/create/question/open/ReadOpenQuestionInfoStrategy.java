@@ -6,7 +6,7 @@ import ru.mephi.knowledgechecker.common.CreationPhaseType;
 import ru.mephi.knowledgechecker.common.TextType;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageEntity;
-import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageParams;
+import ru.mephi.knowledgechecker.dto.telegram.outcome.params.SendMessageParams;
 import ru.mephi.knowledgechecker.model.question.OpenQuestion;
 import ru.mephi.knowledgechecker.model.test.Test;
 import ru.mephi.knowledgechecker.model.user.CurrentData;
@@ -59,14 +59,13 @@ public class ReadOpenQuestionInfoStrategy extends AbstractMessageStrategy {
         question = openQuestionService.save(question);
         data.setOpenQuestion(question);
         data.setNextPhase(CreationPhaseType.CORRECT_ANSWER);
-        saveToContext(data);
 
         String message = "Введите правильный ответ";
-        MessageParams params = wrapMessageParams(data.getUser().getId(), message,
+        SendMessageParams params = wrapMessageParams(data.getUser().getId(), message,
                 List.of(new MessageEntity(TextType.BOLD, 0, message.length()),
                         new MessageEntity(TextType.UNDERLINE, 8, 10)),
                 null);
-        telegramApiClient.sendMessage(params);
+        sendMessageAndSave(params, data);
     }
 
     private void readCorrectAnswer(CurrentData data, Test test, String correctAnswer) {
@@ -76,9 +75,8 @@ public class ReadOpenQuestionInfoStrategy extends AbstractMessageStrategy {
         data.setOpenQuestion(null);
         data.setNextPhase(null);
         data.setNeedCheck(true);
-        saveToContext(nextState, data);
 
-        MessageParams params = addingQuestionParams(test, data.getUser().getId());
-        telegramApiClient.sendMessage(params);
+        SendMessageParams params = addingQuestionParams(test, data.getUser().getId());
+        sendMessageAndSave(params, nextState, data);
     }
 }

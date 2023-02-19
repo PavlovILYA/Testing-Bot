@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import ru.mephi.knowledgechecker.common.TextType;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageEntity;
-import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageParams;
+import ru.mephi.knowledgechecker.dto.telegram.outcome.params.SendMessageParams;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.keyboard.KeyboardMarkup;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.keyboard.inline.InlineKeyboardButton;
 import ru.mephi.knowledgechecker.model.user.User;
@@ -56,10 +56,8 @@ public class ShowSearchResultStrategy extends AbstractMessageStrategy {
     }
 
     private void sendNotFound(User user) {
-        saveToContext(user.getId(), publicTestListState);
-
         String message = "По данному запросу ничего не найдено 🤷🏼‍";
-        MessageParams params = wrapMessageParams(user.getId(), message,
+        SendMessageParams params = wrapMessageParams(user.getId(), message,
                 List.of(new MessageEntity(TextType.BOLD, 0, message.length())),
                 null);
         telegramApiClient.sendMessage(params);
@@ -68,17 +66,15 @@ public class ShowSearchResultStrategy extends AbstractMessageStrategy {
         params = wrapMessageParams(user.getId(), message,
                 List.of(new MessageEntity(TextType.BOLD, 0, message.length())),
                 getPublicTestListInlineKeyboardMarkup(user));
-        telegramApiClient.sendMessage(params);
+        sendMenuAndSave(params, publicTestListState, user.getData());
     }
 
     private void sendResults(User user, List<String> testTitles) {
-        saveToContext(user.getId(), nextState);
-
         String message = "🕵🏻‍ Результаты поиска:";
-        MessageParams params = wrapMessageParams(user.getId(), message,
+        SendMessageParams params = wrapMessageParams(user.getId(), message,
                 List.of(new MessageEntity(TextType.BOLD, 0, message.length())),
                 getInlineKeyboardMarkup(testTitles));
-        telegramApiClient.sendMessage(params);
+        sendMessageAndSave(params, nextState, user.getData());
     }
 
     private KeyboardMarkup getInlineKeyboardMarkup(List<String> testTitles) {
