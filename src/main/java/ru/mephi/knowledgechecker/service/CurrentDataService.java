@@ -6,6 +6,9 @@ import org.springframework.stereotype.Service;
 import ru.mephi.knowledgechecker.model.user.CurrentData;
 import ru.mephi.knowledgechecker.model.user.User;
 import ru.mephi.knowledgechecker.repository.CurrentDataRepository;
+import ru.mephi.knowledgechecker.state.impl.InitialState;
+
+import static ru.mephi.knowledgechecker.model.user.mapper.UserMapper.mapStateToBeanName;
 
 @Slf4j
 @Service
@@ -13,9 +16,14 @@ import ru.mephi.knowledgechecker.repository.CurrentDataRepository;
 public class CurrentDataService {
     private final CurrentDataRepository dataRepository;
 
+    public CurrentData getByUserId(Long userId) {
+        return dataRepository.findByUserId(userId);
+    }
+
     public CurrentData createForUser(User user) {
         CurrentData data = CurrentData.builder()
                 .user(user)
+                .state(mapStateToBeanName(InitialState.class))
                 .build();
         data = dataRepository.save(data);
         log.info("Saved data: {}", data);

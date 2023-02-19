@@ -11,7 +11,6 @@ import ru.mephi.knowledgechecker.model.answer.VariableAnswer;
 import ru.mephi.knowledgechecker.model.question.VariableQuestion;
 import ru.mephi.knowledgechecker.model.test.Test;
 import ru.mephi.knowledgechecker.model.user.CurrentData;
-import ru.mephi.knowledgechecker.model.user.User;
 import ru.mephi.knowledgechecker.service.VariableAnswerService;
 import ru.mephi.knowledgechecker.service.VariableQuestionService;
 import ru.mephi.knowledgechecker.state.impl.test.create.question.variable.WrongVariableAnswerAddingState;
@@ -42,8 +41,7 @@ public class ReadVariableQuestionStrategy extends AbstractMessageStrategy {
     }
 
     @Override
-    public void process(User user, Update update) throws StrategyProcessException {
-        CurrentData data = user.getData();
+    public void process(CurrentData data, Update update) throws StrategyProcessException {
         String userText = update.getMessage().getText();
         switch (data.getNextPhase()) {
             case TEXT:
@@ -51,7 +49,7 @@ public class ReadVariableQuestionStrategy extends AbstractMessageStrategy {
                 break;
             case CORRECT_ANSWER:
                 if (userText.length() > 30) {
-                    throw new StrategyProcessException(user.getId(),
+                    throw new StrategyProcessException(data.getUser().getId(),
                             "Максимальная длина вариативного ответа 30 символов, попробуйте еще раз");
                 }
                 readCorrectAnswer(data, userText);
@@ -64,7 +62,7 @@ public class ReadVariableQuestionStrategy extends AbstractMessageStrategy {
                     }
                     readMaxAnswerNumber(data, maxAnswerNumber);
                 } catch (NumberFormatException e) {
-                    throw new StrategyProcessException(user.getId(),
+                    throw new StrategyProcessException(data.getUser().getId(),
                             "Неверный формат, попробуйте еще раз\nВведите число от 1 до 9");
                 }
                 break;
@@ -131,6 +129,7 @@ public class ReadVariableQuestionStrategy extends AbstractMessageStrategy {
                         new MessageEntity(TextType.UNDERLINE, 11, 9),
                         new MessageEntity(TextType.ITALIC, boldMessage.length(), italicMessage.length())),
                 getAddWrongVariableAnswerInlineKeyboardMarkup());
-        sendMessageAndSave(params, nextState, data);
+        data.setState(nextState);
+        sendMessageAndSave(params, data);
     }
 }

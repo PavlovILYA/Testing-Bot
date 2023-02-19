@@ -7,7 +7,7 @@ import ru.mephi.knowledgechecker.common.TextType;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageEntity;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.params.SendMessageParams;
-import ru.mephi.knowledgechecker.model.user.User;
+import ru.mephi.knowledgechecker.model.user.CurrentData;
 import ru.mephi.knowledgechecker.state.impl.menu.PublicTestListState;
 import ru.mephi.knowledgechecker.strategy.StrategyProcessException;
 import ru.mephi.knowledgechecker.strategy.impl.AbstractCallbackQueryStrategy;
@@ -33,11 +33,12 @@ public class ToPublicTestListStrategy extends AbstractCallbackQueryStrategy {
     }
 
     @Override
-    public void process(User user, Update update) throws StrategyProcessException {
+    public void process(CurrentData data, Update update) throws StrategyProcessException {
         String text = "🔽\nГЛАВНОЕ МЕНЮ\n⬇️️\nПУБЛИЧНЫЕ ТЕСТЫ";
-        SendMessageParams params = wrapMessageParams(user.getId(), text,
+        SendMessageParams params = wrapMessageParams(data.getUser().getId(), text,
                 List.of(new MessageEntity(TextType.BOLD, 0, text.length())),
-                getPublicTestListInlineKeyboardMarkup(user));
-        sendMenuAndSave(params, nextState, user.getData());
+                getPublicTestListInlineKeyboardMarkup(data.getUser()));
+        data.setState(nextState);
+        sendMenuAndSave(params, data);
     }
 }

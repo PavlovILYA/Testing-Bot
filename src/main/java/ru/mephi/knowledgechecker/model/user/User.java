@@ -40,8 +40,4 @@ public class User {
     @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "user") // todo: fetch, cascade
     List<OpenAnswer> openAnswers;
-
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private CurrentData data;
-    private String state;
 }

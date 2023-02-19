@@ -9,7 +9,6 @@ import ru.mephi.knowledgechecker.dto.telegram.outcome.params.SendMessageParams;
 import ru.mephi.knowledgechecker.model.answer.VariableAnswer;
 import ru.mephi.knowledgechecker.model.question.VariableQuestion;
 import ru.mephi.knowledgechecker.model.user.CurrentData;
-import ru.mephi.knowledgechecker.model.user.User;
 import ru.mephi.knowledgechecker.service.VariableAnswerService;
 import ru.mephi.knowledgechecker.service.VariableQuestionService;
 import ru.mephi.knowledgechecker.state.impl.test.create.question.variable.WrongVariableAnswerAddingState;
@@ -40,16 +39,15 @@ public class ReadWrongVariableAnswerStrategy extends AbstractMessageStrategy {
     }
 
     @Override
-    public void process(User user, Update update) throws StrategyProcessException {
-        CurrentData data = user.getData();
+    public void process(CurrentData data, Update update) throws StrategyProcessException {
         VariableQuestion question = data.getVariableQuestion();
         String answerText = update.getMessage().getText();
         if (question.getCorrectAnswer().getText().equals(answerText)) {
-            throw new StrategyProcessException(user.getId(),
+            throw new StrategyProcessException(data.getUser().getId(),
                     "Это правильный вариант ответа, попробуйте еще раз ввести пример неверного");
         }
         if (answerText.length() > 30) {
-            throw new StrategyProcessException(user.getId(),
+            throw new StrategyProcessException(data.getUser().getId(),
                     "Максимальная длина вариативного ответа 30 символов, попробуйте еще раз");
         }
         VariableAnswer answer = variableAnswerService.getByText(answerText);
@@ -64,7 +62,7 @@ public class ReadWrongVariableAnswerStrategy extends AbstractMessageStrategy {
             question = variableQuestionService.save(question);
             data.setVariableQuestion(question);
         } catch (RuntimeException e) {
-            throw new StrategyProcessException(user.getId(),
+            throw new StrategyProcessException(data.getUser().getId(),
                     "Этот вариант ответа Вы уже использовали для этого вопроса, попробуйте еще раз");
         }
 
@@ -72,11 +70,12 @@ public class ReadWrongVariableAnswerStrategy extends AbstractMessageStrategy {
         String italicMessage =
                 "\n\nНа данный момент добавлено " + question.getWrongAnswers().size() + " неверных ответов\n" +
                 "Максимальное количество отображаемых неверных вопросов: " + (question.getMaxAnswerNumber() - 1);
-        SendMessageParams params = wrapMessageParams(user.getId(), boldMessage + italicMessage,
+        SendMessageParams params = wrapMessageParams(data.getUser().getId(), boldMessage + italicMessage,
                 List.of(new MessageEntity(TextType.BOLD, 0, boldMessage.length()),
                         new MessageEntity(TextType.UNDERLINE, 11, 9),
                         new MessageEntity(TextType.ITALIC, boldMessage.length(), italicMessage.length())),
                 getAddWrongVariableAnswerInlineKeyboardMarkup());
-        sendMessageAndSave(params, nextState, data);
+        data.setState(nextState);
+        sendMessageAndSave(params, data);
     }
 }

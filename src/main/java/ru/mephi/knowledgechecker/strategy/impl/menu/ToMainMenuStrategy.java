@@ -10,7 +10,6 @@ import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageEntity;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.params.SendMessageParams;
 import ru.mephi.knowledgechecker.model.test.Test;
 import ru.mephi.knowledgechecker.model.user.CurrentData;
-import ru.mephi.knowledgechecker.model.user.User;
 import ru.mephi.knowledgechecker.service.TestService;
 import ru.mephi.knowledgechecker.state.impl.menu.MainMenuState;
 import ru.mephi.knowledgechecker.strategy.StrategyProcessException;
@@ -47,13 +46,12 @@ public class ToMainMenuStrategy extends AbstractActionStrategy {
     }
 
     @Override
-    public void process(User user, Update update) throws StrategyProcessException {
-        CurrentData data = user.getData();
+    public void process(CurrentData data, Update update) throws StrategyProcessException {
         if (data.isNeedCheck()) {
             String uniqueTitle = data.getTest().getUniqueTitle();
             Test test = testService.getByUniqueTitle(uniqueTitle);
             if (test.getOpenQuestions().size() + test.getVariableQuestions().size() == 0) {
-                throw new StrategyProcessException(user.getId(),
+                throw new StrategyProcessException(data.getUser().getId(),
                         "Необходимо добавить как минимум один вопрос",
                         update.getCallbackQuery().getId());
             }
@@ -62,9 +60,10 @@ public class ToMainMenuStrategy extends AbstractActionStrategy {
         data.setTest(null);
 
         String text = "🔽️\nГЛАВНОЕ МЕНЮ ⤵️";
-        SendMessageParams params = wrapMessageParams(user.getId(), text,
+        SendMessageParams params = wrapMessageParams(data.getUser().getId(), text,
                 List.of(new MessageEntity(TextType.BOLD, 0, text.length())),
                 getStartKeyboardMarkup());
-        sendMenuAndSave(params, nextState, data);
+        data.setState(nextState);
+        sendMenuAndSave(params, data);
     }
 }

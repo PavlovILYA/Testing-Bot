@@ -6,10 +6,10 @@ import org.springframework.stereotype.Component;
 import ru.mephi.knowledgechecker.common.TextType;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageEntity;
-import ru.mephi.knowledgechecker.dto.telegram.outcome.params.SendMessageParams;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.keyboard.KeyboardMarkup;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.keyboard.inline.InlineKeyboardButton;
-import ru.mephi.knowledgechecker.model.user.User;
+import ru.mephi.knowledgechecker.dto.telegram.outcome.params.SendMessageParams;
+import ru.mephi.knowledgechecker.model.user.CurrentData;
 import ru.mephi.knowledgechecker.service.TestService;
 import ru.mephi.knowledgechecker.state.impl.menu.PublicTestListState;
 import ru.mephi.knowledgechecker.state.impl.test.search.TestSearchResultState;
@@ -45,36 +45,38 @@ public class ShowSearchResultStrategy extends AbstractMessageStrategy {
     }
 
     @Override
-    public void process(User user, Update update) throws StrategyProcessException {
+    public void process(CurrentData data, Update update) throws StrategyProcessException {
         String keyWords = update.getMessage().getText().replaceAll(";", "|");
-        List<String> testTitles = testService.findTests(keyWords, user.getId());
+        List<String> testTitles = testService.findTests(keyWords, data.getUser().getId());
         if (testTitles.size() != 0) {
-            sendResults(user, testTitles);
+            sendResults(data, testTitles);
         } else {
-            sendNotFound(user);
+            sendNotFound(data);
         }
     }
 
-    private void sendNotFound(User user) {
+    private void sendNotFound(CurrentData data) {
         String message = "По данному запросу ничего не найдено 🤷🏼‍";
-        SendMessageParams params = wrapMessageParams(user.getId(), message,
+        SendMessageParams params = wrapMessageParams(data.getUser().getId(), message,
                 List.of(new MessageEntity(TextType.BOLD, 0, message.length())),
                 null);
         telegramApiClient.sendMessage(params);
 
         message = "🔽\nГЛАВНОЕ МЕНЮ\n⬇️️\nПУБЛИЧНЫЕ ТЕСТЫ";
-        params = wrapMessageParams(user.getId(), message,
+        params = wrapMessageParams(data.getUser().getId(), message,
                 List.of(new MessageEntity(TextType.BOLD, 0, message.length())),
-                getPublicTestListInlineKeyboardMarkup(user));
-        sendMenuAndSave(params, publicTestListState, user.getData());
+                getPublicTestListInlineKeyboardMarkup(data.getUser()));
+        data.setState(publicTestListState);
+        sendMenuAndSave(params, data);
     }
 
-    private void sendResults(User user, List<String> testTitles) {
+    private void sendResults(CurrentData data, List<String> testTitles) {
         String message = "🕵🏻‍ Результаты поиска:";
-        SendMessageParams params = wrapMessageParams(user.getId(), message,
+        SendMessageParams params = wrapMessageParams(data.getUser().getId(), message,
                 List.of(new MessageEntity(TextType.BOLD, 0, message.length())),
                 getInlineKeyboardMarkup(testTitles));
-        sendMessageAndSave(params, nextState, user.getData());
+        data.setState(nextState);
+        sendMessageAndSave(params, data);
     }
 
     private KeyboardMarkup getInlineKeyboardMarkup(List<String> testTitles) {

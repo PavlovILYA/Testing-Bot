@@ -8,7 +8,6 @@ import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageEntity;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.params.SendMessageParams;
 import ru.mephi.knowledgechecker.model.user.CurrentData;
-import ru.mephi.knowledgechecker.model.user.User;
 import ru.mephi.knowledgechecker.state.impl.test.create.question.variable.VariableQuestionInfoReadingState;
 import ru.mephi.knowledgechecker.strategy.StrategyProcessException;
 import ru.mephi.knowledgechecker.strategy.impl.AbstractCallbackQueryStrategy;
@@ -32,8 +31,7 @@ public class AddVariableQuestionStrategy extends AbstractCallbackQueryStrategy {
     }
 
     @Override
-    public void process(User user, Update update) throws StrategyProcessException {
-        CurrentData data = user.getData();
+    public void process(CurrentData data, Update update) throws StrategyProcessException {
         data.setNextPhase(CreationPhaseType.TEXT);
 
         String boldMessage = "Введите содержание вопроса";
@@ -42,10 +40,11 @@ public class AddVariableQuestionStrategy extends AbstractCallbackQueryStrategy {
                 "A: Ответ 1\n" +
                 "B: Ответ 2\n" +
                 "etc.";
-        SendMessageParams params = wrapMessageParams(user.getId(), boldMessage + italicMessage,
+        SendMessageParams params = wrapMessageParams(data.getUser().getId(), boldMessage + italicMessage,
                 List.of(new MessageEntity(TextType.BOLD, 0, boldMessage.length()),
                         new MessageEntity(TextType.ITALIC, boldMessage.length(), italicMessage.length())),
                 null);
-        sendMessageAndSave(params, nextState, data);
+        data.setState(nextState);
+        sendMessageAndSave(params, data);
     }
 }

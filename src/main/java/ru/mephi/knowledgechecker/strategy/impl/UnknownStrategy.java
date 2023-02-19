@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.params.SendMessageParams;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.params.SendPopupParams;
-import ru.mephi.knowledgechecker.model.user.User;
+import ru.mephi.knowledgechecker.model.user.CurrentData;
 import ru.mephi.knowledgechecker.strategy.StrategyProcessException;
 
 import static ru.mephi.knowledgechecker.common.ParamsWrapper.wrapMessageParams;
@@ -23,7 +23,7 @@ public class UnknownStrategy extends AbstractActionStrategy {
     }
 
     @Override
-    public void process(User user, Update update) throws StrategyProcessException {
+    public void process(CurrentData data, Update update) throws StrategyProcessException {
         if (update.getCallbackQuery() != null) {
             SendPopupParams params = SendPopupParams.builder()
                     .callbackQueryId(update.getCallbackQuery().getId())
@@ -32,7 +32,7 @@ public class UnknownStrategy extends AbstractActionStrategy {
                     .build();
             telegramApiClient.answerCallbackQuery(params);
         } else {
-            SendMessageParams params = wrapMessageParams(user.getId(), NOT_IMPLEMENTED_MESSAGE, null);
+            SendMessageParams params = wrapMessageParams(data.getUser().getId(), NOT_IMPLEMENTED_MESSAGE, null);
             telegramApiClient.sendMessage(params);
         }
     }

@@ -14,7 +14,6 @@ CREATE TABLE IF NOT EXISTS users (
     first_name VARCHAR(255),
     last_name VARCHAR(255),
     username VARCHAR(255) UNIQUE,
-    state VARCHAR(500),
     PRIMARY KEY (id)
 );
 
@@ -118,6 +117,7 @@ CREATE INDEX IF NOT EXISTS solving_user_id
 CREATE TABLE IF NOT EXISTS current_data (
     id BIGINT GENERATED ALWAYS AS IDENTITY UNIQUE,
     user_id BIGINT UNIQUE,
+    state VARCHAR(500),
     next_phase VARCHAR(500),
     test_id BIGINT, -- TEST_ID, TEST_UNIQUE_TITLE
     need_check BOOLEAN, -- CHECK_0_QUESTIONS

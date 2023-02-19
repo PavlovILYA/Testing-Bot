@@ -5,10 +5,10 @@ import org.springframework.stereotype.Component;
 import ru.mephi.knowledgechecker.common.TextType;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageEntity;
-import ru.mephi.knowledgechecker.dto.telegram.outcome.params.SendMessageParams;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.keyboard.KeyboardMarkup;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.keyboard.inline.InlineKeyboardButton;
-import ru.mephi.knowledgechecker.model.user.User;
+import ru.mephi.knowledgechecker.dto.telegram.outcome.params.SendMessageParams;
+import ru.mephi.knowledgechecker.model.user.CurrentData;
 import ru.mephi.knowledgechecker.state.impl.test.create.TestCreatingState;
 import ru.mephi.knowledgechecker.strategy.StrategyProcessException;
 import ru.mephi.knowledgechecker.strategy.impl.AbstractCallbackQueryStrategy;
@@ -34,14 +34,15 @@ public class ToTestCreatingStrategy extends AbstractCallbackQueryStrategy {
     }
 
     @Override
-    public void process(User user, Update update) throws StrategyProcessException {
+    public void process(CurrentData data, Update update) throws StrategyProcessException {
         String message = "Введите уникальное название теста (максимум 30 символов)";
-        SendMessageParams params = wrapMessageParams(user.getId(), message,
+        SendMessageParams params = wrapMessageParams(data.getUser().getId(), message,
                 List.of(new MessageEntity(TextType.BOLD, 0, message.length()),
                         new MessageEntity(TextType.UNDERLINE, 8, 10)),
                 getInlineKeyboardMarkup());
-        deleteMenu(user.getData());
-        sendMessageAndSave(params, nextState, user.getData());
+        deleteMenu(data);
+        data.setState(nextState);
+        sendMessageAndSave(params, data);
     }
 
     private KeyboardMarkup getInlineKeyboardMarkup() {

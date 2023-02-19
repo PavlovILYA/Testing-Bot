@@ -10,7 +10,6 @@ import ru.mephi.knowledgechecker.model.solving.Solving;
 import ru.mephi.knowledgechecker.model.solving.SolvingType;
 import ru.mephi.knowledgechecker.model.test.Test;
 import ru.mephi.knowledgechecker.model.user.CurrentData;
-import ru.mephi.knowledgechecker.model.user.User;
 import ru.mephi.knowledgechecker.service.SolvingService;
 import ru.mephi.knowledgechecker.state.impl.menu.PublicTestListState;
 import ru.mephi.knowledgechecker.state.impl.test.solve.SolvingTestState;
@@ -47,32 +46,33 @@ public class StartSolvingTestStrategy extends AbstractCallbackQueryStrategy {
     }
 
     @Override
-    public void process(User user, Update update) throws StrategyProcessException {
-        CurrentData data = user.getData();
+    public void process(CurrentData data, Update update) throws StrategyProcessException {
         Test test = data.getTest();
         if (test.getMaxQuestionsNumber() == null ||
                 test.getVariableQuestions().size() + test.getOpenQuestions().size() == 0) {
             data.setTest(null);
 
             String message = "Тест составлен автором некорректно 🆘";
-            SendMessageParams params = wrapMessageParams(user.getId(), message,
+            SendMessageParams params = wrapMessageParams(data.getUser().getId(), message,
                     List.of(new MessageEntity(TextType.BOLD, 0, message.length())),
                     null);
             telegramApiClient.sendMessage(params);
 
             message = "🔽\nГЛАВНОЕ МЕНЮ\n⬇️️\nПУБЛИЧНЫЕ ТЕСТЫ";
-            params = wrapMessageParams(user.getId(), message,
+            params = wrapMessageParams(data.getUser().getId(), message,
                     List.of(new MessageEntity(TextType.BOLD, 0, message.length())),
-                    getPublicTestListInlineKeyboardMarkup(user));
-            sendMenuAndSave(params, publicTestListState, user.getData());
+                    getPublicTestListInlineKeyboardMarkup(data.getUser()));
+            data.setState(publicTestListState);
+            sendMenuAndSave(params, data);
             return;
         }
 
-        Solving solving = solvingService.generateQuestions(user, test,
+        Solving solving = solvingService.generateQuestions(data.getUser(), test,
                 SolvingType.valueOf(update.getCallbackQuery().getData()));
         data.setTest(null);
         clearInlineKeyboard(data);
-        saveToContext(nextState, data);
+        data.setState(nextState);
+        saveToContext(data);
         showQuestionStrategy.sendQuestion(solving, data, update);
     }
 }

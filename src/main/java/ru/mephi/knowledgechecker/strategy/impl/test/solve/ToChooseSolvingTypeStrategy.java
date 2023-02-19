@@ -9,7 +9,6 @@ import ru.mephi.knowledgechecker.dto.telegram.outcome.params.SendMessageParams;
 import ru.mephi.knowledgechecker.model.test.Test;
 import ru.mephi.knowledgechecker.model.test.TestType;
 import ru.mephi.knowledgechecker.model.user.CurrentData;
-import ru.mephi.knowledgechecker.model.user.User;
 import ru.mephi.knowledgechecker.service.TestService;
 import ru.mephi.knowledgechecker.state.impl.test.solve.ChooseSolvingTypeState;
 import ru.mephi.knowledgechecker.strategy.StrategyProcessException;
@@ -44,18 +43,17 @@ public class ToChooseSolvingTypeStrategy extends AbstractCallbackQueryStrategy {
     }
 
     @Override
-    public void process(User user, Update update) throws StrategyProcessException {
+    public void process(CurrentData data, Update update) throws StrategyProcessException {
         String uniqueTitle = update.getCallbackQuery().getData().split(":")[1];
         Test test = testService.getByUniqueTitle(uniqueTitle);
-
-        CurrentData data = user.getData();
         data.setTest(test);
 
         String message = "Выберите вариант прохождения теста";
-        SendMessageParams params = wrapMessageParams(user.getId(), message,
+        SendMessageParams params = wrapMessageParams(data.getUser().getId(), message,
                 List.of(new MessageEntity(TextType.BOLD, 0, message.length())),
                 getTestSolvingTypesInlineKeyboardMarkup());
-        deleteMenu(user.getData());
-        sendMessageAndSave(params, nextState, data);
+        deleteMenu(data);
+        data.setState(nextState);
+        sendMessageAndSave(params, data);
     }
 }

@@ -14,65 +14,40 @@ import ru.mephi.knowledgechecker.service.UserService;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static ru.mephi.knowledgechecker.model.user.mapper.UserMapper.mapStateToBeanName;
-
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class StateContext {
 
-//    private final ConcurrentMap<String, BotState> states = new ConcurrentHashMap<>();
     @Autowired
     private final Map<String, BotState> states = new ConcurrentHashMap<>();
     private final UserService userService;
     private final CurrentDataService dataService;
 
     public void process(Update update) {
-        User user = getUser(update);
-        log.info("STATES: {}", states);
-        states.get(user.getState()).process(user, update);
-        log.info("CURRENT USER (STATE, DATA) after process:\n{}", user);
+        CurrentData data = getUserData(update);
+        states.get(data.getState()).process(data, update);
+        log.info("CURRENT USER DATA (after process):\n{}", data);
     }
 
-    private User getUser(Update update) {
+    private CurrentData getUserData(Update update) {
         Long userId = update.getUserId();
-        User user = userService.get(userId);
-        if (user == null) {
-            user = saveUser(update);
+        CurrentData data = dataService.getByUserId(userId);
+        if (data == null) {
+            data = registerUser(update);
         }
-        return user;
+        return data;
     }
 
-    private User saveUser(Update update) {
+    private CurrentData registerUser(Update update) {
         UserDto userDto = update.getCallbackQuery() != null
                 ? update.getCallbackQuery().getFrom()
                 : update.getMessage().getFrom();
         User user = userService.save(userDto);
-        CurrentData data = dataService.createForUser(user);
-        user.setData(data);
-//        userService.save(userDto);
-        user = userService.get(user.getId());
-        log.info("👤 Пользователь зарегистрирован:\n{}", user);
-        return user;
-    }
-
-    public void putState(Long userId, BotState state) {
-        User user = userService.get(userId);
-        user.setState(mapStateToBeanName(state.getClass()));
-        userService.save(user);
+        return dataService.createForUser(user);
     }
 
     public void saveUserData(CurrentData data) {
         dataService.update(data);
-    }
-
-    public void putStateAndSaveUserData(BotState state, CurrentData data) {
-        data = dataService.update(data);
-        User user = userService.get(data.getUser().getId());
-        log.info("||||||| USER before: {}", user);
-        user.setData(data);
-        log.info("||||||| USER after: {}", user);
-        user.setState(mapStateToBeanName(state.getClass()));
-        userService.save(user);
     }
 }

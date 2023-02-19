@@ -11,7 +11,6 @@ import ru.mephi.knowledgechecker.dto.telegram.outcome.params.SendMessageParams;
 import ru.mephi.knowledgechecker.model.test.Test;
 import ru.mephi.knowledgechecker.model.test.TestType;
 import ru.mephi.knowledgechecker.model.user.CurrentData;
-import ru.mephi.knowledgechecker.model.user.User;
 import ru.mephi.knowledgechecker.service.TestService;
 import ru.mephi.knowledgechecker.state.impl.test.create.TestInfoReadingState;
 import ru.mephi.knowledgechecker.strategy.StrategyProcessException;
@@ -40,33 +39,33 @@ public class ReadUniqueTestNameStrategy extends AbstractMessageStrategy {
     }
 
     @Override
-    public void process(User user, Update update) throws StrategyProcessException {
+    public void process(CurrentData data, Update update) throws StrategyProcessException {
         String uniqueTestName = update.getMessage().getText();
         if (testService.getByUniqueTitle(uniqueTestName) != null) {
-            throw new StrategyProcessException(user.getId(),
+            throw new StrategyProcessException(data.getUser().getId(),
                     "Тест с таким названием уже существует, попробуйте еще раз");
         }
         if ((uniqueTestName + ":" + PUBLIC_TEST_PREFIX).getBytes(StandardCharsets.UTF_8).length > 64) {
-            throw new StrategyProcessException(user.getId(),
+            throw new StrategyProcessException(data.getUser().getId(),
                     "Длина уникального названия теста больше 30, попробуйте еще раз");
         }
 
         Test test = Test.builder()
                 .uniqueTitle(uniqueTestName)
-                .creator(user)
+                .creator(data.getUser())
                 .testType(TestType.PUBLIC)
                 .build();
         test = testService.save(test);
-        log.info("Unique test title: {}, userId: {}", test.getUniqueTitle(), user.getId());
-        CurrentData data = user.getData();
+        log.info("Unique test title: {}, userId: {}", test.getUniqueTitle(), data.getUser().getId());
         data.setTest(test);
         data.setNextPhase(CreationPhaseType.TITLE);
 
         String message = "Введите полное (неуникальное) название теста";
-        SendMessageParams params = wrapMessageParams(user.getId(), message,
+        SendMessageParams params = wrapMessageParams(data.getUser().getId(), message,
                 List.of(new MessageEntity(TextType.BOLD, 0, message.length()),
                         new MessageEntity(TextType.UNDERLINE, 16, 12)),
                 null);
-        sendMessageAndSave(params, nextState, data);
+        data.setState(nextState);
+        sendMessageAndSave(params, data);
     }
 }

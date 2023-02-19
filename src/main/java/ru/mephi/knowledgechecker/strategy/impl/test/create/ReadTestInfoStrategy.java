@@ -9,7 +9,6 @@ import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageEntity;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.params.SendMessageParams;
 import ru.mephi.knowledgechecker.model.test.Test;
 import ru.mephi.knowledgechecker.model.user.CurrentData;
-import ru.mephi.knowledgechecker.model.user.User;
 import ru.mephi.knowledgechecker.service.TestService;
 import ru.mephi.knowledgechecker.state.impl.test.create.question.QuestionAddingState;
 import ru.mephi.knowledgechecker.strategy.StrategyProcessException;
@@ -36,8 +35,7 @@ public class ReadTestInfoStrategy extends AbstractMessageStrategy {
     }
 
     @Override
-    public void process(User user, Update update) throws StrategyProcessException {
-        CurrentData data = user.getData();
+    public void process(CurrentData data, Update update) throws StrategyProcessException {
         Test test = data.getTest();
         CreationPhaseType nextPhase = data.getNextPhase();
         switch (nextPhase) {
@@ -52,7 +50,7 @@ public class ReadTestInfoStrategy extends AbstractMessageStrategy {
                     }
                     readMaxQuestionsNumber(data, test, maxQuestionNumber);
                 } catch (NumberFormatException e) {
-                    throw new StrategyProcessException(user.getId(),
+                    throw new StrategyProcessException(data.getUser().getId(),
                             "Неверный формат, попробуйте еще раз:\n" +
                             "Введите число от 1 до 50");
                 }
@@ -86,6 +84,7 @@ public class ReadTestInfoStrategy extends AbstractMessageStrategy {
         data.setNeedCheck(true);
 
         SendMessageParams params = addingQuestionParams(test, data.getUser().getId());
-        sendMessageAndSave(params, nextState, data);
+        data.setState(nextState);
+        sendMessageAndSave(params, data);
     }
 }

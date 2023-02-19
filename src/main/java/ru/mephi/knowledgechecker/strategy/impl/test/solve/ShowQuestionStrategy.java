@@ -16,7 +16,6 @@ import ru.mephi.knowledgechecker.model.question.VariableQuestion;
 import ru.mephi.knowledgechecker.model.solving.Solving;
 import ru.mephi.knowledgechecker.model.solving.SolvingType;
 import ru.mephi.knowledgechecker.model.user.CurrentData;
-import ru.mephi.knowledgechecker.model.user.User;
 import ru.mephi.knowledgechecker.service.OpenAnswerService;
 import ru.mephi.knowledgechecker.service.OpenQuestionService;
 import ru.mephi.knowledgechecker.service.SolvingService;
@@ -69,10 +68,9 @@ public class ShowQuestionStrategy extends AbstractMessageStrategy {
     }
 
     @Override
-    public void process(User user, Update update) throws StrategyProcessException {
-        Solving solving = solvingService.getByUserId(user.getId());
+    public void process(CurrentData data, Update update) throws StrategyProcessException {
+        Solving solving = solvingService.getByUserId(data.getUser().getId());
         String answerText = update.getMessage().getText();
-        CurrentData data = user.getData();
         saveAnswer(solving, data, answerText);
         sendQuestion(solving, data, update);
     }
@@ -172,7 +170,8 @@ public class ShowQuestionStrategy extends AbstractMessageStrategy {
         if (variableQuestionIds.size() == variableAnswerIds.size()) {
             if (openQuestionIds.size() == openAnswerIds.size()) {
                 data.setPreviousQuestionType(null);
-                saveToContext(nextState, data);
+                data.setState(nextState);
+                saveToContext(data);
                 generateReport(solving, data, update);
             } else {
                 data.setPreviousQuestionType(QuestionType.OPEN);
@@ -232,7 +231,7 @@ public class ShowQuestionStrategy extends AbstractMessageStrategy {
         }
         clearSolving(solving);
         try {
-            toMainMenuStrategy.process(data.getUser(), update);
+            toMainMenuStrategy.process(data, update);
         } catch (StrategyProcessException e) {
             toMainMenuStrategy.analyzeException(e);
         }

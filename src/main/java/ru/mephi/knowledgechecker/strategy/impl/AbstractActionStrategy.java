@@ -25,16 +25,8 @@ public abstract class AbstractActionStrategy implements ActionStrategy {
     protected TelegramApiClient telegramApiClient;
     protected BotState nextState;
 
-    protected void saveToContext(BotState state, CurrentData data) {
-        stateContext.putStateAndSaveUserData(state, data);
-    }
-
     protected void saveToContext(CurrentData data) {
         stateContext.saveUserData(data);
-    }
-
-    protected void saveToContext(Long userId, BotState state) {
-        stateContext.putState(userId, state);
     }
 
     @Override
@@ -63,7 +55,7 @@ public abstract class AbstractActionStrategy implements ActionStrategy {
         }
     }
 
-    protected void sendMenuAndSave(SendMessageParams params, BotState nextState, CurrentData data) {
+    protected void sendMenuAndSave(SendMessageParams params, CurrentData data) {
         clearInlineKeyboard(data);
         Long menuMessageId = data.getMenuMessageId();
         if (data.getMenuMessageId() != null) {
@@ -72,7 +64,7 @@ public abstract class AbstractActionStrategy implements ActionStrategy {
             menuMessageId = telegramApiClient.sendMessage(params);
         }
         data.setMenuMessageId(menuMessageId);
-        saveToContext(nextState, data);
+        saveToContext(data);
     }
 
     protected void deleteMenu(CurrentData data) {
@@ -86,21 +78,13 @@ public abstract class AbstractActionStrategy implements ActionStrategy {
         data.setMenuMessageId(null);
     }
 
-    protected void sendMessageAndSave(SendMessageParams params, BotState nextState, CurrentData data) {
+    protected void sendMessageAndSave(SendMessageParams params, CurrentData data) {
         clearInlineKeyboard(data);
         Long messageId = telegramApiClient.sendMessage(params);
         if (params.getReplyMarkup() != null && params.getReplyMarkup() instanceof InlineKeyboardMarkup) {
             data.setClearReplyMessageId(messageId);
         }
-        if (nextState != null) {
-            saveToContext(nextState, data);
-        } else {
-            saveToContext(data);
-        }
-    }
-
-    protected void sendMessageAndSave(SendMessageParams params, CurrentData data) {
-        sendMessageAndSave(params, null, data);
+        saveToContext(data);
     }
 
     protected void clearInlineKeyboard(CurrentData data) {
