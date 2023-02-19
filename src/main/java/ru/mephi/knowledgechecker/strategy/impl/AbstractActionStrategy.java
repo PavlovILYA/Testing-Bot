@@ -64,7 +64,7 @@ public abstract class AbstractActionStrategy implements ActionStrategy {
     }
 
     protected void sendMenuAndSave(SendMessageParams params, BotState nextState, CurrentData data) {
-        clearReply(data);
+        clearInlineKeyboard(data);
         Long menuMessageId = data.getMenuMessageId();
         if (data.getMenuMessageId() != null) {
             menuMessageId = telegramApiClient.editMessageText(new EditMessageTextParams(menuMessageId, params));
@@ -87,7 +87,7 @@ public abstract class AbstractActionStrategy implements ActionStrategy {
     }
 
     protected void sendMessageAndSave(SendMessageParams params, BotState nextState, CurrentData data) {
-        clearReply(data);
+        clearInlineKeyboard(data);
         Long messageId = telegramApiClient.sendMessage(params);
         if (params.getReplyMarkup() != null && params.getReplyMarkup() instanceof InlineKeyboardMarkup) {
             data.setClearReplyMessageId(messageId);
@@ -103,14 +103,14 @@ public abstract class AbstractActionStrategy implements ActionStrategy {
         sendMessageAndSave(params, null, data);
     }
 
-    protected void clearReply(CurrentData data) {
+    protected void clearInlineKeyboard(CurrentData data) {
         Long clearReplyMessageId = data.getClearReplyMessageId();
         if (clearReplyMessageId != null) {
             telegramApiClient.editMessageReplyMarkup(EditMessageReplyMarkupParams.builder()
                     .chatId(data.getUser().getId())
                     .messageId(clearReplyMessageId)
                     .build());
+            data.setClearReplyMessageId(null);
         }
-        data.setClearReplyMessageId(null);
     }
 }

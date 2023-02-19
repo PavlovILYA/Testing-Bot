@@ -6,6 +6,7 @@ import ru.mephi.knowledgechecker.common.QuestionType;
 import ru.mephi.knowledgechecker.common.TextType;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageEntity;
+import ru.mephi.knowledgechecker.dto.telegram.outcome.keyboard.reply.ReplyKeyboardRemove;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.params.SendMessageParams;
 import ru.mephi.knowledgechecker.model.answer.OpenAnswer;
 import ru.mephi.knowledgechecker.model.answer.OpenAnswerKey;
@@ -247,7 +248,7 @@ public class ShowQuestionStrategy extends AbstractMessageStrategy {
         SendMessageParams params = wrapMessageParams(solving.getUser().getId(), boldMessage + codeMessage,
                 List.of(new MessageEntity(TextType.BOLD, 0, boldMessage.length()),
                         new MessageEntity(TextType.CODE, boldMessage.length(), codeMessage.length())),
-                null);
+                new ReplyKeyboardRemove(true));
         telegramApiClient.sendMessage(params);
     }
 

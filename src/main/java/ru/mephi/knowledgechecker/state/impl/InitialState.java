@@ -26,7 +26,7 @@ public class InitialState extends AbstractBotState {
     public void process(User user, Update update) {
         log.info("👤 Пользователь {} ({}) зарегистрирован!", user.getFirstName(), user.getUsername());
         SendMessageParams params = wrapMessageParams(user.getId(), "👤 Пользователь " + user.getFirstName()
-                + "(" + user.getUsername() + ") зарегистрирован!", null);
+                + " (" + user.getUsername() + ") зарегистрирован!", null);
         telegramApiClient.sendMessage(params);
         super.process(user, update);
     }

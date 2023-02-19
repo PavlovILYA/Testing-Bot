@@ -19,7 +19,7 @@ import ru.mephi.knowledgechecker.strategy.impl.AbstractActionStrategy;
 import java.util.List;
 
 import static ru.mephi.knowledgechecker.common.Constants.TO_MAIN_MENU;
-import static ru.mephi.knowledgechecker.common.KeyboardMarkups.getStartReplyKeyboardMarkup;
+import static ru.mephi.knowledgechecker.common.KeyboardMarkups.getStartKeyboardMarkup;
 import static ru.mephi.knowledgechecker.common.ParamsWrapper.wrapMessageParams;
 import static ru.mephi.knowledgechecker.strategy.impl.AbstractBotCommandStrategy.BOT_COMMAND;
 
@@ -64,7 +64,7 @@ public class ToMainMenuStrategy extends AbstractActionStrategy {
         String text = "🔽️\nГЛАВНОЕ МЕНЮ ⤵️";
         SendMessageParams params = wrapMessageParams(user.getId(), text,
                 List.of(new MessageEntity(TextType.BOLD, 0, text.length())),
-                getStartReplyKeyboardMarkup());
+                getStartKeyboardMarkup());
         sendMenuAndSave(params, nextState, data);
     }
 }

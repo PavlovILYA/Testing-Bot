@@ -71,7 +71,7 @@ public class StartSolvingTestStrategy extends AbstractCallbackQueryStrategy {
         Solving solving = solvingService.generateQuestions(user, test,
                 SolvingType.valueOf(update.getCallbackQuery().getData()));
         data.setTest(null);
-        clearReply(data);
+        clearInlineKeyboard(data);
         saveToContext(nextState, data);
         showQuestionStrategy.sendQuestion(solving, data, update);
     }

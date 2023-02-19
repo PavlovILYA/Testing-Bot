@@ -19,7 +19,7 @@ import static ru.mephi.knowledgechecker.common.ParamsWrapper.wrapInlineKeyboardM
 import static ru.mephi.knowledgechecker.common.ParamsWrapper.wrapReplyKeyboardMarkup;
 
 public class KeyboardMarkups {
-    public static KeyboardMarkup getStartReplyKeyboardMarkup() {
+    public static KeyboardMarkup getStartKeyboardMarkup() {
         List<List<InlineKeyboardButton>> markup = new ArrayList<>();
         markup.add(List.of(InlineKeyboardButton.builder()
                 .text(PUBLIC_TEST_LIST)
