@@ -2,7 +2,6 @@ package ru.mephi.knowledgechecker.common;
 
 public class Constants {
     public static final String PUBLIC_TEST_LIST = "Список публичных тестов";
-    public static final String MAIN_MENU = "Главное меню";
     public static final String TO_MAIN_MENU = "В главное меню";
     public static final String CREATE_PUBLIC_TEST = "Создать публичный тест";
     public static final String FIND_PUBLIC_TEST = "Найти публичный тест";
