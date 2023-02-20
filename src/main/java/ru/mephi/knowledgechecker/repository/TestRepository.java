@@ -13,4 +13,8 @@ public interface TestRepository extends JpaRepository<Test, Long> {
             "  WHERE t.creator_id <> :userId AND " +
             "        regexp_match(t.unique_title, :keyWords)", nativeQuery = true)
     Page<String> getTestsByKeyWords(String keyWords, Long userId, Pageable pageable);
+
+    @Query(value = "SELECT t.unique_title FROM tests AS t" +
+            "  WHERE t.creator_id = :userId", nativeQuery = true)
+    Page<String> getCreatedTests(Long userId, Pageable pageable);
 }

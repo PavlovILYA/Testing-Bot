@@ -1,6 +1,7 @@
 package ru.mephi.knowledgechecker.strategy.impl.test.solve;
 
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 import ru.mephi.knowledgechecker.common.TextType;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
@@ -12,6 +13,7 @@ import ru.mephi.knowledgechecker.model.solving.SolvingType;
 import ru.mephi.knowledgechecker.model.test.Test;
 import ru.mephi.knowledgechecker.model.user.CurrentData;
 import ru.mephi.knowledgechecker.service.SolvingService;
+import ru.mephi.knowledgechecker.service.TestService;
 import ru.mephi.knowledgechecker.state.impl.menu.PublicTestListState;
 import ru.mephi.knowledgechecker.state.impl.test.solve.SolvingTestState;
 import ru.mephi.knowledgechecker.strategy.StrategyProcessException;
@@ -19,7 +21,7 @@ import ru.mephi.knowledgechecker.strategy.impl.AbstractCallbackQueryStrategy;
 
 import java.util.List;
 
-import static ru.mephi.knowledgechecker.common.KeyboardMarkups.getPublicTestListInlineKeyboardMarkup;
+import static ru.mephi.knowledgechecker.common.KeyboardMarkups.getPublicTestMenuInlineKeyboardMarkup;
 import static ru.mephi.knowledgechecker.common.MenuTitleType.PUBLIC_TEST_LIST;
 import static ru.mephi.knowledgechecker.common.ParamsWrapper.wrapMessageParams;
 
@@ -27,13 +29,16 @@ import static ru.mephi.knowledgechecker.common.ParamsWrapper.wrapMessageParams;
 public class StartSolvingTestStrategy extends AbstractCallbackQueryStrategy {
 
     private final SolvingService solvingService;
+    private final TestService testService;
     private final ShowQuestionStrategy showQuestionStrategy;
     private final PublicTestListState publicTestListState;
 
-    public StartSolvingTestStrategy(SolvingService solvingService, ShowQuestionStrategy showQuestionStrategy,
+    public StartSolvingTestStrategy(SolvingService solvingService, TestService testService,
+                                    ShowQuestionStrategy showQuestionStrategy,
                                     @Lazy SolvingTestState solvingTestState,
                                     @Lazy PublicTestListState publicTestListState) {
         this.solvingService = solvingService;
+        this.testService = testService;
         this.showQuestionStrategy = showQuestionStrategy;
         this.nextState = solvingTestState;
         this.publicTestListState = publicTestListState;
@@ -61,9 +66,10 @@ public class StartSolvingTestStrategy extends AbstractCallbackQueryStrategy {
                     .build();
             telegramApiClient.answerCallbackQuery(popup);
 
+            Page<String> publicTests = testService.getCreatedTests(data.getUser().getId());
             SendMessageParams params = wrapMessageParams(data.getUser().getId(), PUBLIC_TEST_LIST.getTitle(),
                     List.of(new MessageEntity(TextType.BOLD, 0, PUBLIC_TEST_LIST.getTitle().length())),
-                    getPublicTestListInlineKeyboardMarkup(data.getUser()));
+                    getPublicTestMenuInlineKeyboardMarkup(publicTests));
             data.setState(publicTestListState);
             sendMenuAndSave(params, data);
             return;

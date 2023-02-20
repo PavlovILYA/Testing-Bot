@@ -43,6 +43,7 @@ public class CurrentData {
     private Long lastMessageId;
     private Long menuMessageId;
     private Long clearReplyMessageId;
+    private String searchKeyWords;
 
     public void setState(BotState state) {
         this.state = mapStateToBeanName(state.getClass());

@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import ru.mephi.knowledgechecker.dto.telegram.income.Response;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.params.*;
@@ -48,7 +49,11 @@ public class TelegramApiClient {
 
     public void answerCallbackQuery(SendPopupParams params) {
         log.info("[To Telegram API] send popup: {}", params);
-        ResponseEntity<Object> response = restTemplate
-                .postForEntity(telegramApi + "/answerCallbackQuery", params, Object.class);
+        try {
+            ResponseEntity<Object> response = restTemplate
+                    .postForEntity(telegramApi + "/answerCallbackQuery", params, Object.class);
+        } catch (HttpClientErrorException e) {
+            log.warn("ERROR: {}", e.getMessage());
+        }
     }
 }

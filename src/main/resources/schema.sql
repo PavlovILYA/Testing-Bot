@@ -127,6 +127,7 @@ CREATE TABLE IF NOT EXISTS current_data (
     last_message_id BIGINT,
     menu_message_id BIGINT,
     clear_reply_message_id BIGINT,
+    search_key_words VARCHAR(3000),
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (test_id) REFERENCES tests(id) ON DELETE SET NULL,
     FOREIGN KEY (open_question_id) REFERENCES open_questions(id) ON DELETE SET NULL,

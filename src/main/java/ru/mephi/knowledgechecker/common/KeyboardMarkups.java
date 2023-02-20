@@ -1,13 +1,12 @@
 package ru.mephi.knowledgechecker.common;
 
+import org.springframework.data.domain.Page;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.keyboard.KeyboardMarkup;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.keyboard.inline.InlineKeyboardButton;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.keyboard.reply.KeyboardButton;
 import ru.mephi.knowledgechecker.model.answer.VariableAnswer;
 import ru.mephi.knowledgechecker.model.question.VariableQuestion;
 import ru.mephi.knowledgechecker.model.solving.SolvingType;
-import ru.mephi.knowledgechecker.model.test.Test;
-import ru.mephi.knowledgechecker.model.user.User;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -121,7 +120,7 @@ public class KeyboardMarkups {
         return wrapReplyKeyboardMarkup(markup, "Выберите правильный ответ");
     }
 
-    public static KeyboardMarkup getPublicTestListInlineKeyboardMarkup(User user) {
+    public static KeyboardMarkup getPublicTestMenuInlineKeyboardMarkup(Page<String> publicTestsPage) {
         List<List<InlineKeyboardButton>> markup = new ArrayList<>();
         List<InlineKeyboardButton> menu = new ArrayList<>();
         menu.add(InlineKeyboardButton.builder()
@@ -138,14 +137,61 @@ public class KeyboardMarkups {
                 .build());
         markup.add(menu);
 
-        for (Test test: user.getCreatedTests()) {
+        return getPublicTestListInlineKeyboardMarkup(markup, publicTestsPage, CREATED_TESTS_PAGE_PREFIX);
+    }
+
+    public static KeyboardMarkup getSearchResultsInlineKeyboardMarkup(Page<String> publicTestsPage) {
+        List<List<InlineKeyboardButton>> markup = new ArrayList<>();
+        List<InlineKeyboardButton> back = List.of(InlineKeyboardButton.builder()
+                .text("⬅️")
+                .callbackData(TO_PUBLIC_TEST_LIST.name())
+                .build());
+        markup.add(back);
+
+        return getPublicTestListInlineKeyboardMarkup(markup, publicTestsPage, SEARCH_TESTS_PAGE_PREFIX);
+    }
+
+    public static KeyboardMarkup getPublicTestListInlineKeyboardMarkup(List<List<InlineKeyboardButton>> markup,
+                                                                       Page<String> publicTestsPage,
+                                                                       String callbackPrefix) {
+        for (String test: publicTestsPage.getContent()) {
             List<InlineKeyboardButton> testList = new ArrayList<>();
             testList.add(InlineKeyboardButton.builder()
-                    .text("📌 " + test.getUniqueTitle())
-                    .callbackData(PUBLIC_TEST_PREFIX + COLON + test.getUniqueTitle())
+                    .text("📌 " + test)
+                    .callbackData(PUBLIC_TEST_PREFIX + COLON + test)
                     .build());
             markup.add(testList);
         }
+
+        if (publicTestsPage.getTotalElements() > PAGE_SIZE) {
+            markup.add(getNavigationButtons(publicTestsPage, callbackPrefix));
+        }
         return wrapInlineKeyboardMarkup(markup);
+    }
+
+    public static List<InlineKeyboardButton> getNavigationButtons(Page<String> currentPage, String callbackPrefix) {
+        int pageNumber = currentPage.getNumber();
+        List<InlineKeyboardButton> navigationList = new ArrayList<>();
+        if (pageNumber != 0) {
+            navigationList.add(getPreviousPageButton(pageNumber, callbackPrefix));
+        }
+        if (pageNumber != currentPage.getTotalPages() - 1) {
+            navigationList.add(getNextPageButton(pageNumber, callbackPrefix));
+        }
+        return navigationList;
+    }
+
+    private static InlineKeyboardButton getNextPageButton(int currentPage, String callbackPrefix) {
+        return InlineKeyboardButton.builder()
+                .text(NEXT.getDescription())
+                .callbackData(callbackPrefix + COLON + (currentPage + 1))
+                .build();
+    }
+
+    private static InlineKeyboardButton getPreviousPageButton(int currentPage, String callbackPrefix) {
+        return InlineKeyboardButton.builder()
+                .text(PREVIOUS.getDescription())
+                .callbackData(callbackPrefix + COLON + (currentPage - 1))
+                .build();
     }
 }

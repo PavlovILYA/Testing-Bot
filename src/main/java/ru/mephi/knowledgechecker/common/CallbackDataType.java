@@ -12,7 +12,9 @@ public enum CallbackDataType {
     ADD_VARIABLE_QUESTION("☑️ С вариантами"),
     ADD_OPEN_QUESTION("💬 Открытый"),
     ADD_WRONG_VARIABLE_ANSWER("Добавить"),
-    TO_QUESTION_ADDING("Добавить вопрос");
+    TO_QUESTION_ADDING("Добавить вопрос"),
+    NEXT("⏩️"),
+    PREVIOUS("⏪️");
 
     private final String description;
 

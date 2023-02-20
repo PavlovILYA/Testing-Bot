@@ -30,11 +30,11 @@ public class User {
     )
     private List<Test> addedTests;
 
-    @ToString.Exclude
-    @EqualsAndHashCode.Exclude
-    @OneToMany(mappedBy = "creator", // todo: fetch, cascade
-            fetch = FetchType.LAZY)
-    private List<Test> createdTests;
+//    @ToString.Exclude
+//    @EqualsAndHashCode.Exclude
+//    @OneToMany(mappedBy = "creator", // todo: fetch, cascade
+//            fetch = FetchType.LAZY)
+//    private List<Test> createdTests;
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
