@@ -17,6 +17,7 @@ import ru.mephi.knowledgechecker.strategy.impl.AbstractCallbackQueryStrategy;
 
 import java.util.List;
 
+import static ru.mephi.knowledgechecker.common.CallbackDataType.DELETE_TEST;
 import static ru.mephi.knowledgechecker.common.CallbackDataType.TO_PUBLIC_TEST_LIST;
 import static ru.mephi.knowledgechecker.common.KeyboardMarkups.getPublicTestMenuInlineKeyboardMarkup;
 import static ru.mephi.knowledgechecker.common.MenuTitleType.PUBLIC_TEST_LIST;
@@ -37,13 +38,20 @@ public class ToPublicTestListStrategy extends AbstractCallbackQueryStrategy {
     @Override
     public boolean apply(Update update) {
         return super.apply(update)
-                && update.getCallbackQuery().getData().equals(TO_PUBLIC_TEST_LIST.name());
+                && (
+                        update.getCallbackQuery().getData().equals(TO_PUBLIC_TEST_LIST.name())
+                        ||
+                        update.getCallbackQuery().getData().equals(DELETE_TEST.name())
+                );
     }
 
     @Override
     public void process(CurrentData data, Update update) throws StrategyProcessException {
+        Test test = data.getTest();
+        if (update.getCallbackQuery().getData().equals(DELETE_TEST.name())) {
+            testService.delete(test.getId());
+        }
         if (data.isNeedCheck()) {
-            Test test = data.getTest();
             if (test.getOpenQuestions().size() + test.getVariableQuestions().size() == 0) {
                 throw new StrategyProcessException(data.getUser().getId(),
                         "Необходимо добавить как минимум один вопрос",

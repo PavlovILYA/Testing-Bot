@@ -42,9 +42,13 @@ public class TelegramApiClient {
 
     public void deleteMessage(DeleteMessageParams params) {
         log.info("[To Telegram API] delete message: {}", params);
-        ResponseEntity<String> response = restTemplate
-                .postForEntity(telegramApi + "/deleteMessage", params, String.class);
-        log.info("Response from TG: {}", response.getBody());
+        try {
+            ResponseEntity<String> response = restTemplate
+                    .postForEntity(telegramApi + "/deleteMessage", params, String.class);
+            log.info("Response from TG: {}", response.getBody());
+        } catch (HttpClientErrorException e) {
+            editMessageText(new EditMessageTextParams(params));
+        }
     }
 
     public void answerCallbackQuery(SendPopupParams params) {

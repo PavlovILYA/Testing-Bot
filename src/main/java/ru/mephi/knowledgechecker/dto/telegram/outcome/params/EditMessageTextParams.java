@@ -31,4 +31,13 @@ public class EditMessageTextParams {
         this.entities = params.getEntities();
         this.replyMarkup = (InlineKeyboardMarkup) params.getReplyMarkup();
     }
+
+    // Если сообщение-меню было отправлено более 38 часов назад, его удалить не получится
+    // Вместо удаления будет отправлен комплимент :)
+    public EditMessageTextParams(DeleteMessageParams params) {
+        this.chatId = params.getChatId();
+        this.messageId = params.getMessageId();
+        this.text = "Кстати, Вы отлично выглядите сегодня!";
+        this.replyMarkup = null;
+    }
 }

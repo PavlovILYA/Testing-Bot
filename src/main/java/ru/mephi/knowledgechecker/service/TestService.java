@@ -46,4 +46,9 @@ public class TestService {
         return testRepository.getCreatedTests(userId,
                 PageRequest.of(from, PAGE_SIZE, Sort.by("unique_title")));
     }
+
+    public void delete(Long testId) {
+        testRepository.deleteById(testId);
+        log.info("Deleted test: {}", testId);
+    }
 }

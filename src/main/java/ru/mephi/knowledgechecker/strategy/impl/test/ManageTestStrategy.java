@@ -1,4 +1,4 @@
-package ru.mephi.knowledgechecker.strategy.impl.test.solve;
+package ru.mephi.knowledgechecker.strategy.impl.test;
 
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -18,15 +18,15 @@ import java.util.List;
 
 import static ru.mephi.knowledgechecker.common.Constants.COLON;
 import static ru.mephi.knowledgechecker.common.Constants.PUBLIC_TEST_PREFIX;
-import static ru.mephi.knowledgechecker.common.KeyboardMarkups.getTestSolvingTypesInlineKeyboardMarkup;
+import static ru.mephi.knowledgechecker.common.KeyboardMarkups.getTestManageInlineKeyboardMarkup;
 import static ru.mephi.knowledgechecker.common.ParamsWrapper.wrapMessageParams;
 
 @Component
-public class ToChooseSolvingTypeStrategy extends AbstractCallbackQueryStrategy {
+public class ManageTestStrategy extends AbstractCallbackQueryStrategy {
     private final TestService testService;
 
-    public ToChooseSolvingTypeStrategy(TestService testService,
-                                       @Lazy ChooseSolvingTypeState chooseSolvingTypeState) {
+    public ManageTestStrategy(TestService testService,
+                              @Lazy ChooseSolvingTypeState chooseSolvingTypeState) {
         this.testService = testService;
         this.nextState = chooseSolvingTypeState;
     }
@@ -49,12 +49,12 @@ public class ToChooseSolvingTypeStrategy extends AbstractCallbackQueryStrategy {
         Test test = testService.getByUniqueTitle(uniqueTitle);
         data.setTest(test);
 
+        boolean own = test.getCreator().getId().equals(data.getUser().getId());
         String message = "Выберите вариант прохождения теста";
         SendMessageParams params = wrapMessageParams(data.getUser().getId(), message,
                 List.of(new MessageEntity(TextType.BOLD, 0, message.length())),
-                getTestSolvingTypesInlineKeyboardMarkup());
-        deleteMenu(data);
+                getTestManageInlineKeyboardMarkup(own));
         data.setState(nextState);
-        sendMessageAndSave(params, data);
+        sendMenuAndSave(params, data);
     }
 }

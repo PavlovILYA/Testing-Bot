@@ -70,8 +70,12 @@ public class KeyboardMarkups {
         return wrapInlineKeyboardMarkup(markup);
     }
 
-    public static KeyboardMarkup getTestSolvingTypesInlineKeyboardMarkup() {
+    public static KeyboardMarkup getTestManageInlineKeyboardMarkup(boolean own) {
         List<List<InlineKeyboardButton>> markup = new ArrayList<>();
+        markup.add(List.of(InlineKeyboardButton.builder()
+                .text("⬅️")
+                .callbackData(TO_PUBLIC_TEST_LIST.name())
+                .build()));
         markup.add(List.of(InlineKeyboardButton.builder()
                 .text(SolvingType.INSTANT_DEMONSTRATION_ANSWER.getDescription())
                 .callbackData(SolvingType.INSTANT_DEMONSTRATION_ANSWER.name())
@@ -80,6 +84,18 @@ public class KeyboardMarkups {
                 .text(SolvingType.REPORT_GENERATING_AT_THE_END.getDescription())
                 .callbackData(SolvingType.REPORT_GENERATING_AT_THE_END.name())
                 .build()));
+        if (own) {
+            markup.add(List.of(
+                    InlineKeyboardButton.builder()
+                            .text(EDIT_TEST.getDescription())
+                            .callbackData(EDIT_TEST.name())
+                            .build(),
+                    InlineKeyboardButton.builder()
+                            .text(DELETE_TEST.getDescription())
+                            .callbackData(DELETE_TEST.name())
+                            .build()
+            ));
+        }
         return wrapInlineKeyboardMarkup(markup);
     }
 

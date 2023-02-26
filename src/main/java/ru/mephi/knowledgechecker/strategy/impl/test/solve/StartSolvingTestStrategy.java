@@ -80,7 +80,16 @@ public class StartSolvingTestStrategy extends AbstractCallbackQueryStrategy {
         data.setTest(null);
         clearInlineKeyboard(data);
         data.setState(nextState);
-        saveToContext(data);
+
+        String boldMessage = "🚩 Прохождение теста " + test.getUniqueTitle() + " началось 🚩\n\n";
+        String italicMessage = "😉 Удачи!";
+        SendMessageParams params = wrapMessageParams(data.getUser().getId(), boldMessage + italicMessage,
+                List.of(new MessageEntity(TextType.BOLD, 0, boldMessage.length()),
+                        new MessageEntity(TextType.UNDERLINE, 20, test.getUniqueTitle().length() + 1),
+                        new MessageEntity(TextType.ITALIC, boldMessage.length(), italicMessage.length())),
+                null);
+        deleteMenu(data);
+        sendMessageAndSave(params, data);
         showQuestionStrategy.sendQuestion(solving, data, update);
     }
 }
