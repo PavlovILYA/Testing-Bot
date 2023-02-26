@@ -47,11 +47,11 @@ public class KeyboardMarkups {
                 .text(ADD_OPEN_QUESTION.getDescription())
                 .callbackData(ADD_OPEN_QUESTION.name())
                 .build());
-        menu.add(InlineKeyboardButton.builder()
+        markup.add(menu);
+        markup.add(List.of(InlineKeyboardButton.builder()
                 .text("✅️")
                 .callbackData(TO_PUBLIC_TEST_LIST.name())
-                .build());
-        markup.add(menu);
+                .build()));
         return wrapInlineKeyboardMarkup(markup);
     }
 
@@ -138,11 +138,11 @@ public class KeyboardMarkups {
 
     public static KeyboardMarkup getPublicTestMenuInlineKeyboardMarkup(Page<String> publicTestsPage) {
         List<List<InlineKeyboardButton>> markup = new ArrayList<>();
-        List<InlineKeyboardButton> menu = new ArrayList<>();
-        menu.add(InlineKeyboardButton.builder()
+        markup.add(List.of(InlineKeyboardButton.builder()
                 .text(TO_MAIN_MENU.getDescription())
                 .callbackData(TO_MAIN_MENU.name())
-                .build());
+                .build()));
+        List<InlineKeyboardButton> menu = new ArrayList<>();
         menu.add(InlineKeyboardButton.builder()
                 .text(CREATE_PUBLIC_TEST.getDescription())
                 .callbackData(CREATE_PUBLIC_TEST.name())

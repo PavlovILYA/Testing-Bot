@@ -46,11 +46,11 @@ public class ToCoursesListStrategy extends AbstractCallbackQueryStrategy {
 
     private KeyboardMarkup getInlineKeyboardMarkup() {
         List<List<InlineKeyboardButton>> markup = new ArrayList<>();
-        List<InlineKeyboardButton> menu = new ArrayList<>();
-        menu.add(InlineKeyboardButton.builder()
+        markup.add(List.of(InlineKeyboardButton.builder()
                 .text(TO_MAIN_MENU.getDescription())
                 .callbackData(TO_MAIN_MENU.name())
-                .build());
+                .build()));
+        List<InlineKeyboardButton> menu = new ArrayList<>();
         menu.add(InlineKeyboardButton.builder()
                 .text(ATTEND_COURSE.getDescription())
                 .callbackData(ATTEND_COURSE.name())

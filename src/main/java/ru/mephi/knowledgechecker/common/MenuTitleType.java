@@ -4,11 +4,12 @@ import static ru.mephi.knowledgechecker.common.Constants.HOME;
 import static ru.mephi.knowledgechecker.common.Constants.MENU_LINE;
 
 public enum MenuTitleType {
-    MAIN_MENU(MENU_LINE + "\n🏠 " + HOME + "\n" + MENU_LINE),
-    PUBLIC_TEST_LIST(MENU_LINE + "\n📗 " + HOME + " ➤ ПУБЛИЧНЫЕ ТЕСТЫ\n" + MENU_LINE),
-    COURSES_LIST(MENU_LINE + "\n📚 " + HOME + " ➤ КУРСЫ\n" + MENU_LINE),
-    ADMIN_MENU(MENU_LINE + "\n🔐 " + HOME + " ➤ АДМИНИСТРАТОРСКОЕ МЕНЮ\n" + MENU_LINE),
-    SEARCH_RESULT(MENU_LINE + "\n🕵🏻‍ ПУБЛИЧНЫЕ ТЕСТЫ ➤ РЕЗУЛЬТАТЫ ПОИСКА\n" + MENU_LINE);
+    MAIN_MENU("" + MENU_LINE + "\n🏠\n" + HOME),
+    PUBLIC_TEST_LIST("" + MENU_LINE + "\n📗\n" + HOME + " ➤ ПУБЛИЧНЫЕ ТЕСТЫ"),
+    COURSES_LIST("" + MENU_LINE + "\n📚\n" + HOME + " ➤ КУРСЫ"),
+    ADMIN_MENU("" + MENU_LINE + "\n🔐\n" + HOME + " ➤ АДМИНИСТРАТОРСКОЕ МЕНЮ"),
+    SEARCH_RESULT("" + MENU_LINE + "\n🕵🏻‍\nПУБЛИЧНЫЕ ТЕСТЫ ➤ РЕЗУЛЬТАТЫ ПОИСКА"),
+    MANAGE_TEST("" + MENU_LINE + "\n📃\nТЕСТ: ");
 
     private final String title;
 

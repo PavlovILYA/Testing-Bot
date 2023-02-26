@@ -19,6 +19,7 @@ import java.util.List;
 import static ru.mephi.knowledgechecker.common.Constants.COLON;
 import static ru.mephi.knowledgechecker.common.Constants.PUBLIC_TEST_PREFIX;
 import static ru.mephi.knowledgechecker.common.KeyboardMarkups.getTestManageInlineKeyboardMarkup;
+import static ru.mephi.knowledgechecker.common.MenuTitleType.MANAGE_TEST;
 import static ru.mephi.knowledgechecker.common.ParamsWrapper.wrapMessageParams;
 
 @Component
@@ -50,7 +51,7 @@ public class ManageTestStrategy extends AbstractCallbackQueryStrategy {
         data.setTest(test);
 
         boolean own = test.getCreator().getId().equals(data.getUser().getId());
-        String message = "Выберите вариант прохождения теста";
+        String message = MANAGE_TEST.getTitle() + test.getUniqueTitle();
         SendMessageParams params = wrapMessageParams(data.getUser().getId(), message,
                 List.of(new MessageEntity(TextType.BOLD, 0, message.length())),
                 getTestManageInlineKeyboardMarkup(own));
