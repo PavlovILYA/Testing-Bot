@@ -28,8 +28,8 @@ public class ToTestCreatingStrategy extends AbstractCallbackQueryStrategy {
     }
 
     @Override
-    public boolean apply(Update update) {
-        return super.apply(update)
+    public boolean apply(CurrentData data, Update update) {
+        return super.apply(data, update)
                 && update.getCallbackQuery().getData().equals(CREATE_PUBLIC_TEST.name());
     }
 

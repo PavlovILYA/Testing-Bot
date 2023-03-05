@@ -33,8 +33,9 @@ public class ManageTestStrategy extends AbstractCallbackQueryStrategy {
     }
 
     @Override
-    public boolean apply(Update update) {
-        if (!super.apply(update) || !update.getCallbackQuery().getData().split(COLON)[0].equals(PUBLIC_TEST_PREFIX)) {
+    public boolean apply(CurrentData data, Update update) {
+        if (!super.apply(data, update) ||
+                !update.getCallbackQuery().getData().split(COLON)[0].equals(PUBLIC_TEST_PREFIX)) {
             return false;
         }
 

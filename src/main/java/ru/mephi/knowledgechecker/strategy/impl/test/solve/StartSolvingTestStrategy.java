@@ -45,8 +45,8 @@ public class StartSolvingTestStrategy extends AbstractCallbackQueryStrategy {
     }
 
     @Override
-    public boolean apply(Update update) {
-        return super.apply(update)
+    public boolean apply(CurrentData data, Update update) {
+        return super.apply(data, update)
                 &&
                 (update.getCallbackQuery().getData().equals(SolvingType.INSTANT_DEMONSTRATION_ANSWER.name())
                 || update.getCallbackQuery().getData().equals(SolvingType.REPORT_GENERATING_AT_THE_END.name()));

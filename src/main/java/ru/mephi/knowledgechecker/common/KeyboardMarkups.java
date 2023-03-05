@@ -5,6 +5,7 @@ import ru.mephi.knowledgechecker.dto.telegram.outcome.keyboard.KeyboardMarkup;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.keyboard.inline.InlineKeyboardButton;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.keyboard.reply.KeyboardButton;
 import ru.mephi.knowledgechecker.model.answer.VariableAnswer;
+import ru.mephi.knowledgechecker.model.course.Course;
 import ru.mephi.knowledgechecker.model.question.VariableQuestion;
 import ru.mephi.knowledgechecker.model.solving.SolvingType;
 
@@ -185,7 +186,39 @@ public class KeyboardMarkups {
         return wrapInlineKeyboardMarkup(markup);
     }
 
-    public static List<InlineKeyboardButton> getNavigationButtons(Page<String> currentPage, String callbackPrefix) {
+    public static KeyboardMarkup getOwnCoursesInlineKeyboardMarkup(Page<Course> coursesPage) {
+        List<List<InlineKeyboardButton>> markup = new ArrayList<>();
+        List<InlineKeyboardButton> menu = new ArrayList<>();
+        menu.add(InlineKeyboardButton.builder()
+                .text(TO_MAIN_MENU.getDescription())
+                .callbackData(TO_MAIN_MENU.name())
+                .build());
+        menu.add(InlineKeyboardButton.builder()
+                .text(CREATE_COURSE.getDescription())
+                .callbackData(CREATE_COURSE.name())
+                .build());
+        markup.add(menu);
+        return getCourseListInlineKeyboardMarkup(markup, coursesPage);
+    }
+
+    private static KeyboardMarkup getCourseListInlineKeyboardMarkup(List<List<InlineKeyboardButton>> markup,
+                                                                    Page<Course> coursesPage) {
+        for (Course course: coursesPage.getContent()) {
+            List<InlineKeyboardButton> courseList = new ArrayList<>();
+            courseList.add(InlineKeyboardButton.builder()
+                    .text("📌 " + course.getTitle())
+                    .callbackData(OWN_COURSE_PREFIX + COLON + course.getId())
+                    .build());
+            markup.add(courseList);
+        }
+
+        if (coursesPage.getTotalElements() > PAGE_SIZE) {
+            markup.add(getNavigationButtons(coursesPage, OWN_COURSE_PAGE_PREFIX));
+        }
+        return wrapInlineKeyboardMarkup(markup);
+    }
+
+    public static List<InlineKeyboardButton> getNavigationButtons(Page<?> currentPage, String callbackPrefix) {
         int pageNumber = currentPage.getNumber();
         List<InlineKeyboardButton> navigationList = new ArrayList<>();
         if (pageNumber != 0) {

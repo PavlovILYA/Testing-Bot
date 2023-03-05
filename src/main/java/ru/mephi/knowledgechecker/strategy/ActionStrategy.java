@@ -4,7 +4,7 @@ import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 import ru.mephi.knowledgechecker.model.user.CurrentData;
 
 public interface ActionStrategy {
-    boolean apply(Update update); // choose appropriate strategy
+    boolean apply(CurrentData data, Update update); // choose appropriate strategy
 
     void process(CurrentData data, Update update) throws StrategyProcessException;  // do logic things
 

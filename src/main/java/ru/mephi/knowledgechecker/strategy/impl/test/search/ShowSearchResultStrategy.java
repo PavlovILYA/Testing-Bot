@@ -39,8 +39,8 @@ public class ShowSearchResultStrategy extends AbstractMessageStrategy {
     }
 
     @Override
-    public boolean apply(Update update) {
-        return super.apply(update);
+    public boolean apply(CurrentData data, Update update) {
+        return super.apply(data, update);
     }
 
     @Override

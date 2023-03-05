@@ -60,8 +60,8 @@ public class ShowQuestionStrategy extends AbstractMessageStrategy {
     }
 
     @Override
-    public boolean apply(Update update) {
-        if (!super.apply(update)) {
+    public boolean apply(CurrentData data, Update update) {
+        if (!super.apply(data, update)) {
             return false;
         }
         return true;

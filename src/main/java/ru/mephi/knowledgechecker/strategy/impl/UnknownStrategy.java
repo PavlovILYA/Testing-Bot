@@ -18,7 +18,7 @@ public class UnknownStrategy extends AbstractActionStrategy {
 
 
     @Override
-    public boolean apply(Update update) {
+    public boolean apply(CurrentData data, Update update) {
         return false;
     }
 

@@ -30,7 +30,7 @@ public class ToMainMenuStrategy extends AbstractActionStrategy {
     }
 
     @Override
-    public boolean apply(Update update) {
+    public boolean apply(CurrentData data, Update update) {
         return update.getCallbackQuery() != null
                 && update.getCallbackQuery().getData().equals(TO_MAIN_MENU.name())
                 ||

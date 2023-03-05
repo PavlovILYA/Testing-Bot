@@ -5,5 +5,6 @@ public enum CreationPhaseType {
     TEXT,
     CORRECT_ANSWER,
     MAX_QUESTION_NUMBER,
-    MAX_ANSWER_NUMBER
+    MAX_ANSWER_NUMBER,
+    SAVE_COURSE
 }

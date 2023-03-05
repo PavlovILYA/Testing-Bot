@@ -25,8 +25,8 @@ public class AskForSearchQueryStrategy extends AbstractCallbackQueryStrategy {
     }
 
     @Override
-    public boolean apply(Update update) {
-        return super.apply(update)
+    public boolean apply(CurrentData data, Update update) {
+        return super.apply(data, update)
                 && (update.getCallbackQuery().getData().equals(FIND_PUBLIC_TEST.name()));
     }
 

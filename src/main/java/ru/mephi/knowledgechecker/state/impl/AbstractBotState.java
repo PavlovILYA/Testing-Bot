@@ -24,7 +24,7 @@ public abstract class AbstractBotState implements BotState {
     @Override
     public void process(CurrentData data, Update update) {
         for (ActionStrategy strategy : availableStrategies) {
-            if (strategy.apply(update)) {
+            if (strategy.apply(data, update)) {
                 try {
                     log.info("USE STRATEGY: {}", strategy.getClass().getName());
                     strategy.process(data, update);

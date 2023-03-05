@@ -87,6 +87,15 @@ public abstract class AbstractActionStrategy implements ActionStrategy {
         saveToContext(data);
     }
 
+    protected void sendMessageAndSave(String boldMessage, CurrentData data) {
+        SendMessageParams params = SendMessageParams.builder()
+                .chatId(data.getUser().getId())
+                .text(boldMessage)
+                .entities(List.of(new MessageEntity(TextType.BOLD, 0, boldMessage.length())))
+                .build();
+        sendMessageAndSave(params, data);
+    }
+
     protected void clearInlineKeyboard(CurrentData data) {
         Long clearReplyMessageId = data.getClearReplyMessageId();
         if (clearReplyMessageId != null) {

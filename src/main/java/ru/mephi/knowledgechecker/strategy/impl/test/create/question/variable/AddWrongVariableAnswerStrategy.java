@@ -24,8 +24,8 @@ public class AddWrongVariableAnswerStrategy extends AbstractCallbackQueryStrateg
     }
 
     @Override
-    public boolean apply(Update update) {
-        return super.apply(update)
+    public boolean apply(CurrentData data, Update update) {
+        return super.apply(data, update)
                 && update.getCallbackQuery().getData().equals(ADD_WRONG_VARIABLE_ANSWER.name());
     }
 

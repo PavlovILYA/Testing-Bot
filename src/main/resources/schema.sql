@@ -1,3 +1,4 @@
+-- DROP TABLE courses;
 -- DROP TABLE current_data;
 -- DROP TABLE solving;
 -- DROP TABLE users_tests;
@@ -137,6 +138,17 @@ CREATE TABLE IF NOT EXISTS current_data (
 
 CREATE INDEX IF NOT EXISTS current_data_user_id
     ON current_data(user_id);
+
+CREATE TABLE IF NOT EXISTS courses (
+    id BIGINT GENERATED ALWAYS AS IDENTITY UNIQUE,
+    title varchar(500),
+    creator_id BIGINT,
+    FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE CASCADE,
+    PRIMARY KEY (id)
+);
+
+CREATE INDEX IF NOT EXISTS courses_title
+    ON courses(title);
 
 CREATE OR REPLACE FUNCTION regexp_match(varchar, varchar) RETURNS boolean
     AS 'select $1 ~* $2;'
