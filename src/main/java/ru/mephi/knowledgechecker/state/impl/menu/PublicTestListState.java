@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.mephi.knowledgechecker.state.impl.AbstractBotState;
 import ru.mephi.knowledgechecker.strategy.impl.menu.ToMainMenuStrategy;
-import ru.mephi.knowledgechecker.strategy.impl.test.TurnPageStrategy;
+import ru.mephi.knowledgechecker.strategy.impl.TurnPageStrategy;
 import ru.mephi.knowledgechecker.strategy.impl.test.create.ToTestCreatingStrategy;
 import ru.mephi.knowledgechecker.strategy.impl.test.search.AskForSearchQueryStrategy;
 import ru.mephi.knowledgechecker.strategy.impl.test.ManageTestStrategy;

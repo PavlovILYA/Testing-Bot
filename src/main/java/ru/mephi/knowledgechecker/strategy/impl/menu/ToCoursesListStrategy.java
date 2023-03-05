@@ -3,12 +3,9 @@ package ru.mephi.knowledgechecker.strategy.impl.menu;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
-import ru.mephi.knowledgechecker.common.TextType;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
-import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageEntity;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.keyboard.KeyboardMarkup;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.keyboard.inline.InlineKeyboardButton;
-import ru.mephi.knowledgechecker.dto.telegram.outcome.params.SendMessageParams;
 import ru.mephi.knowledgechecker.model.user.CurrentData;
 import ru.mephi.knowledgechecker.state.impl.menu.CoursesListState;
 import ru.mephi.knowledgechecker.strategy.StrategyProcessException;
@@ -20,7 +17,6 @@ import java.util.List;
 import static ru.mephi.knowledgechecker.common.CallbackDataType.*;
 import static ru.mephi.knowledgechecker.common.MenuTitleType.COURSES_LIST;
 import static ru.mephi.knowledgechecker.common.ParamsWrapper.wrapInlineKeyboardMarkup;
-import static ru.mephi.knowledgechecker.common.ParamsWrapper.wrapMessageParams;
 
 @Slf4j
 @Component
@@ -37,11 +33,8 @@ public class ToCoursesListStrategy extends AbstractCallbackQueryStrategy {
 
     @Override
     public void process(CurrentData data, Update update) throws StrategyProcessException {
-        SendMessageParams params = wrapMessageParams(data.getUser().getId(), COURSES_LIST.getTitle(),
-                List.of(new MessageEntity(TextType.BOLD, 0, COURSES_LIST.getTitle().length())),
-                getInlineKeyboardMarkup());
         data.setState(nextState);
-        sendMenuAndSave(params, data);
+        sendMenuAndSave(data, COURSES_LIST.getTitle(), getInlineKeyboardMarkup());
     }
 
     private KeyboardMarkup getInlineKeyboardMarkup() {

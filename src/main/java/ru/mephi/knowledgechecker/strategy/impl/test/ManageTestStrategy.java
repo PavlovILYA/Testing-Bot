@@ -2,10 +2,7 @@ package ru.mephi.knowledgechecker.strategy.impl.test;
 
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
-import ru.mephi.knowledgechecker.common.TextType;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
-import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageEntity;
-import ru.mephi.knowledgechecker.dto.telegram.outcome.params.SendMessageParams;
 import ru.mephi.knowledgechecker.model.test.Test;
 import ru.mephi.knowledgechecker.model.test.TestType;
 import ru.mephi.knowledgechecker.model.user.CurrentData;
@@ -14,13 +11,10 @@ import ru.mephi.knowledgechecker.state.impl.test.solve.ChooseSolvingTypeState;
 import ru.mephi.knowledgechecker.strategy.StrategyProcessException;
 import ru.mephi.knowledgechecker.strategy.impl.AbstractCallbackQueryStrategy;
 
-import java.util.List;
-
 import static ru.mephi.knowledgechecker.common.Constants.COLON;
 import static ru.mephi.knowledgechecker.common.Constants.PUBLIC_TEST_PREFIX;
 import static ru.mephi.knowledgechecker.common.KeyboardMarkups.getTestManageInlineKeyboardMarkup;
 import static ru.mephi.knowledgechecker.common.MenuTitleType.MANAGE_TEST;
-import static ru.mephi.knowledgechecker.common.ParamsWrapper.wrapMessageParams;
 
 @Component
 public class ManageTestStrategy extends AbstractCallbackQueryStrategy {
@@ -53,10 +47,7 @@ public class ManageTestStrategy extends AbstractCallbackQueryStrategy {
 
         boolean own = test.getCreator().getId().equals(data.getUser().getId());
         String message = MANAGE_TEST.getTitle() + test.getUniqueTitle();
-        SendMessageParams params = wrapMessageParams(data.getUser().getId(), message,
-                List.of(new MessageEntity(TextType.BOLD, 0, message.length())),
-                getTestManageInlineKeyboardMarkup(own));
         data.setState(nextState);
-        sendMenuAndSave(params, data);
+        sendMenuAndSave(data, message, getTestManageInlineKeyboardMarkup(own));
     }
 }

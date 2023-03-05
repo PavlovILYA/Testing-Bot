@@ -106,11 +106,8 @@ public class ReadVariableQuestionStrategy extends AbstractMessageStrategy {
         data.setVariableQuestion(question);
         data.setNextPhase(CreationPhaseType.MAX_ANSWER_NUMBER);
 
-        String boldMessage = "Введите максимальное количество неверных ответов (от 1 до 9)";
-        SendMessageParams params = wrapMessageParams(data.getUser().getId(), boldMessage,
-                List.of(new MessageEntity(TextType.BOLD, 0, boldMessage.length())),
-                null);
-        sendMessageAndSave(params, data);
+        String message = "Введите максимальное количество неверных ответов (от 1 до 9)";
+        sendMessageAndSave(message, data);
     }
 
     private void readMaxAnswerNumber(CurrentData data, Integer maxAnswerNumber) {

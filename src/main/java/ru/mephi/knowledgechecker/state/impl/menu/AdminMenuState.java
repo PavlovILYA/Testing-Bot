@@ -4,7 +4,7 @@ import org.springframework.stereotype.Component;
 import ru.mephi.knowledgechecker.state.impl.AbstractBotState;
 import ru.mephi.knowledgechecker.strategy.impl.course.create.CreatingCourseStrategy;
 import ru.mephi.knowledgechecker.strategy.impl.menu.ToMainMenuStrategy;
-import ru.mephi.knowledgechecker.strategy.impl.test.TurnPageStrategy;
+import ru.mephi.knowledgechecker.strategy.impl.TurnPageStrategy;
 
 @Component
 public class AdminMenuState extends AbstractBotState {

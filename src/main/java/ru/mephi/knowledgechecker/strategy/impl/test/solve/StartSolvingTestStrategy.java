@@ -67,11 +67,8 @@ public class StartSolvingTestStrategy extends AbstractCallbackQueryStrategy {
             telegramApiClient.answerCallbackQuery(popup);
 
             Page<String> publicTests = testService.getCreatedTests(data.getUser().getId());
-            SendMessageParams params = wrapMessageParams(data.getUser().getId(), PUBLIC_TEST_LIST.getTitle(),
-                    List.of(new MessageEntity(TextType.BOLD, 0, PUBLIC_TEST_LIST.getTitle().length())),
-                    getPublicTestMenuInlineKeyboardMarkup(publicTests));
             data.setState(publicTestListState);
-            sendMenuAndSave(params, data);
+            sendMenuAndSave(data, PUBLIC_TEST_LIST.getTitle(), getPublicTestMenuInlineKeyboardMarkup(publicTests));
             return;
         }
 

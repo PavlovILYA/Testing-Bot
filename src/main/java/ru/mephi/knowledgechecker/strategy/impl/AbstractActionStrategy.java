@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import ru.mephi.knowledgechecker.common.TextType;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageEntity;
+import ru.mephi.knowledgechecker.dto.telegram.outcome.keyboard.KeyboardMarkup;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.keyboard.inline.InlineKeyboardMarkup;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.params.*;
 import ru.mephi.knowledgechecker.httpclient.TelegramApiClient;
@@ -55,7 +56,14 @@ public abstract class AbstractActionStrategy implements ActionStrategy {
         }
     }
 
-    protected void sendMenuAndSave(SendMessageParams params, CurrentData data) {
+    protected void sendMenuAndSave(CurrentData data, String text, KeyboardMarkup markup) {
+        SendMessageParams params = SendMessageParams.builder()
+                .chatId(data.getUser().getId())
+                .text(text)
+                .entities(List.of(new MessageEntity(TextType.BOLD, 0, text.length())))
+                .replyMarkup(markup)
+                .build();
+
         clearInlineKeyboard(data);
         Long menuMessageId = data.getMenuMessageId();
         if (data.getMenuMessageId() != null) {

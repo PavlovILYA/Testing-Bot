@@ -63,18 +63,12 @@ public class ShowSearchResultStrategy extends AbstractMessageStrategy {
         telegramApiClient.sendMessage(params);
 
         Page<String> publicTests = testService.getCreatedTests(data.getUser().getId());
-        params = wrapMessageParams(data.getUser().getId(), PUBLIC_TEST_LIST.getTitle(),
-                List.of(new MessageEntity(TextType.BOLD, 0, PUBLIC_TEST_LIST.getTitle().length())),
-                getPublicTestMenuInlineKeyboardMarkup(publicTests));
         data.setState(publicTestListState);
-        sendMenuAndSave(params, data);
+        sendMenuAndSave(data, PUBLIC_TEST_LIST.getTitle(), getPublicTestMenuInlineKeyboardMarkup(publicTests));
     }
 
     private void sendResults(CurrentData data, Page<String> testTitlesPage) {
-        SendMessageParams params = wrapMessageParams(data.getUser().getId(), SEARCH_RESULT.getTitle(),
-                List.of(new MessageEntity(TextType.BOLD, 0, SEARCH_RESULT.getTitle().length())),
-                getSearchResultsInlineKeyboardMarkup(testTitlesPage));
         data.setState(nextState);
-        sendMenuAndSave(params, data);
+        sendMenuAndSave(data, SEARCH_RESULT.getTitle(), getSearchResultsInlineKeyboardMarkup(testTitlesPage));
     }
 }
