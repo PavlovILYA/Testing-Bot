@@ -28,7 +28,7 @@ public class EditTestStrategy extends AbstractCallbackQueryStrategy {
     public void process(CurrentData data, Update update) throws StrategyProcessException {
         data.setNeedCheck(true);
 
-        SendMessageParams params = addingQuestionParams(data.getTest(), data.getUser().getId());
+        SendMessageParams params = addingQuestionParams(data.getTest(), data.getUser().getId(), data.getCourse());
         data.setState(nextState);
         deleteMenu(data);
         sendMessageAndSave(params, data);

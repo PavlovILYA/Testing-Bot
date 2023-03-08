@@ -14,7 +14,7 @@ import ru.mephi.knowledgechecker.model.test.Test;
 import ru.mephi.knowledgechecker.model.user.CurrentData;
 import ru.mephi.knowledgechecker.service.SolvingService;
 import ru.mephi.knowledgechecker.service.TestService;
-import ru.mephi.knowledgechecker.state.impl.menu.PublicTestListState;
+import ru.mephi.knowledgechecker.state.impl.menu.TestListState;
 import ru.mephi.knowledgechecker.state.impl.test.solve.SolvingTestState;
 import ru.mephi.knowledgechecker.strategy.StrategyProcessException;
 import ru.mephi.knowledgechecker.strategy.impl.AbstractCallbackQueryStrategy;
@@ -31,17 +31,17 @@ public class StartSolvingTestStrategy extends AbstractCallbackQueryStrategy {
     private final SolvingService solvingService;
     private final TestService testService;
     private final ShowQuestionStrategy showQuestionStrategy;
-    private final PublicTestListState publicTestListState;
+    private final TestListState testListState;
 
     public StartSolvingTestStrategy(SolvingService solvingService, TestService testService,
                                     ShowQuestionStrategy showQuestionStrategy,
                                     @Lazy SolvingTestState solvingTestState,
-                                    @Lazy PublicTestListState publicTestListState) {
+                                    @Lazy TestListState testListState) {
         this.solvingService = solvingService;
         this.testService = testService;
         this.showQuestionStrategy = showQuestionStrategy;
         this.nextState = solvingTestState;
-        this.publicTestListState = publicTestListState;
+        this.testListState = testListState;
     }
 
     @Override
@@ -67,7 +67,7 @@ public class StartSolvingTestStrategy extends AbstractCallbackQueryStrategy {
             telegramApiClient.answerCallbackQuery(popup);
 
             Page<String> publicTests = testService.getCreatedTests(data.getUser().getId());
-            data.setState(publicTestListState);
+            data.setState(testListState);
             sendMenuAndSave(data, PUBLIC_TEST_LIST.getTitle(), getPublicTestMenuInlineKeyboardMarkup(publicTests));
             return;
         }

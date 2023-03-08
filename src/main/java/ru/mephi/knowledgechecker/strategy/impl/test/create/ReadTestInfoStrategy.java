@@ -83,7 +83,7 @@ public class ReadTestInfoStrategy extends AbstractMessageStrategy {
         data.setNextPhase(null);
         data.setNeedCheck(true);
 
-        SendMessageParams params = addingQuestionParams(test, data.getUser().getId());
+        SendMessageParams params = addingQuestionParams(test, data.getUser().getId(), data.getCourse());
         data.setState(nextState);
         sendMessageAndSave(params, data);
     }

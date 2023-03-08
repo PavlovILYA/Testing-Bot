@@ -9,7 +9,8 @@ public enum MenuTitleType {
     COURSES_LIST("" + MENU_LINE + "\n📚\n" + HOME + " ➤ КУРСЫ"),
     ADMIN_MENU("" + MENU_LINE + "\n🔐\n" + HOME + " ➤ АДМИНИСТРАТОРСКОЕ МЕНЮ"),
     SEARCH_RESULT("" + MENU_LINE + "\n🕵🏻‍\nПУБЛИЧНЫЕ ТЕСТЫ ➤ РЕЗУЛЬТАТЫ ПОИСКА"),
-    MANAGE_TEST("" + MENU_LINE + "\n📃\nТЕСТ: ");
+    MANAGE_TEST("" + MENU_LINE + "\n📃\nТЕСТ: "),
+    MANAGE_COURSE("" + MENU_LINE + "\n📃\nКУРС: ");
 
     private final String title;
 

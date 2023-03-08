@@ -21,6 +21,17 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE INDEX IF NOT EXISTS users_username
     ON users(username);
 
+CREATE TABLE IF NOT EXISTS courses (
+    id BIGINT GENERATED ALWAYS AS IDENTITY UNIQUE,
+    title varchar(500),
+    creator_id BIGINT,
+    FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE CASCADE,
+    PRIMARY KEY (id)
+);
+
+CREATE INDEX IF NOT EXISTS courses_title
+    ON courses(title);
+
 CREATE TABLE IF NOT EXISTS tests (
     id BIGINT GENERATED ALWAYS AS IDENTITY UNIQUE,
     unique_title VARCHAR(50) UNIQUE, -- 30
@@ -28,9 +39,11 @@ CREATE TABLE IF NOT EXISTS tests (
     title VARCHAR(500),
     file_id BIGINT, -- from tg
     max_questions_number INT,
-    test_type VARCHAR(255), -- enum
+    test_type VARCHAR(255),
+    course_id BIGINT,
     PRIMARY KEY (unique_title),
-    FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE CASCADE
+    FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS variable_answers (
@@ -121,6 +134,7 @@ CREATE TABLE IF NOT EXISTS current_data (
     state VARCHAR(500),
     next_phase VARCHAR(500),
     test_id BIGINT,
+    course_id BIGINT,
     need_check BOOLEAN,
     open_question_id BIGINT,
     variable_question_id BIGINT,
@@ -131,6 +145,7 @@ CREATE TABLE IF NOT EXISTS current_data (
     search_key_words VARCHAR(3000),
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (test_id) REFERENCES tests(id) ON DELETE SET NULL,
+    FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE SET NULL,
     FOREIGN KEY (open_question_id) REFERENCES open_questions(id) ON DELETE SET NULL,
     FOREIGN KEY (variable_question_id) REFERENCES variable_questions(id) ON DELETE SET NULL,
     PRIMARY KEY (id)
@@ -138,17 +153,6 @@ CREATE TABLE IF NOT EXISTS current_data (
 
 CREATE INDEX IF NOT EXISTS current_data_user_id
     ON current_data(user_id);
-
-CREATE TABLE IF NOT EXISTS courses (
-    id BIGINT GENERATED ALWAYS AS IDENTITY UNIQUE,
-    title varchar(500),
-    creator_id BIGINT,
-    FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE CASCADE,
-    PRIMARY KEY (id)
-);
-
-CREATE INDEX IF NOT EXISTS courses_title
-    ON courses(title);
 
 CREATE OR REPLACE FUNCTION regexp_match(varchar, varchar) RETURNS boolean
     AS 'select $1 ~* $2;'

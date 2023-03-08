@@ -41,7 +41,7 @@ public class ToQuestionAddingStrategy extends AbstractCallbackQueryStrategy {
         data.setVariableQuestion(null);
         data.setNeedCheck(true);
 
-        SendMessageParams params = addingQuestionParams(data.getTest(), data.getUser().getId());
+        SendMessageParams params = addingQuestionParams(data.getTest(), data.getUser().getId(), data.getCourse());
         data.setState(nextState);
         sendMessageAndSave(params, data);
     }

@@ -31,4 +31,10 @@ public class CourseService {
     public Page<Course> getCoursesByCreatorId(Long creatorId) {
         return getCoursesByCreatorId(creatorId, 0);
     }
+
+    public Course getById(Long id) {
+        Course course = courseRepository.findById(id).orElse(null);
+        log.info("Get course: {}", course);
+        return course;
+    }
 }

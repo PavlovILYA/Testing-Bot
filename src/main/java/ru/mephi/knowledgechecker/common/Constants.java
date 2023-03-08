@@ -1,7 +1,8 @@
 package ru.mephi.knowledgechecker.common;
 
 public class Constants {
-    public static final String PUBLIC_TEST_PREFIX = "pt";
+    public static final String PUBLIC_TEST_PREFIX = "pu";
+    public static final String PRIVATE_TEST_PREFIX = "pr";
     public static final String OWN_COURSE_PREFIX = "oc";
     public static final String COLON = ":";
     public static final String SEMICOLON = ";";
@@ -11,4 +12,5 @@ public class Constants {
     public static final String CREATED_TESTS_PAGE_PREFIX = "cr";
     public static final String SEARCH_TESTS_PAGE_PREFIX = "s";
     public static final String OWN_COURSE_PAGE_PREFIX = "ocp";
+    public static final String PRIVATE_TESTS_PAGE_PREFIX = "pt";
 }

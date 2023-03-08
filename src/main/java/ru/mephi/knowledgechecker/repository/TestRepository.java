@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import ru.mephi.knowledgechecker.model.course.Course;
 import ru.mephi.knowledgechecker.model.test.Test;
 
 public interface TestRepository extends JpaRepository<Test, Long> {
@@ -15,6 +16,10 @@ public interface TestRepository extends JpaRepository<Test, Long> {
     Page<String> getTestsByKeyWords(String keyWords, Long userId, Pageable pageable);
 
     @Query(value = "SELECT t.unique_title FROM tests AS t" +
-            "  WHERE t.creator_id = :userId", nativeQuery = true)
-    Page<String> getCreatedTests(Long userId, Pageable pageable);
+            "  WHERE t.creator_id = :userId AND t.test_type LIKE 'PUBLIC'", nativeQuery = true)
+    Page<String> getCreatedPublicTests(Long userId, Pageable pageable);
+
+    @Query(value = "SELECT t.uniqueTitle FROM Test AS t" +
+            "  WHERE t.course = :course")
+    Page<String> getTestsByCourse(Course course, Pageable pageable);
 }

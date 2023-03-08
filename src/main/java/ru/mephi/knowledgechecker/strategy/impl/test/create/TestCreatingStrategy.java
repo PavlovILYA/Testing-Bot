@@ -16,21 +16,21 @@ import ru.mephi.knowledgechecker.strategy.impl.AbstractCallbackQueryStrategy;
 import java.util.ArrayList;
 import java.util.List;
 
-import static ru.mephi.knowledgechecker.common.CallbackDataType.CREATE_PUBLIC_TEST;
+import static ru.mephi.knowledgechecker.common.CallbackDataType.CREATE_TEST;
 import static ru.mephi.knowledgechecker.common.CallbackDataType.TO_PUBLIC_TEST_LIST;
 import static ru.mephi.knowledgechecker.common.ParamsWrapper.wrapInlineKeyboardMarkup;
 import static ru.mephi.knowledgechecker.common.ParamsWrapper.wrapMessageParams;
 
 @Component
-public class ToTestCreatingStrategy extends AbstractCallbackQueryStrategy {
-    public ToTestCreatingStrategy(@Lazy TestCreatingState nextState) {
+public class TestCreatingStrategy extends AbstractCallbackQueryStrategy {
+    public TestCreatingStrategy(@Lazy TestCreatingState nextState) {
         this.nextState = nextState;
     }
 
     @Override
     public boolean apply(CurrentData data, Update update) {
         return super.apply(data, update)
-                && update.getCallbackQuery().getData().equals(CREATE_PUBLIC_TEST.name());
+                && update.getCallbackQuery().getData().equals(CREATE_TEST.name());
     }
 
     @Override

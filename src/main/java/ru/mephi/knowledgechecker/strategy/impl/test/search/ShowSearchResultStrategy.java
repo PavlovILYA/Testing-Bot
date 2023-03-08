@@ -10,7 +10,7 @@ import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageEntity;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.params.SendMessageParams;
 import ru.mephi.knowledgechecker.model.user.CurrentData;
 import ru.mephi.knowledgechecker.service.TestService;
-import ru.mephi.knowledgechecker.state.impl.menu.PublicTestListState;
+import ru.mephi.knowledgechecker.state.impl.menu.TestListState;
 import ru.mephi.knowledgechecker.state.impl.test.search.TestSearchResultState;
 import ru.mephi.knowledgechecker.strategy.StrategyProcessException;
 import ru.mephi.knowledgechecker.strategy.impl.AbstractMessageStrategy;
@@ -28,14 +28,14 @@ import static ru.mephi.knowledgechecker.common.ParamsWrapper.wrapMessageParams;
 @Component
 public class ShowSearchResultStrategy extends AbstractMessageStrategy {
     private final TestService testService;
-    private final PublicTestListState publicTestListState;
+    private final TestListState testListState;
 
     public ShowSearchResultStrategy(TestService testService,
                                     @Lazy TestSearchResultState testSearchResultState,
-                                    @Lazy PublicTestListState publicTestListState) {
+                                    @Lazy TestListState testListState) {
         this.testService = testService;
         this.nextState = testSearchResultState;
-        this.publicTestListState = publicTestListState;
+        this.testListState = testListState;
     }
 
     @Override
@@ -63,7 +63,7 @@ public class ShowSearchResultStrategy extends AbstractMessageStrategy {
         telegramApiClient.sendMessage(params);
 
         Page<String> publicTests = testService.getCreatedTests(data.getUser().getId());
-        data.setState(publicTestListState);
+        data.setState(testListState);
         sendMenuAndSave(data, PUBLIC_TEST_LIST.getTitle(), getPublicTestMenuInlineKeyboardMarkup(publicTests));
     }
 

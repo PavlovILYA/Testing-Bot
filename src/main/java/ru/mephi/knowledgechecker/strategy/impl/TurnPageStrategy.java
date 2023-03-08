@@ -61,6 +61,11 @@ public class TurnPageStrategy extends AbstractCallbackQueryStrategy {
                 Page<Course> ownCoursesPage = courseService.getCoursesByCreatorId(data.getUser().getId(), pageNumber);
                 markup = getOwnCoursesInlineKeyboardMarkup(ownCoursesPage);
                 break;
+            case PRIVATE_TESTS_PAGE_PREFIX:
+                message = MANAGE_COURSE.getTitle() + data.getCourse().getTitle();
+                Page<String> privateTestsPage = testService.getTestsByCourse(data.getCourse(), pageNumber);
+                markup = getManageCourseInlineKeyboardMarkup(privateTestsPage);
+                break;
             default:
                 return;
         }

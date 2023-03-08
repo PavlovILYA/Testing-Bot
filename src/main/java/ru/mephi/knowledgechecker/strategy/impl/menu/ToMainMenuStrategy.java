@@ -37,6 +37,9 @@ public class ToMainMenuStrategy extends AbstractActionStrategy {
 
     @Override
     public void process(CurrentData data, Update update) throws StrategyProcessException {
+        if (data.getCourse() != null) {
+            data.setCourse(null);
+        }
         data.setState(nextState);
         sendMenuAndSave(data, MAIN_MENU.getTitle(), getStartKeyboardMarkup());
     }

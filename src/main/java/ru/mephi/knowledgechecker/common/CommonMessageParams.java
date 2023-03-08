@@ -2,17 +2,25 @@ package ru.mephi.knowledgechecker.common;
 
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageEntity;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.params.SendMessageParams;
+import ru.mephi.knowledgechecker.model.course.Course;
 import ru.mephi.knowledgechecker.model.question.VariableQuestion;
 import ru.mephi.knowledgechecker.model.test.Test;
 
 import java.util.List;
 
+import static ru.mephi.knowledgechecker.common.CallbackDataType.TO_PUBLIC_TEST_LIST;
+import static ru.mephi.knowledgechecker.common.Constants.COLON;
+import static ru.mephi.knowledgechecker.common.Constants.OWN_COURSE_PREFIX;
 import static ru.mephi.knowledgechecker.common.KeyboardMarkups.getAddQuestionInlineKeyboardMarkup;
 import static ru.mephi.knowledgechecker.common.KeyboardMarkups.getAddWrongVariableAnswerInlineKeyboardMarkup;
 import static ru.mephi.knowledgechecker.common.ParamsWrapper.wrapMessageParams;
 
 public class CommonMessageParams {
-    public static SendMessageParams addingQuestionParams(Test test, Long userId) {
+    public static SendMessageParams addingQuestionParams(Test test, Long userId, Course course) {
+        String doneCallbackData = TO_PUBLIC_TEST_LIST.name();
+        if (course != null) {
+            doneCallbackData = OWN_COURSE_PREFIX + COLON + course.getId();
+        }
         int questionCount = test.getVariableQuestions().size();
         questionCount += test.getOpenQuestions().size();
         String boldMessage = "Добавление вопроса";
@@ -22,7 +30,7 @@ public class CommonMessageParams {
         return  wrapMessageParams(userId, boldMessage + italicMessage,
                 List.of(new MessageEntity(TextType.BOLD, 0, boldMessage.length()),
                         new MessageEntity(TextType.ITALIC, boldMessage.length(), italicMessage.length())),
-                getAddQuestionInlineKeyboardMarkup());
+                getAddQuestionInlineKeyboardMarkup(doneCallbackData));
     }
 
     public static SendMessageParams addingWrongAnswerParams(VariableQuestion question, Long userId) {

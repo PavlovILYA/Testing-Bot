@@ -4,7 +4,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 import ru.mephi.knowledgechecker.model.user.CurrentData;
-import ru.mephi.knowledgechecker.state.impl.course.create.CreatingCourseState;
+import ru.mephi.knowledgechecker.state.impl.course.create.CourseCreatingState;
 import ru.mephi.knowledgechecker.strategy.StrategyProcessException;
 import ru.mephi.knowledgechecker.strategy.impl.AbstractCallbackQueryStrategy;
 
@@ -13,8 +13,8 @@ import static ru.mephi.knowledgechecker.common.CallbackDataType.CREATE_COURSE;
 @Component
 public class CreatingCourseStrategy extends AbstractCallbackQueryStrategy {
 
-    public CreatingCourseStrategy(@Lazy CreatingCourseState creatingCourseState) {
-        nextState = creatingCourseState;
+    public CreatingCourseStrategy(@Lazy CourseCreatingState courseCreatingState) {
+        nextState = courseCreatingState;
     }
 
     @Override

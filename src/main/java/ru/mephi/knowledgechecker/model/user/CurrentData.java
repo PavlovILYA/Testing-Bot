@@ -1,9 +1,13 @@
 package ru.mephi.knowledgechecker.model.user;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import ru.mephi.knowledgechecker.common.CreationPhaseType;
-import ru.mephi.knowledgechecker.model.question.QuestionType;
+import ru.mephi.knowledgechecker.model.course.Course;
 import ru.mephi.knowledgechecker.model.question.OpenQuestion;
+import ru.mephi.knowledgechecker.model.question.QuestionType;
 import ru.mephi.knowledgechecker.model.question.VariableQuestion;
 import ru.mephi.knowledgechecker.model.test.Test;
 import ru.mephi.knowledgechecker.state.BotState;
@@ -31,6 +35,9 @@ public class CurrentData {
     @OneToOne
     @JoinColumn(name = "test_id", referencedColumnName = "id")
     private Test test;
+    @OneToOne
+    @JoinColumn(name = "course_id", referencedColumnName = "id")
+    private Course course;
     private boolean needCheck;
     @OneToOne
     @JoinColumn(name = "open_question_id", referencedColumnName = "id")

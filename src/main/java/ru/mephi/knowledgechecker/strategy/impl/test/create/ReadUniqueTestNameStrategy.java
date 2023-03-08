@@ -8,6 +8,7 @@ import ru.mephi.knowledgechecker.common.TextType;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageEntity;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.params.SendMessageParams;
+import ru.mephi.knowledgechecker.model.course.Course;
 import ru.mephi.knowledgechecker.model.test.Test;
 import ru.mephi.knowledgechecker.model.test.TestType;
 import ru.mephi.knowledgechecker.model.user.CurrentData;
@@ -51,13 +52,21 @@ public class ReadUniqueTestNameStrategy extends AbstractMessageStrategy {
                     "Длина уникального названия теста больше 30, попробуйте еще раз");
         }
 
+        Course course = null;
+        TestType publicity = TestType.PUBLIC;
+        if (data.getCourse() != null) {
+            course = data.getCourse();
+            publicity = TestType.PRIVATE;
+        }
         Test test = Test.builder()
                 .uniqueTitle(uniqueTestName)
                 .creator(data.getUser())
-                .testType(TestType.PUBLIC)
+                .testType(publicity)
+                .course(course)
                 .build();
         test = testService.save(test);
         log.info("Unique test title: {}, userId: {}", test.getUniqueTitle(), data.getUser().getId());
+
         data.setTest(test);
         data.setNextPhase(CreationPhaseType.TITLE);
 

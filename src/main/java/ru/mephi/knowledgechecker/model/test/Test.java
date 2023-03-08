@@ -1,6 +1,7 @@
 package ru.mephi.knowledgechecker.model.test;
 
 import lombok.*;
+import ru.mephi.knowledgechecker.model.course.Course;
 import ru.mephi.knowledgechecker.model.question.OpenQuestion;
 import ru.mephi.knowledgechecker.model.question.VariableQuestion;
 import ru.mephi.knowledgechecker.model.user.User;
@@ -35,16 +36,20 @@ public class Test {
     @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "test", // todo: fetch, cascade
               fetch = FetchType.LAZY, orphanRemoval = true)
-    List<VariableQuestion> variableQuestions;
+    private List<VariableQuestion> variableQuestions;
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "test", // todo: fetch, cascade
             fetch = FetchType.LAZY, orphanRemoval = true)
-    List<OpenQuestion> openQuestions;
+    private List<OpenQuestion> openQuestions;
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @ManyToMany(mappedBy = "addedTests") // а надо оно здесь вообще?
-    List<User> usingUsers;
+    private List<User> usingUsers;
+
+    @ManyToOne
+    @JoinColumn(table = "tests", name = "course_id")
+    private Course course;
 }

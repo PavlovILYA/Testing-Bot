@@ -37,7 +37,7 @@ public class KeyboardMarkups {
         return wrapInlineKeyboardMarkup(markup);
     }
 
-    public static KeyboardMarkup getAddQuestionInlineKeyboardMarkup() {
+    public static KeyboardMarkup getAddQuestionInlineKeyboardMarkup(String doneCallbackData) {
         List<List<InlineKeyboardButton>> markup = new ArrayList<>();
         List<InlineKeyboardButton> menu = new ArrayList<>();
         menu.add(InlineKeyboardButton.builder()
@@ -51,7 +51,7 @@ public class KeyboardMarkups {
         markup.add(menu);
         markup.add(List.of(InlineKeyboardButton.builder()
                 .text("✅️")
-                .callbackData(TO_PUBLIC_TEST_LIST.name())
+                .callbackData(doneCallbackData)
                 .build()));
         return wrapInlineKeyboardMarkup(markup);
     }
@@ -71,11 +71,11 @@ public class KeyboardMarkups {
         return wrapInlineKeyboardMarkup(markup);
     }
 
-    public static KeyboardMarkup getTestManageInlineKeyboardMarkup(boolean own) {
+    public static KeyboardMarkup getTestManageInlineKeyboardMarkup(boolean own, String backCallbackData) {
         List<List<InlineKeyboardButton>> markup = new ArrayList<>();
         markup.add(List.of(InlineKeyboardButton.builder()
                 .text("⬅️")
-                .callbackData(TO_PUBLIC_TEST_LIST.name())
+                .callbackData(backCallbackData)
                 .build()));
         markup.add(List.of(InlineKeyboardButton.builder()
                 .text(SolvingType.INSTANT_DEMONSTRATION_ANSWER.getDescription())
@@ -145,8 +145,8 @@ public class KeyboardMarkups {
                 .build()));
         List<InlineKeyboardButton> menu = new ArrayList<>();
         menu.add(InlineKeyboardButton.builder()
-                .text(CREATE_PUBLIC_TEST.getDescription())
-                .callbackData(CREATE_PUBLIC_TEST.name())
+                .text(CREATE_TEST.getDescription())
+                .callbackData(CREATE_TEST.name())
                 .build());
         menu.add(InlineKeyboardButton.builder()
                 .text(FIND_PUBLIC_TEST.getDescription())
@@ -154,7 +154,8 @@ public class KeyboardMarkups {
                 .build());
         markup.add(menu);
 
-        return getPublicTestListInlineKeyboardMarkup(markup, publicTestsPage, CREATED_TESTS_PAGE_PREFIX);
+        return getTestListInlineKeyboardMarkup(markup, publicTestsPage,
+                PUBLIC_TEST_PREFIX, CREATED_TESTS_PAGE_PREFIX);
     }
 
     public static KeyboardMarkup getSearchResultsInlineKeyboardMarkup(Page<String> publicTestsPage) {
@@ -165,24 +166,27 @@ public class KeyboardMarkups {
                 .build());
         markup.add(back);
 
-        return getPublicTestListInlineKeyboardMarkup(markup, publicTestsPage, SEARCH_TESTS_PAGE_PREFIX);
+        return getTestListInlineKeyboardMarkup(markup, publicTestsPage,
+                PUBLIC_TEST_PREFIX, SEARCH_TESTS_PAGE_PREFIX);
     }
 
-    public static KeyboardMarkup getPublicTestListInlineKeyboardMarkup(List<List<InlineKeyboardButton>> markup,
-                                                                       Page<String> publicTestsPage,
-                                                                       String callbackPrefix) {
-        for (String test: publicTestsPage.getContent()) {
+    public static KeyboardMarkup getTestListInlineKeyboardMarkup(List<List<InlineKeyboardButton>> markup,
+                                                                 Page<String> testsPage,
+                                                                 String testPublicityPrefix,
+                                                                 String pagePrefix) {
+        for (String test: testsPage.getContent()) {
             List<InlineKeyboardButton> testList = new ArrayList<>();
             testList.add(InlineKeyboardButton.builder()
                     .text("📌 " + test)
-                    .callbackData(PUBLIC_TEST_PREFIX + COLON + test)
+                    .callbackData(testPublicityPrefix + COLON + test)
                     .build());
             markup.add(testList);
         }
 
-        if (publicTestsPage.getTotalElements() > PAGE_SIZE) {
-            markup.add(getNavigationButtons(publicTestsPage, callbackPrefix));
+        if (testsPage.getTotalElements() > PAGE_SIZE) {
+            markup.add(getNavigationButtons(testsPage, pagePrefix));
         }
+
         return wrapInlineKeyboardMarkup(markup);
     }
 
@@ -198,6 +202,7 @@ public class KeyboardMarkups {
                 .callbackData(CREATE_COURSE.name())
                 .build());
         markup.add(menu);
+
         return getCourseListInlineKeyboardMarkup(markup, coursesPage);
     }
 
@@ -215,7 +220,25 @@ public class KeyboardMarkups {
         if (coursesPage.getTotalElements() > PAGE_SIZE) {
             markup.add(getNavigationButtons(coursesPage, OWN_COURSE_PAGE_PREFIX));
         }
+
         return wrapInlineKeyboardMarkup(markup);
+    }
+
+    public static KeyboardMarkup getManageCourseInlineKeyboardMarkup(Page<String> privateTestsPage) {
+        List<List<InlineKeyboardButton>> markup = new ArrayList<>();
+        List<InlineKeyboardButton> menu = new ArrayList<>();
+        menu.add(InlineKeyboardButton.builder()
+                .text("⬅️")
+                .callbackData(TO_ADMIN_MENU.name())
+                .build());
+        menu.add(InlineKeyboardButton.builder()
+                .text(CREATE_TEST.getDescription())
+                .callbackData(CREATE_TEST.name())
+                .build());
+        markup.add(menu);
+
+        return getTestListInlineKeyboardMarkup(markup, privateTestsPage,
+                PRIVATE_TEST_PREFIX, PRIVATE_TESTS_PAGE_PREFIX);
     }
 
     public static List<InlineKeyboardButton> getNavigationButtons(Page<?> currentPage, String callbackPrefix) {

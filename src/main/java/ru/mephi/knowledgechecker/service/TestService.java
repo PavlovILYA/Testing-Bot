@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import ru.mephi.knowledgechecker.model.course.Course;
 import ru.mephi.knowledgechecker.model.test.Test;
 import ru.mephi.knowledgechecker.repository.TestRepository;
 
@@ -43,12 +44,21 @@ public class TestService {
     }
 
     public Page<String> getCreatedTests(Long userId, int from) {
-        return testRepository.getCreatedTests(userId,
+        return testRepository.getCreatedPublicTests(userId,
                 PageRequest.of(from, PAGE_SIZE, Sort.by("unique_title")));
     }
 
     public void delete(Long testId) {
         testRepository.deleteById(testId);
         log.info("Deleted test: {}", testId);
+    }
+
+    public Page<String> getTestsByCourse(Course course) {
+        return getTestsByCourse(course, 0);
+    }
+
+    public Page<String> getTestsByCourse(Course course, int from) {
+        return testRepository.getTestsByCourse(course,
+                PageRequest.of(from, PAGE_SIZE, Sort.by("uniqueTitle")));
     }
 }

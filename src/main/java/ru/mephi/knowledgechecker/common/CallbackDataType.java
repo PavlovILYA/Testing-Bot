@@ -3,7 +3,7 @@ package ru.mephi.knowledgechecker.common;
 public enum CallbackDataType {
     TO_PUBLIC_TEST_LIST("📗 Список публичных тестов"),
     TO_MAIN_MENU("⬅️"),
-    CREATE_PUBLIC_TEST("📝 Создать тест"),
+    CREATE_TEST("📝 Создать тест"),
     FIND_PUBLIC_TEST("🔎️ Найти тест"),
     TO_COURSES_LIST("📚 Список курсов"),
     ATTEND_COURSE("👩🏼‍🎓 Поступить на курс"),
