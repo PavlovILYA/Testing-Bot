@@ -86,6 +86,15 @@ public abstract class AbstractActionStrategy implements ActionStrategy {
         data.setMenuMessageId(null);
     }
 
+    protected void sendBoldMessage(String boldMessage, Long userId) {
+        SendMessageParams params = SendMessageParams.builder()
+                .chatId(userId)
+                .text(boldMessage)
+                .entities(List.of(new MessageEntity(TextType.BOLD, 0, boldMessage.length())))
+                .build();
+        telegramApiClient.sendMessage(params);
+    }
+
     protected void sendMessageAndSave(SendMessageParams params, CurrentData data) {
         clearInlineKeyboard(data);
         Long messageId = telegramApiClient.sendMessage(params);

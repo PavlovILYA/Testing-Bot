@@ -219,6 +219,18 @@ public class KeyboardMarkups {
                 SEARCH_COURSE_PREFIX, SEARCH_COURSES_PAGE_PREFIX);
     }
 
+    public static KeyboardMarkup getOutputCourseQueriesInlineKeyboardMarkup(Page<Course> courseTitlesPage) {
+        List<List<InlineKeyboardButton>> markup = new ArrayList<>();
+        List<InlineKeyboardButton> back = List.of(InlineKeyboardButton.builder()
+                .text("⬅️")
+                .callbackData(TO_COURSES_LIST.name())
+                .build());
+        markup.add(back);
+
+        return getCourseListInlineKeyboardMarkup(markup, courseTitlesPage,
+                OUTPUT_QUERIES_PREFIX, OUTPUT_QUERIES_PAGE_PREFIX);
+    }
+
     private static KeyboardMarkup getCourseListInlineKeyboardMarkup(List<List<InlineKeyboardButton>> markup,
                                                                     Page<Course> coursesPage,
                                                                     String coursePrefix,
@@ -268,8 +280,8 @@ public class KeyboardMarkups {
                 .callbackData(FIND_COURSE.name())
                 .build());
         menu.add(InlineKeyboardButton.builder()
-                .text(COURSES_APPLICATIONS.getDescription())
-                .callbackData(COURSES_APPLICATIONS.name())
+                .text(TO_OUTPUT_COURSE_QUERIES.getDescription())
+                .callbackData(TO_OUTPUT_COURSE_QUERIES.name())
                 .build());
         markup.add(menu);
 

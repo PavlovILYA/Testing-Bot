@@ -36,7 +36,8 @@ public class TurnPageStrategy extends AbstractCallbackQueryStrategy {
                         || prefix.equals(SEARCH_TESTS_PAGE_PREFIX)
                         || prefix.equals(OWN_COURSE_PAGE_PREFIX)
                         || prefix.equals(PRIVATE_TESTS_PAGE_PREFIX)
-                        || prefix.equals((SEARCH_COURSES_PAGE_PREFIX)));
+                        || prefix.equals(SEARCH_COURSES_PAGE_PREFIX)
+                        || prefix.equals(OUTPUT_QUERIES_PAGE_PREFIX));
     }
 
     @Override
@@ -73,6 +74,12 @@ public class TurnPageStrategy extends AbstractCallbackQueryStrategy {
                 Page<Course> coursesPage = courseService.findCourses(data.getSearchKeyWords(),
                         data.getUser().getId(), pageNumber);
                 markup = getCourseSearchResultsInlineKeyboardMarkup(coursesPage);
+                break;
+            case OUTPUT_QUERIES_PAGE_PREFIX:
+                message = OUTPUT_COURSE_QUERIES.getTitle();
+                Page<Course> outputQueriesPage = courseService.getCoursesByParticipantId(data.getUser().getId(),
+                        false, pageNumber);
+                markup = getOutputCourseQueriesInlineKeyboardMarkup(outputQueriesPage);
                 break;
             default:
                 return;

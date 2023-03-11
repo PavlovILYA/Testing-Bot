@@ -18,6 +18,7 @@ import java.util.List;
 import static ru.mephi.knowledgechecker.common.CallbackDataType.*;
 import static ru.mephi.knowledgechecker.common.Constants.*;
 import static ru.mephi.knowledgechecker.common.MenuTitleType.MANAGE_COURSE;
+import static ru.mephi.knowledgechecker.common.MenuTitleType.QUERY_TO_COURSE;
 import static ru.mephi.knowledgechecker.common.ParamsWrapper.wrapInlineKeyboardMarkup;
 
 @Component
@@ -37,6 +38,7 @@ public class ManageCourseStrategy extends AbstractCallbackQueryStrategy {
                 && (
                         coursePrefix.equals(OWN_COURSE_PREFIX)
                         || coursePrefix.equals(SEARCH_COURSE_PREFIX)
+                        || coursePrefix.equals(OUTPUT_QUERIES_PREFIX)
         );
     }
 
@@ -46,15 +48,21 @@ public class ManageCourseStrategy extends AbstractCallbackQueryStrategy {
         Long id = Long.parseLong(update.getCallbackQuery().getData().split(COLON)[1]);
         Course course = courseService.getById(id);
         data.setCourse(course);
-        String message = MANAGE_COURSE.getTitle() + course.getTitle();
+        String message;
         KeyboardMarkup markup;
 
         switch (coursePrefix) {
             case OWN_COURSE_PREFIX:
+                message = MANAGE_COURSE.getTitle() + course.getTitle();
                 markup = getManageOwnCourseMarkup();
                 break;
             case SEARCH_COURSE_PREFIX:
+                message = MANAGE_COURSE.getTitle() + course.getTitle();
                 markup = getManageSearchCourseMarkup();
+                break;
+            case OUTPUT_QUERIES_PREFIX:
+                message = QUERY_TO_COURSE.getTitle() + course.getTitle();
+                markup = getManageOutputQueryMarkup();
                 break;
             default:
                 return;
@@ -95,6 +103,20 @@ public class ManageCourseStrategy extends AbstractCallbackQueryStrategy {
                 InlineKeyboardButton.builder()
                         .text(PARTICIPATE_IN_COURSE.getDescription())
                         .callbackData(PARTICIPATE_IN_COURSE.name())
+                        .build()));
+        return wrapInlineKeyboardMarkup(markup);
+    }
+
+    private KeyboardMarkup getManageOutputQueryMarkup() {
+        List<List<InlineKeyboardButton>> markup = new ArrayList<>();
+        markup.add(List.of(
+                InlineKeyboardButton.builder()
+                        .text("⬅️")
+                        .callbackData(TO_OUTPUT_COURSE_QUERIES.name())
+                        .build(),
+                InlineKeyboardButton.builder()
+                        .text(CANCEL_QUERY.getDescription())
+                        .callbackData(CANCEL_QUERY.name())
                         .build()));
         return wrapInlineKeyboardMarkup(markup);
     }

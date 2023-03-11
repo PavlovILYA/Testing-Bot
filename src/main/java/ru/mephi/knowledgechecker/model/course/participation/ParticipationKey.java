@@ -1,4 +1,4 @@
-package ru.mephi.knowledgechecker.model.course.application;
+package ru.mephi.knowledgechecker.model.course.participation;
 
 import lombok.*;
 

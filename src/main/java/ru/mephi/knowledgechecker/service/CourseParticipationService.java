@@ -3,28 +3,37 @@ package ru.mephi.knowledgechecker.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.mephi.knowledgechecker.model.course.application.CourseParticipation;
-import ru.mephi.knowledgechecker.model.course.application.ParticipationKey;
+import ru.mephi.knowledgechecker.model.course.participation.CourseParticipation;
+import ru.mephi.knowledgechecker.model.course.participation.ParticipationKey;
 import ru.mephi.knowledgechecker.repository.CourseParticipationRepository;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class CourseParticipationService {
-    private final CourseParticipationRepository courseParticipationRepository;
+    private final CourseParticipationRepository participationRepository;
 
     public CourseParticipation save(Long userId, Long courseId) {
         ParticipationKey id = ParticipationKey.builder()
                 .userId(userId)
                 .courseId(courseId)
                 .build();
-        CourseParticipation participation = courseParticipationRepository.findById(id).orElse(null);
+        CourseParticipation participation = participationRepository.findById(id).orElse(null);
         if (participation == null) {
-            participation = courseParticipationRepository.save(CourseParticipation.builder()
+            participation = participationRepository.save(CourseParticipation.builder()
                     .id(id)
                     .build());
         }
-        log.info("Saved course application: {}", participation);
+        log.info("Saved course participation: {}", participation);
         return participation;
+    }
+
+    public void remove(Long userId, Long courseId) {
+        ParticipationKey id = ParticipationKey.builder()
+                .userId(userId)
+                .courseId(courseId)
+                .build();
+        participationRepository.deleteById(id);
+        log.info("Removed course participation: {}", id);
     }
 }
