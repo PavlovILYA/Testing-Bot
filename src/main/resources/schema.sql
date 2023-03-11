@@ -144,11 +144,13 @@ CREATE TABLE IF NOT EXISTS current_data (
     menu_message_id BIGINT,
     clear_reply_message_id BIGINT,
     search_key_words VARCHAR(3000),
+    student_id BIGINT,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (test_id) REFERENCES tests(id) ON DELETE SET NULL,
     FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE SET NULL,
     FOREIGN KEY (open_question_id) REFERENCES open_questions(id) ON DELETE SET NULL,
     FOREIGN KEY (variable_question_id) REFERENCES variable_questions(id) ON DELETE SET NULL,
+    FOREIGN KEY (student_id) REFERENCES users(id) ON DELETE SET NULL,
     PRIMARY KEY (id)
 );
 

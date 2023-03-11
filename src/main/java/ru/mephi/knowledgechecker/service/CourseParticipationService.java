@@ -36,4 +36,19 @@ public class CourseParticipationService {
         participationRepository.deleteById(id);
         log.info("Removed course participation: {}", id);
     }
+
+    public CourseParticipation acceptParticipation(Long userId, Long courseId) {
+        ParticipationKey id = ParticipationKey.builder()
+                .userId(userId)
+                .courseId(courseId)
+                .build();
+        CourseParticipation participation = participationRepository.findById(id).orElse(null);
+        if (participation == null) {
+            return null;
+        }
+        participation.setApproved(true);
+        participation = participationRepository.save(participation);
+        log.info("Accept course participation: {}", participation);
+        return participation;
+    }
 }

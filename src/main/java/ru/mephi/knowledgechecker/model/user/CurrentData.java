@@ -51,6 +51,9 @@ public class CurrentData {
     private Long menuMessageId;
     private Long clearReplyMessageId;
     private String searchKeyWords;
+    @OneToOne
+    @JoinColumn(name = "student_id", referencedColumnName = "id")
+    private User student;
 
     public void setState(BotState state) {
         this.state = mapStateToBeanName(state.getClass());

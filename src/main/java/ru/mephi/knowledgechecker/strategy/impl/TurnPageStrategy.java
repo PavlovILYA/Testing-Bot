@@ -29,15 +29,17 @@ public class TurnPageStrategy extends AbstractCallbackQueryStrategy {
 
     @Override
     public boolean apply(CurrentData data, Update update) {
+        if (!super.apply(data, update)) {
+            return false;
+        }
+
         String prefix = update.getCallbackQuery().getData().split(COLON)[0];
-        return super.apply(data, update)
-                &&
-                (prefix.equals(CREATED_TESTS_PAGE_PREFIX)
-                        || prefix.equals(SEARCH_TESTS_PAGE_PREFIX)
-                        || prefix.equals(OWN_COURSE_PAGE_PREFIX)
-                        || prefix.equals(PRIVATE_TESTS_PAGE_PREFIX)
-                        || prefix.equals(SEARCH_COURSES_PAGE_PREFIX)
-                        || prefix.equals(OUTPUT_QUERIES_PAGE_PREFIX));
+        return prefix.equals(CREATED_TESTS_PAGE_PREFIX)
+                || prefix.equals(SEARCH_TESTS_PAGE_PREFIX)
+                || prefix.equals(OWN_COURSE_PAGE_PREFIX)
+                || prefix.equals(PRIVATE_TESTS_PAGE_PREFIX)
+                || prefix.equals(SEARCH_COURSES_PAGE_PREFIX)
+                || prefix.equals(OUTPUT_QUERIES_PAGE_PREFIX);
     }
 
     @Override

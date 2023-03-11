@@ -33,20 +33,21 @@ public class ManageCourseStrategy extends AbstractCallbackQueryStrategy {
 
     @Override
     public boolean apply(CurrentData data, Update update) {
+        if (!super.apply(data, update)) {
+            return false;
+        }
+
         String coursePrefix = update.getCallbackQuery().getData().split(COLON)[0];
-        return super.apply(data, update)
-                && (
-                        coursePrefix.equals(OWN_COURSE_PREFIX)
-                        || coursePrefix.equals(SEARCH_COURSE_PREFIX)
-                        || coursePrefix.equals(OUTPUT_QUERIES_PREFIX)
-        );
+        return coursePrefix.equals(OWN_COURSE_PREFIX)
+                || coursePrefix.equals(SEARCH_COURSE_PREFIX)
+                || coursePrefix.equals(OUTPUT_QUERIES_PREFIX);
     }
 
     @Override
     public void process(CurrentData data, Update update) throws StrategyProcessException {
         String coursePrefix = update.getCallbackQuery().getData().split(COLON)[0];
-        Long id = Long.parseLong(update.getCallbackQuery().getData().split(COLON)[1]);
-        Course course = courseService.getById(id);
+        Long courseId = Long.parseLong(update.getCallbackQuery().getData().split(COLON)[1]);
+        Course course = courseService.getById(courseId);
         data.setCourse(course);
         String message;
         KeyboardMarkup markup;
@@ -79,8 +80,8 @@ public class ManageCourseStrategy extends AbstractCallbackQueryStrategy {
                 .callbackData(TO_ADMIN_MENU.name())
                 .build()));
         markup.add(List.of(InlineKeyboardButton.builder()
-                .text(GENERATE_INVITE_CODE.getDescription())
-                .callbackData(GENERATE_INVITE_CODE.name())
+                .text(TO_STUDENTS.getDescription())
+                .callbackData(TO_STUDENTS.name())
                 .build()));
         markup.add(List.of(InlineKeyboardButton.builder()
                 .text(TO_PRIVATE_TEST_LIST.getDescription())
@@ -89,6 +90,10 @@ public class ManageCourseStrategy extends AbstractCallbackQueryStrategy {
         markup.add(List.of(InlineKeyboardButton.builder()
                 .text(ACADEMIC_PERFORMANCE.getDescription())
                 .callbackData(ACADEMIC_PERFORMANCE.name())
+                .build()));
+        markup.add(List.of(InlineKeyboardButton.builder()
+                .text(TO_INPUT_COURSE_QUERIES.getDescription())
+                .callbackData(TO_INPUT_COURSE_QUERIES.name())
                 .build()));
         return wrapInlineKeyboardMarkup(markup);
     }
@@ -115,8 +120,8 @@ public class ManageCourseStrategy extends AbstractCallbackQueryStrategy {
                         .callbackData(TO_OUTPUT_COURSE_QUERIES.name())
                         .build(),
                 InlineKeyboardButton.builder()
-                        .text(CANCEL_QUERY.getDescription())
-                        .callbackData(CANCEL_QUERY.name())
+                        .text(CANCEL_OUTPUT_QUERY.getDescription())
+                        .callbackData(CANCEL_OUTPUT_QUERY.name())
                         .build()));
         return wrapInlineKeyboardMarkup(markup);
     }

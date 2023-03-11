@@ -8,6 +8,7 @@ import ru.mephi.knowledgechecker.model.answer.VariableAnswer;
 import ru.mephi.knowledgechecker.model.course.Course;
 import ru.mephi.knowledgechecker.model.question.VariableQuestion;
 import ru.mephi.knowledgechecker.model.solving.SolvingType;
+import ru.mephi.knowledgechecker.model.user.User;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -294,6 +295,37 @@ public class KeyboardMarkups {
 //                    .build());
 //        }
 //        markup.add(two);
+        return wrapInlineKeyboardMarkup(markup);
+    }
+
+    public static KeyboardMarkup getPotentialStudentsInlineKeyboardMarkup(Page<User> queriedPeople, Long courseId) {
+        List<List<InlineKeyboardButton>> markup = new ArrayList<>();
+        markup.add(List.of(InlineKeyboardButton.builder()
+                .text("⬅️")
+                .callbackData(OWN_COURSE_PREFIX + COLON + courseId)
+                .build()));
+
+        return getUserListInlineKeyboardMarkup(markup, queriedPeople,
+                INPUT_QUERIES_PREFIX, INPUT_QUERIES_PAGE_PREFIX);
+    }
+
+    public static KeyboardMarkup getUserListInlineKeyboardMarkup(List<List<InlineKeyboardButton>> markup,
+                                                                 Page<User> queriedPeople,
+                                                                 String userPrefix,
+                                                                 String pagePrefix) {
+        for (User user : queriedPeople.getContent()) {
+            List<InlineKeyboardButton> testList = new ArrayList<>();
+            testList.add(InlineKeyboardButton.builder()
+                    .text("👤 " + user.getUsername())
+                    .callbackData(userPrefix + COLON + user.getId())
+                    .build());
+            markup.add(testList);
+        }
+
+        if (queriedPeople.getTotalElements() > PAGE_SIZE) {
+            markup.add(getNavigationButtons(queriedPeople, pagePrefix));
+        }
+
         return wrapInlineKeyboardMarkup(markup);
     }
 

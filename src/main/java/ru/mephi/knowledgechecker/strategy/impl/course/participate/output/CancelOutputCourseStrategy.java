@@ -8,7 +8,7 @@ import ru.mephi.knowledgechecker.service.CourseParticipationService;
 import ru.mephi.knowledgechecker.strategy.StrategyProcessException;
 import ru.mephi.knowledgechecker.strategy.impl.AbstractCallbackQueryStrategy;
 
-import static ru.mephi.knowledgechecker.common.CallbackDataType.CANCEL_QUERY;
+import static ru.mephi.knowledgechecker.common.CallbackDataType.CANCEL_OUTPUT_QUERY;
 
 @Component
 public class CancelOutputCourseStrategy extends AbstractCallbackQueryStrategy {
@@ -24,7 +24,7 @@ public class CancelOutputCourseStrategy extends AbstractCallbackQueryStrategy {
     @Override
     public boolean apply(CurrentData data, Update update) {
         return super.apply(data, update)
-                && update.getCallbackQuery().getData().equals(CANCEL_QUERY.name());
+                && update.getCallbackQuery().getData().equals(CANCEL_OUTPUT_QUERY.name());
     }
 
     @Override

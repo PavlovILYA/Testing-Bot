@@ -8,7 +8,7 @@ public enum CallbackDataType {
     TO_COURSES_LIST("📚 Список курсов"),
     FIND_COURSE("🔎️ Найти курс"),
     PARTICIPATE_IN_COURSE("👩🏼‍🎓 Поступить на курс"),
-    CANCEL_QUERY("❌ Отменить"),
+    CANCEL_OUTPUT_QUERY("❌ Отменить"),
     TO_OUTPUT_COURSE_QUERIES("Активные заявки"),
     TO_ADMIN_MENU("🔐 Администраторское меню"),
     CREATE_COURSE("📝 Создать курс"),
@@ -16,13 +16,16 @@ public enum CallbackDataType {
     ADD_OPEN_QUESTION("💬 Открытый"),
     ADD_WRONG_VARIABLE_ANSWER("Добавить"),
     TO_QUESTION_ADDING("Добавить вопрос"),
-    GENERATE_INVITE_CODE("Сгенерировать коды доступа"),
+    TO_STUDENTS("Список студентов"),
+    TO_INPUT_COURSE_QUERIES("Заявки на обучение"),
     TO_PRIVATE_TEST_LIST("Тесты курса"),
     ACADEMIC_PERFORMANCE("Успеваемость"),
     NEXT("⏩️"),
     PREVIOUS("⏪️"),
     DELETE_TEST("❌"),
-    EDIT_TEST("✏️");
+    EDIT_TEST("✏️"),
+    ACCEPT_INPUT_QUERY("✅"),
+    REJECT_INPUT_QUERY("⛔️");
 
     private final String description;
 
