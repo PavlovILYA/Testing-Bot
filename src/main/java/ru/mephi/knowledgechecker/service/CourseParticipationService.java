@@ -14,13 +14,17 @@ public class CourseParticipationService {
     private final CourseParticipationRepository courseParticipationRepository;
 
     public CourseParticipation save(Long userId, Long courseId) {
-        CourseParticipation application = courseParticipationRepository.save(CourseParticipation.builder()
-                .id(ParticipationKey.builder()
-                        .userId(userId)
-                        .courseId(courseId)
-                        .build())
-                .build());
-        log.info("Saved course application: {}", application);
-        return application;
+        ParticipationKey id = ParticipationKey.builder()
+                .userId(userId)
+                .courseId(courseId)
+                .build();
+        CourseParticipation participation = courseParticipationRepository.findById(id).orElse(null);
+        if (participation == null) {
+            participation = courseParticipationRepository.save(CourseParticipation.builder()
+                    .id(id)
+                    .build());
+        }
+        log.info("Saved course application: {}", participation);
+        return participation;
     }
 }

@@ -6,6 +6,7 @@ public enum CallbackDataType {
     CREATE_TEST("📝 Создать тест"),
     FIND_PUBLIC_TEST("🔎️ Найти тест"),
     TO_COURSES_LIST("📚 Список курсов"),
+    FIND_COURSE("🔎️ Найти курс"),
     PARTICIPATE_IN_COURSE("👩🏼‍🎓 Поступить на курс"),
     COURSES_APPLICATIONS("Активные заявки"),
     TO_ADMIN_MENU("🔐 Администраторское меню"),

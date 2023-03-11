@@ -9,7 +9,7 @@ import ru.mephi.knowledgechecker.state.impl.course.search.CourseSearchAttemptSta
 import ru.mephi.knowledgechecker.strategy.StrategyProcessException;
 import ru.mephi.knowledgechecker.strategy.impl.AbstractCallbackQueryStrategy;
 
-import static ru.mephi.knowledgechecker.common.CallbackDataType.PARTICIPATE_IN_COURSE;
+import static ru.mephi.knowledgechecker.common.CallbackDataType.FIND_COURSE;
 import static ru.mephi.knowledgechecker.common.CommonMessageParams.askSearchQueryParams;
 
 @Slf4j
@@ -22,7 +22,7 @@ public class AskForCourseSearchQueryStrategy extends AbstractCallbackQueryStrate
     @Override
     public boolean apply(CurrentData data, Update update) {
         return super.apply(data, update)
-                && (update.getCallbackQuery().getData().equals(PARTICIPATE_IN_COURSE.name()));
+                && (update.getCallbackQuery().getData().equals(FIND_COURSE.name()));
     }
 
     @Override

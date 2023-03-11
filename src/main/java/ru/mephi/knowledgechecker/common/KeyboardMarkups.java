@@ -264,8 +264,8 @@ public class KeyboardMarkups {
                 .build()));
         List<InlineKeyboardButton> menu = new ArrayList<>();
         menu.add(InlineKeyboardButton.builder()
-                .text(PARTICIPATE_IN_COURSE.getDescription())
-                .callbackData(PARTICIPATE_IN_COURSE.name())
+                .text(FIND_COURSE.getDescription())
+                .callbackData(FIND_COURSE.name())
                 .build());
         menu.add(InlineKeyboardButton.builder()
                 .text(COURSES_APPLICATIONS.getDescription())

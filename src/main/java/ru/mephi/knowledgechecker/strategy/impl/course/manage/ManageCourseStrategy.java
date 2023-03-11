@@ -16,8 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static ru.mephi.knowledgechecker.common.CallbackDataType.*;
-import static ru.mephi.knowledgechecker.common.Constants.COLON;
-import static ru.mephi.knowledgechecker.common.Constants.OWN_COURSE_PREFIX;
+import static ru.mephi.knowledgechecker.common.Constants.*;
 import static ru.mephi.knowledgechecker.common.MenuTitleType.MANAGE_COURSE;
 import static ru.mephi.knowledgechecker.common.ParamsWrapper.wrapInlineKeyboardMarkup;
 
@@ -33,25 +32,39 @@ public class ManageCourseStrategy extends AbstractCallbackQueryStrategy {
 
     @Override
     public boolean apply(CurrentData data, Update update) {
+        String coursePrefix = update.getCallbackQuery().getData().split(COLON)[0];
         return super.apply(data, update)
                 && (
-                        update.getCallbackQuery().getData().split(COLON)[0].equals(OWN_COURSE_PREFIX)
-//                        || // todo delete course (с подтверждением)
-//                        update.getCallbackQuery().getData().equals(DELETE_TEST.name())
+                        coursePrefix.equals(OWN_COURSE_PREFIX)
+                        || coursePrefix.equals(SEARCH_COURSE_PREFIX)
         );
     }
 
     @Override
     public void process(CurrentData data, Update update) throws StrategyProcessException {
+        String coursePrefix = update.getCallbackQuery().getData().split(COLON)[0];
         Long id = Long.parseLong(update.getCallbackQuery().getData().split(COLON)[1]);
         Course course = courseService.getById(id);
         data.setCourse(course);
-        data.setState(nextState);
         String message = MANAGE_COURSE.getTitle() + course.getTitle();
-        sendMenuAndSave(data, message, getManageCourseMarkup());
+        KeyboardMarkup markup;
+
+        switch (coursePrefix) {
+            case OWN_COURSE_PREFIX:
+                markup = getManageOwnCourseMarkup();
+                break;
+            case SEARCH_COURSE_PREFIX:
+                markup = getManageSearchCourseMarkup();
+                break;
+            default:
+                return;
+        }
+
+        data.setState(nextState);
+        sendMenuAndSave(data, message, markup);
     }
 
-    private KeyboardMarkup getManageCourseMarkup() {
+    private KeyboardMarkup getManageOwnCourseMarkup() {
         List<List<InlineKeyboardButton>> markup = new ArrayList<>();
         markup.add(List.of(InlineKeyboardButton.builder()
                 .text("⬅️")
@@ -69,6 +82,20 @@ public class ManageCourseStrategy extends AbstractCallbackQueryStrategy {
                 .text(ACADEMIC_PERFORMANCE.getDescription())
                 .callbackData(ACADEMIC_PERFORMANCE.name())
                 .build()));
+        return wrapInlineKeyboardMarkup(markup);
+    }
+
+    private KeyboardMarkup getManageSearchCourseMarkup() {
+        List<List<InlineKeyboardButton>> markup = new ArrayList<>();
+        markup.add(List.of(
+                InlineKeyboardButton.builder()
+                        .text("⬅️")
+                        .callbackData(TO_COURSES_LIST.name())
+                        .build(),
+                InlineKeyboardButton.builder()
+                        .text(PARTICIPATE_IN_COURSE.getDescription())
+                        .callbackData(PARTICIPATE_IN_COURSE.name())
+                        .build()));
         return wrapInlineKeyboardMarkup(markup);
     }
 }

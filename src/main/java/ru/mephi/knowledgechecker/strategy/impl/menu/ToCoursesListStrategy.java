@@ -28,6 +28,9 @@ public class ToCoursesListStrategy extends AbstractCallbackQueryStrategy {
 
     @Override
     public void process(CurrentData data, Update update) throws StrategyProcessException {
+        if (data.getCourse() != null) {
+            data.setCourse(null);
+        }
         data.setState(nextState);
         sendMenuAndSave(data, COURSES_LIST.getTitle(), todoFixThisShitInlineKeyboardMarkup());
     }
