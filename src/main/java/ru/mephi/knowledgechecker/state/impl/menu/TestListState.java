@@ -3,6 +3,7 @@ package ru.mephi.knowledgechecker.state.impl.menu;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.mephi.knowledgechecker.state.impl.AbstractBotState;
+import ru.mephi.knowledgechecker.strategy.impl.course.manage.ManageCourseStrategy;
 import ru.mephi.knowledgechecker.strategy.impl.menu.ToAdminMenuStrategy;
 import ru.mephi.knowledgechecker.strategy.impl.menu.ToMainMenuStrategy;
 import ru.mephi.knowledgechecker.strategy.impl.TurnPageStrategy;
@@ -18,12 +19,14 @@ public class TestListState extends AbstractBotState {
                          ManageTestStrategy manageTestStrategy,
                          AskForSearchQueryStrategy askForSearchQueryStrategy,
                          TurnPageStrategy turnPageStrategy,
-                         ToAdminMenuStrategy toAdminMenuStrategy) {
+                         ToAdminMenuStrategy toAdminMenuStrategy,
+                         ManageCourseStrategy manageCourseStrategy) {
         availableStrategies.add(toMainMenuStrategy);
         availableStrategies.add(testCreatingStrategy);
         availableStrategies.add(manageTestStrategy);
         availableStrategies.add(askForSearchQueryStrategy);
         availableStrategies.add(turnPageStrategy);
         availableStrategies.add(toAdminMenuStrategy);
+        availableStrategies.add(manageCourseStrategy);
     }
 }

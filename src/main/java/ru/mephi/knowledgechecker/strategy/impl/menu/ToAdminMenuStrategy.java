@@ -23,16 +23,16 @@ import static ru.mephi.knowledgechecker.model.user.mapper.UserMapper.mapStateToB
 public class ToAdminMenuStrategy extends AbstractActionStrategy {
     private final CourseService courseService;
 
-    public ToAdminMenuStrategy(@Lazy AdminMenuState nextState,
+    public ToAdminMenuStrategy(@Lazy AdminMenuState adminMenuState,
                                CourseService courseService) {
-        this.nextState = nextState;
+        this.nextState = adminMenuState;
         this.courseService = courseService;
     }
 
     @Override
     public boolean apply(CurrentData data, Update update) {
         return update.getCallbackQuery() != null
-                && (update.getCallbackQuery().getData().equals(TO_ADMIN_MENU.name()) || data.getCourse() != null)
+                && (update.getCallbackQuery().getData().equals(TO_ADMIN_MENU.name()))
                 ||
                 update.getMessage() != null && data.getState().equals(mapStateToBeanName(CourseCreatingState.class));
     }

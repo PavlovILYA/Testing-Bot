@@ -34,7 +34,8 @@ public class TurnPageStrategy extends AbstractCallbackQueryStrategy {
                 &&
                 (prefix.equals(CREATED_TESTS_PAGE_PREFIX)
                         || prefix.equals(SEARCH_TESTS_PAGE_PREFIX)
-                        || prefix.equals(OWN_COURSE_PAGE_PREFIX));
+                        || prefix.equals(OWN_COURSE_PAGE_PREFIX)
+                        || prefix.equals(PRIVATE_TESTS_PAGE_PREFIX));
     }
 
     @Override
@@ -64,7 +65,7 @@ public class TurnPageStrategy extends AbstractCallbackQueryStrategy {
             case PRIVATE_TESTS_PAGE_PREFIX:
                 message = MANAGE_COURSE.getTitle() + data.getCourse().getTitle();
                 Page<String> privateTestsPage = testService.getTestsByCourse(data.getCourse(), pageNumber);
-                markup = getManageCourseInlineKeyboardMarkup(privateTestsPage);
+                markup = getPrivateTestListInlineKeyboardMarkup(privateTestsPage, data.getCourse().getId());
                 break;
             default:
                 return;

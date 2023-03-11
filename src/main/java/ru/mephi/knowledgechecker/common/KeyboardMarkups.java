@@ -224,12 +224,12 @@ public class KeyboardMarkups {
         return wrapInlineKeyboardMarkup(markup);
     }
 
-    public static KeyboardMarkup getManageCourseInlineKeyboardMarkup(Page<String> privateTestsPage) {
+    public static KeyboardMarkup getPrivateTestListInlineKeyboardMarkup(Page<String> privateTestsPage, Long courseId) {
         List<List<InlineKeyboardButton>> markup = new ArrayList<>();
         List<InlineKeyboardButton> menu = new ArrayList<>();
         menu.add(InlineKeyboardButton.builder()
                 .text("⬅️")
-                .callbackData(TO_ADMIN_MENU.name())
+                .callbackData(OWN_COURSE_PREFIX + COLON + courseId)
                 .build());
         menu.add(InlineKeyboardButton.builder()
                 .text(CREATE_TEST.getDescription())

@@ -11,6 +11,7 @@ import ru.mephi.knowledgechecker.state.impl.test.manage.ManageTestState;
 import ru.mephi.knowledgechecker.strategy.StrategyProcessException;
 import ru.mephi.knowledgechecker.strategy.impl.AbstractCallbackQueryStrategy;
 
+import static ru.mephi.knowledgechecker.common.CallbackDataType.TO_PRIVATE_TEST_LIST;
 import static ru.mephi.knowledgechecker.common.CallbackDataType.TO_PUBLIC_TEST_LIST;
 import static ru.mephi.knowledgechecker.common.Constants.*;
 import static ru.mephi.knowledgechecker.common.KeyboardMarkups.getTestManageInlineKeyboardMarkup;
@@ -63,7 +64,7 @@ public class ManageTestStrategy extends AbstractCallbackQueryStrategy {
         data.setState(nextState);
         String backCallbackData = data.getCourse() == null
                 ? TO_PUBLIC_TEST_LIST.name()
-                : OWN_COURSE_PREFIX + COLON + data.getCourse().getId();
+                : TO_PRIVATE_TEST_LIST.name();
         sendMenuAndSave(data, message, getTestManageInlineKeyboardMarkup(own, backCallbackData));
     }
 }

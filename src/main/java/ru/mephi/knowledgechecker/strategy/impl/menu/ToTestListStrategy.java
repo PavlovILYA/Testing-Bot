@@ -8,17 +8,13 @@ import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 import ru.mephi.knowledgechecker.model.course.Course;
 import ru.mephi.knowledgechecker.model.test.Test;
 import ru.mephi.knowledgechecker.model.user.CurrentData;
-import ru.mephi.knowledgechecker.service.CourseService;
 import ru.mephi.knowledgechecker.service.TestService;
 import ru.mephi.knowledgechecker.state.impl.menu.TestListState;
 import ru.mephi.knowledgechecker.strategy.StrategyProcessException;
 import ru.mephi.knowledgechecker.strategy.impl.AbstractCallbackQueryStrategy;
 
-import static ru.mephi.knowledgechecker.common.CallbackDataType.DELETE_TEST;
-import static ru.mephi.knowledgechecker.common.CallbackDataType.TO_PUBLIC_TEST_LIST;
-import static ru.mephi.knowledgechecker.common.Constants.COLON;
-import static ru.mephi.knowledgechecker.common.Constants.OWN_COURSE_PREFIX;
-import static ru.mephi.knowledgechecker.common.KeyboardMarkups.getManageCourseInlineKeyboardMarkup;
+import static ru.mephi.knowledgechecker.common.CallbackDataType.*;
+import static ru.mephi.knowledgechecker.common.KeyboardMarkups.getPrivateTestListInlineKeyboardMarkup;
 import static ru.mephi.knowledgechecker.common.KeyboardMarkups.getPublicTestMenuInlineKeyboardMarkup;
 import static ru.mephi.knowledgechecker.common.MenuTitleType.MANAGE_COURSE;
 import static ru.mephi.knowledgechecker.common.MenuTitleType.PUBLIC_TEST_LIST;
@@ -28,13 +24,11 @@ import static ru.mephi.knowledgechecker.common.MenuTitleType.PUBLIC_TEST_LIST;
 public class ToTestListStrategy extends AbstractCallbackQueryStrategy {
 
     private final TestService testService;
-    private final CourseService courseService;
 
-    public ToTestListStrategy(TestService testService, CourseService courseService,
+    public ToTestListStrategy(TestService testService,
                               @Lazy TestListState testListState) {
         this.nextState = testListState;
         this.testService = testService;
-        this.courseService = courseService;
     }
 
     @Override
@@ -45,7 +39,7 @@ public class ToTestListStrategy extends AbstractCallbackQueryStrategy {
                         ||
                         update.getCallbackQuery().getData().equals(DELETE_TEST.name())
                         ||
-                        update.getCallbackQuery().getData().split(COLON)[0].equals(OWN_COURSE_PREFIX)
+                        update.getCallbackQuery().getData().equals(TO_PRIVATE_TEST_LIST.name())
                 );
     }
 
@@ -66,16 +60,14 @@ public class ToTestListStrategy extends AbstractCallbackQueryStrategy {
         data.setTest(null);
 
         data.setState(nextState);
-        if (!update.getCallbackQuery().getData().split(COLON)[0].equals(OWN_COURSE_PREFIX)) {
+        if (data.getCourse() == null) {
             Page<String> publicTests = testService.getCreatedTests(data.getUser().getId());
             sendMenuAndSave(data, PUBLIC_TEST_LIST.getTitle(), getPublicTestMenuInlineKeyboardMarkup(publicTests));
         } else {
-            Long id = Long.parseLong(update.getCallbackQuery().getData().split(COLON)[1]);
-            Course course = courseService.getById(id);
-            data.setCourse(course);
-            String message = MANAGE_COURSE.getTitle() + course.getTitle();
+            Course course = data.getCourse();
+            String message = MANAGE_COURSE.getTitle() + course.getTitle() + " – ТЕСТЫ";
             Page<String> privateTestsPage = testService.getTestsByCourse(course);
-            sendMenuAndSave(data, message, getManageCourseInlineKeyboardMarkup(privateTestsPage));
+            sendMenuAndSave(data, message, getPrivateTestListInlineKeyboardMarkup(privateTestsPage, course.getId()));
         }
     }
 }

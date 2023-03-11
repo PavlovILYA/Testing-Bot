@@ -8,9 +8,8 @@ import ru.mephi.knowledgechecker.model.test.Test;
 
 import java.util.List;
 
+import static ru.mephi.knowledgechecker.common.CallbackDataType.TO_PRIVATE_TEST_LIST;
 import static ru.mephi.knowledgechecker.common.CallbackDataType.TO_PUBLIC_TEST_LIST;
-import static ru.mephi.knowledgechecker.common.Constants.COLON;
-import static ru.mephi.knowledgechecker.common.Constants.OWN_COURSE_PREFIX;
 import static ru.mephi.knowledgechecker.common.KeyboardMarkups.getAddQuestionInlineKeyboardMarkup;
 import static ru.mephi.knowledgechecker.common.KeyboardMarkups.getAddWrongVariableAnswerInlineKeyboardMarkup;
 import static ru.mephi.knowledgechecker.common.ParamsWrapper.wrapMessageParams;
@@ -19,7 +18,7 @@ public class CommonMessageParams {
     public static SendMessageParams addingQuestionParams(Test test, Long userId, Course course) {
         String doneCallbackData = TO_PUBLIC_TEST_LIST.name();
         if (course != null) {
-            doneCallbackData = OWN_COURSE_PREFIX + COLON + course.getId();
+            doneCallbackData = TO_PRIVATE_TEST_LIST.name();
         }
         int questionCount = test.getVariableQuestions().size();
         questionCount += test.getOpenQuestions().size();
