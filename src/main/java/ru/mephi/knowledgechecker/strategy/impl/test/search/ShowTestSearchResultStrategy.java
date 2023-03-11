@@ -4,10 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
-import ru.mephi.knowledgechecker.common.TextType;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
-import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageEntity;
-import ru.mephi.knowledgechecker.dto.telegram.outcome.params.SendMessageParams;
 import ru.mephi.knowledgechecker.model.user.CurrentData;
 import ru.mephi.knowledgechecker.service.TestService;
 import ru.mephi.knowledgechecker.state.impl.menu.TestListState;
@@ -15,24 +12,22 @@ import ru.mephi.knowledgechecker.state.impl.test.search.TestSearchResultState;
 import ru.mephi.knowledgechecker.strategy.StrategyProcessException;
 import ru.mephi.knowledgechecker.strategy.impl.AbstractMessageStrategy;
 
-import java.util.List;
-
+import static ru.mephi.knowledgechecker.common.CommonMessageParams.nothingIsFoundParams;
 import static ru.mephi.knowledgechecker.common.Constants.SEMICOLON;
 import static ru.mephi.knowledgechecker.common.KeyboardMarkups.getPublicTestMenuInlineKeyboardMarkup;
-import static ru.mephi.knowledgechecker.common.KeyboardMarkups.getSearchResultsInlineKeyboardMarkup;
+import static ru.mephi.knowledgechecker.common.KeyboardMarkups.getTestSearchResultsInlineKeyboardMarkup;
 import static ru.mephi.knowledgechecker.common.MenuTitleType.PUBLIC_TEST_LIST;
-import static ru.mephi.knowledgechecker.common.MenuTitleType.SEARCH_RESULT;
-import static ru.mephi.knowledgechecker.common.ParamsWrapper.wrapMessageParams;
+import static ru.mephi.knowledgechecker.common.MenuTitleType.TEST_SEARCH_RESULT;
 
 @Slf4j
 @Component
-public class ShowSearchResultStrategy extends AbstractMessageStrategy {
+public class ShowTestSearchResultStrategy extends AbstractMessageStrategy {
     private final TestService testService;
     private final TestListState testListState;
 
-    public ShowSearchResultStrategy(TestService testService,
-                                    @Lazy TestSearchResultState testSearchResultState,
-                                    @Lazy TestListState testListState) {
+    public ShowTestSearchResultStrategy(TestService testService,
+                                        @Lazy TestSearchResultState testSearchResultState,
+                                        @Lazy TestListState testListState) {
         this.testService = testService;
         this.nextState = testSearchResultState;
         this.testListState = testListState;
@@ -56,11 +51,7 @@ public class ShowSearchResultStrategy extends AbstractMessageStrategy {
     }
 
     private void sendNotFound(CurrentData data) {
-        String message = "По данному запросу ничего не найдено 🤷🏼‍";
-        SendMessageParams params = wrapMessageParams(data.getUser().getId(), message,
-                List.of(new MessageEntity(TextType.BOLD, 0, message.length())),
-                null);
-        telegramApiClient.sendMessage(params);
+        telegramApiClient.sendMessage(nothingIsFoundParams(data.getUser().getId()));
 
         Page<String> publicTests = testService.getCreatedTests(data.getUser().getId());
         data.setState(testListState);
@@ -69,6 +60,6 @@ public class ShowSearchResultStrategy extends AbstractMessageStrategy {
 
     private void sendResults(CurrentData data, Page<String> testTitlesPage) {
         data.setState(nextState);
-        sendMenuAndSave(data, SEARCH_RESULT.getTitle(), getSearchResultsInlineKeyboardMarkup(testTitlesPage));
+        sendMenuAndSave(data, TEST_SEARCH_RESULT.getTitle(), getTestSearchResultsInlineKeyboardMarkup(testTitlesPage));
     }
 }

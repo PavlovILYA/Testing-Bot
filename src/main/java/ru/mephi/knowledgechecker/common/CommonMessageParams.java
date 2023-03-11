@@ -42,4 +42,22 @@ public class CommonMessageParams {
                         new MessageEntity(TextType.ITALIC, boldMessage.length(), italicMessage.length())),
                 getAddWrongVariableAnswerInlineKeyboardMarkup());
     }
+
+    public static SendMessageParams askSearchQueryParams(Long userId) {
+        String boldMessage = "🔎️ Введите поисковой запрос\n\n";
+        String italicMessage = "(Введите ключевое выражение, которое вероятнее всего содержится в названии)" +
+                "\n❗️ Чтобы объединить выборки по нескольким запросам, введите несколько ключевых выражений, " +
+                "разделенных точкой с запятой";
+        return wrapMessageParams(userId, boldMessage + italicMessage,
+                List.of(new MessageEntity(TextType.BOLD, 0, boldMessage.length()),
+                        new MessageEntity(TextType.ITALIC, boldMessage.length(), italicMessage.length())),
+                null);
+    }
+
+    public static SendMessageParams nothingIsFoundParams(Long userId) {
+        String message = "По данному запросу ничего не найдено 🤷🏼‍";
+        return wrapMessageParams(userId, message,
+                List.of(new MessageEntity(TextType.BOLD, 0, message.length())),
+                null);
+    }
 }

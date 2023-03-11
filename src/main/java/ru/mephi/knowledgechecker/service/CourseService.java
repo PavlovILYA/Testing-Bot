@@ -37,4 +37,22 @@ public class CourseService {
         log.info("Get course: {}", course);
         return course;
     }
+
+    public Page<Course> getCoursesByParticipantId(Long userId, boolean approved, int from) {
+        return courseRepository.getCoursesByParticipantId(userId, approved,
+                PageRequest.of(from, PAGE_SIZE, Sort.by("title")));
+    }
+
+    public Page<Course> getCoursesByParticipantId(Long userId, boolean approved) {
+        return getCoursesByParticipantId(userId, approved, 0);
+    }
+
+    public Page<Course> findCourses(String keyWords, Long userId, int from) {
+        return courseRepository.getCoursesByKeyWords(keyWords, userId,
+                PageRequest.of(from, PAGE_SIZE, Sort.by("title")));
+    }
+
+    public Page<Course> findCourses(String keyWords, Long userId) {
+        return findCourses(keyWords, userId, 0);
+    }
 }

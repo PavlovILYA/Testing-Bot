@@ -8,7 +8,7 @@ import ru.mephi.knowledgechecker.strategy.impl.menu.ToAdminMenuStrategy;
 import ru.mephi.knowledgechecker.strategy.impl.menu.ToMainMenuStrategy;
 import ru.mephi.knowledgechecker.strategy.impl.TurnPageStrategy;
 import ru.mephi.knowledgechecker.strategy.impl.test.create.TestCreatingStrategy;
-import ru.mephi.knowledgechecker.strategy.impl.test.search.AskForSearchQueryStrategy;
+import ru.mephi.knowledgechecker.strategy.impl.test.search.AskForTestSearchQueryStrategy;
 import ru.mephi.knowledgechecker.strategy.impl.test.manage.ManageTestStrategy;
 
 @Slf4j
@@ -17,14 +17,14 @@ public class TestListState extends AbstractBotState {
     public TestListState(ToMainMenuStrategy toMainMenuStrategy,
                          TestCreatingStrategy testCreatingStrategy,
                          ManageTestStrategy manageTestStrategy,
-                         AskForSearchQueryStrategy askForSearchQueryStrategy,
+                         AskForTestSearchQueryStrategy askForTestSearchQueryStrategy,
                          TurnPageStrategy turnPageStrategy,
                          ToAdminMenuStrategy toAdminMenuStrategy,
                          ManageCourseStrategy manageCourseStrategy) {
         availableStrategies.add(toMainMenuStrategy);
         availableStrategies.add(testCreatingStrategy);
         availableStrategies.add(manageTestStrategy);
-        availableStrategies.add(askForSearchQueryStrategy);
+        availableStrategies.add(askForTestSearchQueryStrategy);
         availableStrategies.add(turnPageStrategy);
         availableStrategies.add(toAdminMenuStrategy);
         availableStrategies.add(manageCourseStrategy);

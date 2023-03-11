@@ -35,7 +35,8 @@ public class TurnPageStrategy extends AbstractCallbackQueryStrategy {
                 (prefix.equals(CREATED_TESTS_PAGE_PREFIX)
                         || prefix.equals(SEARCH_TESTS_PAGE_PREFIX)
                         || prefix.equals(OWN_COURSE_PAGE_PREFIX)
-                        || prefix.equals(PRIVATE_TESTS_PAGE_PREFIX));
+                        || prefix.equals(PRIVATE_TESTS_PAGE_PREFIX)
+                        || prefix.equals((SEARCH_COURSES_PAGE_PREFIX)));
     }
 
     @Override
@@ -52,20 +53,26 @@ public class TurnPageStrategy extends AbstractCallbackQueryStrategy {
                 markup = getPublicTestMenuInlineKeyboardMarkup(publicTests);
                 break;
             case SEARCH_TESTS_PAGE_PREFIX:
-                message = SEARCH_RESULT.getTitle();
+                message = TEST_SEARCH_RESULT.getTitle();
                 Page<String> testTitlesPage = testService.findTests(data.getSearchKeyWords(),
                         data.getUser().getId(), pageNumber);
-                markup = getSearchResultsInlineKeyboardMarkup(testTitlesPage);
+                markup = getTestSearchResultsInlineKeyboardMarkup(testTitlesPage);
+                break;
+            case PRIVATE_TESTS_PAGE_PREFIX:
+                message = MANAGE_COURSE.getTitle() + data.getCourse().getTitle();
+                Page<String> privateTestsPage = testService.getTestsByCourse(data.getCourse(), pageNumber);
+                markup = getPrivateTestListInlineKeyboardMarkup(privateTestsPage, data.getCourse().getId());
                 break;
             case OWN_COURSE_PAGE_PREFIX:
                 message = ADMIN_MENU.getTitle();
                 Page<Course> ownCoursesPage = courseService.getCoursesByCreatorId(data.getUser().getId(), pageNumber);
                 markup = getOwnCoursesInlineKeyboardMarkup(ownCoursesPage);
                 break;
-            case PRIVATE_TESTS_PAGE_PREFIX:
-                message = MANAGE_COURSE.getTitle() + data.getCourse().getTitle();
-                Page<String> privateTestsPage = testService.getTestsByCourse(data.getCourse(), pageNumber);
-                markup = getPrivateTestListInlineKeyboardMarkup(privateTestsPage, data.getCourse().getId());
+            case SEARCH_COURSES_PAGE_PREFIX:
+                message = COURSE_SEARCH_RESULT.getTitle();
+                Page<Course> coursesPage = courseService.findCourses(data.getSearchKeyWords(),
+                        data.getUser().getId(), pageNumber);
+                markup = getCourseSearchResultsInlineKeyboardMarkup(coursesPage);
                 break;
             default:
                 return;

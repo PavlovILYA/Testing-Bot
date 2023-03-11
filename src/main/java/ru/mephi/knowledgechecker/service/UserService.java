@@ -2,11 +2,16 @@ package ru.mephi.knowledgechecker.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.mephi.knowledgechecker.dto.telegram.income.UserDto;
 import ru.mephi.knowledgechecker.model.user.User;
 import ru.mephi.knowledgechecker.model.user.mapper.UserMapper;
 import ru.mephi.knowledgechecker.repository.UserRepository;
+
+import static ru.mephi.knowledgechecker.common.Constants.PAGE_SIZE;
 
 @Slf4j
 @Service
@@ -30,5 +35,14 @@ public class UserService {
         user = userRepository.save(user);
         log.info("Saved user: {}", user);
         return user;
+    }
+
+    public Page<User> getParticipantsByCourseId(Long courseId, boolean approved, int from) {
+        return userRepository.getParticipantsByCourseId(courseId, approved,
+                PageRequest.of(from, PAGE_SIZE, Sort.by("username")));
+    }
+
+    public Page<User> getParticipantsByCourseId(Long courseId, boolean approved) {
+        return getParticipantsByCourseId(courseId, approved, 0);
     }
 }

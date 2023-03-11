@@ -158,7 +158,7 @@ public class KeyboardMarkups {
                 PUBLIC_TEST_PREFIX, CREATED_TESTS_PAGE_PREFIX);
     }
 
-    public static KeyboardMarkup getSearchResultsInlineKeyboardMarkup(Page<String> publicTestsPage) {
+    public static KeyboardMarkup getTestSearchResultsInlineKeyboardMarkup(Page<String> publicTestsPage) {
         List<List<InlineKeyboardButton>> markup = new ArrayList<>();
         List<InlineKeyboardButton> back = List.of(InlineKeyboardButton.builder()
                 .text("⬅️")
@@ -203,22 +203,37 @@ public class KeyboardMarkups {
                 .build());
         markup.add(menu);
 
-        return getCourseListInlineKeyboardMarkup(markup, coursesPage);
+        return getCourseListInlineKeyboardMarkup(markup, coursesPage,
+                OWN_COURSE_PREFIX, OWN_COURSE_PAGE_PREFIX);
+    }
+
+    public static KeyboardMarkup getCourseSearchResultsInlineKeyboardMarkup(Page<Course> courseTitlesPage) {
+        List<List<InlineKeyboardButton>> markup = new ArrayList<>();
+        List<InlineKeyboardButton> back = List.of(InlineKeyboardButton.builder()
+                .text("⬅️")
+                .callbackData(TO_COURSES_LIST.name())
+                .build());
+        markup.add(back);
+
+        return getCourseListInlineKeyboardMarkup(markup, courseTitlesPage,
+                SEARCH_COURSE_PREFIX, SEARCH_COURSES_PAGE_PREFIX);
     }
 
     private static KeyboardMarkup getCourseListInlineKeyboardMarkup(List<List<InlineKeyboardButton>> markup,
-                                                                    Page<Course> coursesPage) {
+                                                                    Page<Course> coursesPage,
+                                                                    String coursePrefix,
+                                                                    String pagePrefix) {
         for (Course course: coursesPage.getContent()) {
             List<InlineKeyboardButton> courseList = new ArrayList<>();
             courseList.add(InlineKeyboardButton.builder()
                     .text("📌 " + course.getTitle())
-                    .callbackData(OWN_COURSE_PREFIX + COLON + course.getId())
+                    .callbackData(coursePrefix + COLON + course.getId())
                     .build());
             markup.add(courseList);
         }
 
         if (coursesPage.getTotalElements() > PAGE_SIZE) {
-            markup.add(getNavigationButtons(coursesPage, OWN_COURSE_PAGE_PREFIX));
+            markup.add(getNavigationButtons(coursesPage, pagePrefix));
         }
 
         return wrapInlineKeyboardMarkup(markup);
@@ -239,6 +254,35 @@ public class KeyboardMarkups {
 
         return getTestListInlineKeyboardMarkup(markup, privateTestsPage,
                 PRIVATE_TEST_PREFIX, PRIVATE_TESTS_PAGE_PREFIX);
+    }
+
+    public static KeyboardMarkup todoFixThisShitInlineKeyboardMarkup() { // todo изменить по аналогии с тестами (и объединить с тестами!!!)
+        List<List<InlineKeyboardButton>> markup = new ArrayList<>();
+        markup.add(List.of(InlineKeyboardButton.builder()
+                .text(TO_MAIN_MENU.getDescription())
+                .callbackData(TO_MAIN_MENU.name())
+                .build()));
+        List<InlineKeyboardButton> menu = new ArrayList<>();
+        menu.add(InlineKeyboardButton.builder()
+                .text(PARTICIPATE_IN_COURSE.getDescription())
+                .callbackData(PARTICIPATE_IN_COURSE.name())
+                .build());
+        menu.add(InlineKeyboardButton.builder()
+                .text(COURSES_APPLICATIONS.getDescription())
+                .callbackData(COURSES_APPLICATIONS.name())
+                .build());
+        markup.add(menu);
+
+        // todo
+//        List<InlineKeyboardButton> publicTests = new ArrayList<>();
+//        for (test : tests) {
+//            publicTests.add(InlineKeyboardButton.builder()
+//                    .text(test.getName())
+//                    .callbackData(PUBLIC_TEST_PREFIX + COLON + test.getId())
+//                    .build());
+//        }
+//        markup.add(two);
+        return wrapInlineKeyboardMarkup(markup);
     }
 
     public static List<InlineKeyboardButton> getNavigationButtons(Page<?> currentPage, String callbackPrefix) {

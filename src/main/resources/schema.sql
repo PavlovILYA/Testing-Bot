@@ -1,4 +1,4 @@
--- DROP TABLE courses;
+-- DROP TABLE course_participation;
 -- DROP TABLE current_data;
 -- DROP TABLE solving;
 -- DROP TABLE users_tests;
@@ -8,6 +8,7 @@
 -- DROP TABLE variable_questions;
 -- DROP TABLE variable_answers;
 -- DROP TABLE tests;
+-- DROP TABLE courses;
 -- DROP TABLE users;
 
 CREATE TABLE IF NOT EXISTS users (
@@ -23,7 +24,7 @@ CREATE INDEX IF NOT EXISTS users_username
 
 CREATE TABLE IF NOT EXISTS courses (
     id BIGINT GENERATED ALWAYS AS IDENTITY UNIQUE,
-    title varchar(500),
+    title varchar(500) UNIQUE,
     creator_id BIGINT,
     FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE CASCADE,
     PRIMARY KEY (id)
@@ -149,6 +150,15 @@ CREATE TABLE IF NOT EXISTS current_data (
     FOREIGN KEY (open_question_id) REFERENCES open_questions(id) ON DELETE SET NULL,
     FOREIGN KEY (variable_question_id) REFERENCES variable_questions(id) ON DELETE SET NULL,
     PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS course_participation (
+    user_id BIGINT,
+    course_id BIGINT,
+    approved BOOLEAN DEFAULT FALSE,
+    PRIMARY KEY (user_id, course_id),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE
 );
 
 CREATE INDEX IF NOT EXISTS current_data_user_id
