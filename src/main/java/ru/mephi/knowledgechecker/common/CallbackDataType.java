@@ -25,7 +25,8 @@ public enum CallbackDataType {
     DELETE_TEST("❌"),
     EDIT_TEST("✏️"),
     ACCEPT_INPUT_QUERY("✅"),
-    REJECT_INPUT_QUERY("⛔️");
+    REJECT_INPUT_QUERY("⛔️"),
+    BLOCK_STUDENT("❌");
 
     private final String description;
 

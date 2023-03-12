@@ -1,4 +1,4 @@
-package ru.mephi.knowledgechecker.strategy.impl.course.participate.input;
+package ru.mephi.knowledgechecker.strategy.impl.students;
 
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -8,7 +8,7 @@ import ru.mephi.knowledgechecker.dto.telegram.outcome.keyboard.inline.InlineKeyb
 import ru.mephi.knowledgechecker.model.user.CurrentData;
 import ru.mephi.knowledgechecker.model.user.User;
 import ru.mephi.knowledgechecker.service.UserService;
-import ru.mephi.knowledgechecker.state.impl.course.participate.ManageStudentState;
+import ru.mephi.knowledgechecker.state.impl.students.ManageStudentState;
 import ru.mephi.knowledgechecker.strategy.StrategyProcessException;
 import ru.mephi.knowledgechecker.strategy.impl.AbstractCallbackQueryStrategy;
 
@@ -16,9 +16,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static ru.mephi.knowledgechecker.common.CallbackDataType.*;
-import static ru.mephi.knowledgechecker.common.Constants.COLON;
-import static ru.mephi.knowledgechecker.common.Constants.INPUT_QUERIES_PREFIX;
+import static ru.mephi.knowledgechecker.common.Constants.*;
 import static ru.mephi.knowledgechecker.common.MenuTitleType.QUERY_TO_COURSE;
+import static ru.mephi.knowledgechecker.common.MenuTitleType.STUDENT;
 import static ru.mephi.knowledgechecker.common.ParamsWrapper.wrapInlineKeyboardMarkup;
 
 @Component
@@ -38,7 +38,8 @@ public class ManageStudentStrategy extends AbstractCallbackQueryStrategy {
         }
 
         String studentPrefix = update.getCallbackQuery().getData().split(COLON)[0];
-        return studentPrefix.equals(INPUT_QUERIES_PREFIX);
+        return studentPrefix.equals(INPUT_QUERIES_PREFIX)
+                || studentPrefix.equals(STUDENT_PREFIX);
     }
 
     @Override
@@ -54,6 +55,10 @@ public class ManageStudentStrategy extends AbstractCallbackQueryStrategy {
             case INPUT_QUERIES_PREFIX:
                 message = QUERY_TO_COURSE.getTitle() + student.getUsername();
                 markup = getManageInputQueryMarkup();
+                break;
+            case STUDENT_PREFIX:
+                message = STUDENT.getTitle() + student.getUsername();
+                markup = getManageStudentMarkup();
                 break;
             default:
                 return;
@@ -77,6 +82,20 @@ public class ManageStudentStrategy extends AbstractCallbackQueryStrategy {
                 InlineKeyboardButton.builder()
                         .text(REJECT_INPUT_QUERY.getDescription())
                         .callbackData(REJECT_INPUT_QUERY.name())
+                        .build()));
+        return wrapInlineKeyboardMarkup(markup);
+    }
+
+    private KeyboardMarkup getManageStudentMarkup() {
+        List<List<InlineKeyboardButton>> markup = new ArrayList<>();
+        markup.add(List.of(
+                InlineKeyboardButton.builder()
+                        .text("⬅️")
+                        .callbackData(TO_INPUT_COURSE_QUERIES.name())
+                        .build(),
+                InlineKeyboardButton.builder()
+                        .text(BLOCK_STUDENT.getDescription())
+                        .callbackData(BLOCK_STUDENT.name())
                         .build()));
         return wrapInlineKeyboardMarkup(markup);
     }

@@ -298,15 +298,26 @@ public class KeyboardMarkups {
         return wrapInlineKeyboardMarkup(markup);
     }
 
-    public static KeyboardMarkup getPotentialStudentsInlineKeyboardMarkup(Page<User> queriedPeople, Long courseId) {
+    public static KeyboardMarkup getStudentsListInlineKeyboardMarkup(Page<User> studentsPage, Long courseId) {
+        return getUsersInlineKeyboardMarkup(studentsPage, courseId,
+                STUDENT_PREFIX, STUDENT_PAGE_PREFIX);
+    }
+
+    public static KeyboardMarkup getPotentialStudentsInlineKeyboardMarkup(Page<User> queriedPeoplePage, Long courseId) {
+        return getUsersInlineKeyboardMarkup(queriedPeoplePage, courseId,
+                INPUT_QUERIES_PREFIX, INPUT_QUERIES_PAGE_PREFIX);
+    }
+
+    public static KeyboardMarkup getUsersInlineKeyboardMarkup(Page<User> usersPage, Long courseId,
+                                                              String userPrefix, String pagePrefix) {
         List<List<InlineKeyboardButton>> markup = new ArrayList<>();
         markup.add(List.of(InlineKeyboardButton.builder()
                 .text("⬅️")
                 .callbackData(OWN_COURSE_PREFIX + COLON + courseId)
                 .build()));
 
-        return getUserListInlineKeyboardMarkup(markup, queriedPeople,
-                INPUT_QUERIES_PREFIX, INPUT_QUERIES_PAGE_PREFIX);
+        return getUserListInlineKeyboardMarkup(markup, usersPage,
+                userPrefix, pagePrefix);
     }
 
     public static KeyboardMarkup getUserListInlineKeyboardMarkup(List<List<InlineKeyboardButton>> markup,

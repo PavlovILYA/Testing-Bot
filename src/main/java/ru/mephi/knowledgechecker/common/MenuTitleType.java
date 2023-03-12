@@ -11,9 +11,11 @@ public enum MenuTitleType {
     TEST_SEARCH_RESULT("" + MENU_LINE + "\n🕵🏻‍\nПУБЛИЧНЫЕ ТЕСТЫ ➤ РЕЗУЛЬТАТЫ ПОИСКА"),
     COURSE_SEARCH_RESULT("" + MENU_LINE + "\n🕵🏻‍\nКУРСЫ ➤ РЕЗУЛЬТАТЫ ПОИСКА"),
     OUTPUT_COURSE_QUERIES("" + MENU_LINE + "\n🕵🏻‍\nКУРСЫ ➤ ОТКРЫТЫЕ ЗАЯВКИ"),
+    STUDENTS("" + MENU_LINE + "\n👥\nКУРСЫ ➤ СТУДЕНТЫ"),
     MANAGE_TEST("" + MENU_LINE + "\n📃\nТЕСТ: "),
     MANAGE_COURSE("" + MENU_LINE + "\n📃\nКУРС: "),
-    QUERY_TO_COURSE("" + MENU_LINE + "\n🕐\nЗАЯВКА НА КУРС: ");
+    QUERY_TO_COURSE("" + MENU_LINE + "\n🕐\nЗАЯВКА НА КУРС: "),
+    STUDENT("" + MENU_LINE + "\n🕐\nСТУДЕНТ: ");
 
     private final String title;
 

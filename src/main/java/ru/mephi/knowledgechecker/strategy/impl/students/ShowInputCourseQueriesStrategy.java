@@ -1,4 +1,4 @@
-package ru.mephi.knowledgechecker.strategy.impl.course.participate.input;
+package ru.mephi.knowledgechecker.strategy.impl.students;
 
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
@@ -7,7 +7,7 @@ import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 import ru.mephi.knowledgechecker.model.user.CurrentData;
 import ru.mephi.knowledgechecker.model.user.User;
 import ru.mephi.knowledgechecker.service.UserService;
-import ru.mephi.knowledgechecker.state.impl.course.participate.InputCourseQueriesState;
+import ru.mephi.knowledgechecker.state.impl.students.InputCourseQueriesState;
 import ru.mephi.knowledgechecker.strategy.StrategyProcessException;
 import ru.mephi.knowledgechecker.strategy.impl.AbstractCallbackQueryStrategy;
 
@@ -34,9 +34,9 @@ public class ShowInputCourseQueriesStrategy extends AbstractCallbackQueryStrateg
     @Override
     public void process(CurrentData data, Update update) throws StrategyProcessException {
         data.setStudent(null);
-        Page<User> queriedPeople = userService.getParticipantsByCourseId(data.getCourse().getId(), false);
+        Page<User> queriedPeoplePage = userService.getParticipantsByCourseId(data.getCourse().getId(), false);
         data.setState(nextState);
         sendMenuAndSave(data, OUTPUT_COURSE_QUERIES.getTitle(),
-                getPotentialStudentsInlineKeyboardMarkup(queriedPeople, data.getCourse().getId()));
+                getPotentialStudentsInlineKeyboardMarkup(queriedPeoplePage, data.getCourse().getId()));
     }
 }

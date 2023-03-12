@@ -1,4 +1,4 @@
-package ru.mephi.knowledgechecker.strategy.impl.course.participate.input;
+package ru.mephi.knowledgechecker.strategy.impl.students;
 
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;

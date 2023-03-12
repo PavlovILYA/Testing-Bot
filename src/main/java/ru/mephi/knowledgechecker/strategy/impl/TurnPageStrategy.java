@@ -7,8 +7,10 @@ import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.keyboard.KeyboardMarkup;
 import ru.mephi.knowledgechecker.model.course.Course;
 import ru.mephi.knowledgechecker.model.user.CurrentData;
+import ru.mephi.knowledgechecker.model.user.User;
 import ru.mephi.knowledgechecker.service.CourseService;
 import ru.mephi.knowledgechecker.service.TestService;
+import ru.mephi.knowledgechecker.service.UserService;
 import ru.mephi.knowledgechecker.strategy.StrategyProcessException;
 
 import static ru.mephi.knowledgechecker.common.Constants.*;
@@ -20,11 +22,14 @@ import static ru.mephi.knowledgechecker.common.MenuTitleType.*;
 public class TurnPageStrategy extends AbstractCallbackQueryStrategy {
     private final TestService testService;
     private final CourseService courseService;
+    private final UserService userService;
 
     public TurnPageStrategy(TestService testService,
-                            CourseService courseService) {
+                            CourseService courseService,
+                            UserService userService) {
         this.testService = testService;
         this.courseService = courseService;
+        this.userService = userService;
     }
 
     @Override
@@ -39,7 +44,9 @@ public class TurnPageStrategy extends AbstractCallbackQueryStrategy {
                 || prefix.equals(OWN_COURSE_PAGE_PREFIX)
                 || prefix.equals(PRIVATE_TESTS_PAGE_PREFIX)
                 || prefix.equals(SEARCH_COURSES_PAGE_PREFIX)
-                || prefix.equals(OUTPUT_QUERIES_PAGE_PREFIX);
+                || prefix.equals(OUTPUT_QUERIES_PAGE_PREFIX)
+                || prefix.equals(INPUT_QUERIES_PAGE_PREFIX)
+                || prefix.equals(STUDENT_PAGE_PREFIX);
     }
 
     @Override
@@ -82,6 +89,18 @@ public class TurnPageStrategy extends AbstractCallbackQueryStrategy {
                 Page<Course> outputQueriesPage = courseService.getCoursesByParticipantId(data.getUser().getId(),
                         false, pageNumber);
                 markup = getOutputCourseQueriesInlineKeyboardMarkup(outputQueriesPage);
+                break;
+            case INPUT_QUERIES_PAGE_PREFIX:
+                message = OUTPUT_COURSE_QUERIES.getTitle();
+                Page<User> queriedPeoplePage = userService.getParticipantsByCourseId(
+                        data.getCourse().getId(), false, pageNumber);
+                markup = getStudentsListInlineKeyboardMarkup(queriedPeoplePage, data.getCourse().getId());
+                break;
+            case STUDENT_PAGE_PREFIX:
+                message = STUDENTS.getTitle();
+                Page<User> studentsPage = userService.getParticipantsByCourseId(
+                        data.getCourse().getId(), true, pageNumber);
+                markup = getPotentialStudentsInlineKeyboardMarkup(studentsPage, data.getCourse().getId());
                 break;
             default:
                 return;
