@@ -1,6 +1,7 @@
 package ru.mephi.knowledgechecker.strategy.impl.course.manage;
 
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.keyboard.KeyboardMarkup;
@@ -8,6 +9,7 @@ import ru.mephi.knowledgechecker.dto.telegram.outcome.keyboard.inline.InlineKeyb
 import ru.mephi.knowledgechecker.model.course.Course;
 import ru.mephi.knowledgechecker.model.user.CurrentData;
 import ru.mephi.knowledgechecker.service.CourseService;
+import ru.mephi.knowledgechecker.service.TestService;
 import ru.mephi.knowledgechecker.state.impl.course.manage.ManageCourseState;
 import ru.mephi.knowledgechecker.strategy.StrategyProcessException;
 import ru.mephi.knowledgechecker.strategy.impl.AbstractCallbackQueryStrategy;
@@ -17,6 +19,7 @@ import java.util.List;
 
 import static ru.mephi.knowledgechecker.common.CallbackDataType.*;
 import static ru.mephi.knowledgechecker.common.Constants.*;
+import static ru.mephi.knowledgechecker.common.KeyboardMarkups.getManageStudiedCourseMarkup;
 import static ru.mephi.knowledgechecker.common.MenuTitleType.MANAGE_COURSE;
 import static ru.mephi.knowledgechecker.common.MenuTitleType.QUERY_TO_COURSE;
 import static ru.mephi.knowledgechecker.common.ParamsWrapper.wrapInlineKeyboardMarkup;
@@ -24,11 +27,14 @@ import static ru.mephi.knowledgechecker.common.ParamsWrapper.wrapInlineKeyboardM
 @Component
 public class ManageCourseStrategy extends AbstractCallbackQueryStrategy {
     private final CourseService courseService;
+    private final TestService testService;
 
     public ManageCourseStrategy(@Lazy ManageCourseState manageCourseState,
-                                CourseService courseService) {
+                                CourseService courseService,
+                                TestService testService) {
         this.nextState = manageCourseState;
         this.courseService = courseService;
+        this.testService = testService;
     }
 
     @Override
@@ -40,11 +46,13 @@ public class ManageCourseStrategy extends AbstractCallbackQueryStrategy {
         String coursePrefix = update.getCallbackQuery().getData().split(COLON)[0];
         return coursePrefix.equals(OWN_COURSE_PREFIX)
                 || coursePrefix.equals(SEARCH_COURSE_PREFIX)
-                || coursePrefix.equals(OUTPUT_QUERIES_PREFIX);
+                || coursePrefix.equals(OUTPUT_QUERIES_PREFIX)
+                || coursePrefix.equals(STUDIED_COURSE_PREFIX);
     }
 
     @Override
     public void process(CurrentData data, Update update) throws StrategyProcessException {
+        // test to null?
         String coursePrefix = update.getCallbackQuery().getData().split(COLON)[0];
         Long courseId = Long.parseLong(update.getCallbackQuery().getData().split(COLON)[1]);
         Course course = courseService.getById(courseId);
@@ -64,6 +72,11 @@ public class ManageCourseStrategy extends AbstractCallbackQueryStrategy {
             case OUTPUT_QUERIES_PREFIX:
                 message = QUERY_TO_COURSE.getTitle() + course.getTitle();
                 markup = getManageOutputQueryMarkup();
+                break;
+            case STUDIED_COURSE_PREFIX:
+                message = MANAGE_COURSE.getTitle() + course.getTitle();
+                Page<String> testsOfCoursePage = testService.getTestsByCourse(course);
+                markup = getManageStudiedCourseMarkup(testsOfCoursePage);
                 break;
             default:
                 return;

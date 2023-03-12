@@ -53,7 +53,8 @@ public class ShowCourseSearchResultStrategy extends AbstractMessageStrategy {
         telegramApiClient.sendMessage(nothingIsFoundParams(data.getUser().getId()));
 
         data.setState(coursesListState);
-        sendMenuAndSave(data, COURSES_LIST.getTitle(), todoFixThisShitInlineKeyboardMarkup());
+        Page<Course> studiedCourses = courseService.getCoursesByParticipantId(data.getUser().getId(), true);
+        sendMenuAndSave(data, COURSES_LIST.getTitle(), getStudiedCoursesInlineKeyboardMarkup(studiedCourses));
     }
 
     private void sendResults(CurrentData data, Page<Course> coursesPage) {
