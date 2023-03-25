@@ -31,6 +31,8 @@ public class Test {
     private Integer maxQuestionsNumber;
     @Enumerated(value = EnumType.STRING)
     private TestType testType;
+    @Enumerated(value = EnumType.STRING)
+    private VisibilityType visibility;
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude

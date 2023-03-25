@@ -12,7 +12,7 @@ import ru.mephi.knowledgechecker.strategy.StrategyProcessException;
 import ru.mephi.knowledgechecker.strategy.impl.AbstractCallbackQueryStrategy;
 
 import static ru.mephi.knowledgechecker.common.CallbackDataType.TO_OUTPUT_COURSE_QUERIES;
-import static ru.mephi.knowledgechecker.common.KeyboardMarkups.getOutputCourseQueriesInlineKeyboardMarkup;
+import static ru.mephi.knowledgechecker.common.KeyboardMarkups.getOutputCourseQueriesKeyboardMarkup;
 import static ru.mephi.knowledgechecker.common.MenuTitleType.OUTPUT_COURSE_QUERIES;
 
 @Component
@@ -39,6 +39,6 @@ public class ShowOutputCourseQueriesStrategy extends AbstractCallbackQueryStrate
         Page<Course> coursesPage = courseService.getCoursesByParticipantId(data.getUser().getId(), false);
         data.setState(nextState);
         sendMenuAndSave(data, OUTPUT_COURSE_QUERIES.getTitle(),
-                getOutputCourseQueriesInlineKeyboardMarkup(coursesPage));
+                getOutputCourseQueriesKeyboardMarkup(coursesPage));
     }
 }

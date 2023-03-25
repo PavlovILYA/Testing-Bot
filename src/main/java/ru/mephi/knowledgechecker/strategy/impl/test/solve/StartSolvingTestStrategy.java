@@ -21,7 +21,7 @@ import ru.mephi.knowledgechecker.strategy.impl.AbstractCallbackQueryStrategy;
 
 import java.util.List;
 
-import static ru.mephi.knowledgechecker.common.KeyboardMarkups.getPublicTestMenuInlineKeyboardMarkup;
+import static ru.mephi.knowledgechecker.common.KeyboardMarkups.getPublicTestMenuKeyboardMarkup;
 import static ru.mephi.knowledgechecker.common.MenuTitleType.PUBLIC_TEST_LIST;
 import static ru.mephi.knowledgechecker.common.ParamsWrapper.wrapMessageParams;
 
@@ -68,7 +68,7 @@ public class StartSolvingTestStrategy extends AbstractCallbackQueryStrategy {
 
             Page<String> publicTests = testService.getCreatedTests(data.getUser().getId());
             data.setState(testListState);
-            sendMenuAndSave(data, PUBLIC_TEST_LIST.getTitle(), getPublicTestMenuInlineKeyboardMarkup(publicTests));
+            sendMenuAndSave(data, PUBLIC_TEST_LIST.getTitle(), getPublicTestMenuKeyboardMarkup(publicTests));
             return;
         }
 

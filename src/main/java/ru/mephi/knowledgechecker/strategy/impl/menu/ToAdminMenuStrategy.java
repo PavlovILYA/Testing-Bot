@@ -14,7 +14,7 @@ import ru.mephi.knowledgechecker.strategy.StrategyProcessException;
 import ru.mephi.knowledgechecker.strategy.impl.AbstractActionStrategy;
 
 import static ru.mephi.knowledgechecker.common.CallbackDataType.TO_ADMIN_MENU;
-import static ru.mephi.knowledgechecker.common.KeyboardMarkups.getOwnCoursesInlineKeyboardMarkup;
+import static ru.mephi.knowledgechecker.common.KeyboardMarkups.getOwnCoursesKeyboardMarkup;
 import static ru.mephi.knowledgechecker.common.MenuTitleType.ADMIN_MENU;
 import static ru.mephi.knowledgechecker.model.user.mapper.UserMapper.mapStateToBeanName;
 
@@ -52,6 +52,6 @@ public class ToAdminMenuStrategy extends AbstractActionStrategy {
 
         Page<Course> courses = courseService.getCoursesByCreatorId(data.getUser().getId());
         data.setState(nextState);
-        sendMenuAndSave(data, ADMIN_MENU.getTitle(), getOwnCoursesInlineKeyboardMarkup(courses));
+        sendMenuAndSave(data, ADMIN_MENU.getTitle(), getOwnCoursesKeyboardMarkup(courses));
     }
 }

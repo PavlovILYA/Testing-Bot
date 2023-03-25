@@ -13,7 +13,7 @@ import ru.mephi.knowledgechecker.strategy.StrategyProcessException;
 import ru.mephi.knowledgechecker.strategy.impl.AbstractCallbackQueryStrategy;
 
 import static ru.mephi.knowledgechecker.common.CallbackDataType.TO_COURSES_LIST;
-import static ru.mephi.knowledgechecker.common.KeyboardMarkups.getStudiedCoursesInlineKeyboardMarkup;
+import static ru.mephi.knowledgechecker.common.KeyboardMarkups.getStudiedCoursesKeyboardMarkup;
 import static ru.mephi.knowledgechecker.common.MenuTitleType.COURSES_LIST;
 
 @Slf4j
@@ -40,6 +40,6 @@ public class ToCoursesListStrategy extends AbstractCallbackQueryStrategy {
         }
         Page<Course> studiedCourses = courseService.getCoursesByParticipantId(data.getUser().getId(), true);
         data.setState(nextState);
-        sendMenuAndSave(data, COURSES_LIST.getTitle(), getStudiedCoursesInlineKeyboardMarkup(studiedCourses));
+        sendMenuAndSave(data, COURSES_LIST.getTitle(), getStudiedCoursesKeyboardMarkup(studiedCourses));
     }
 }

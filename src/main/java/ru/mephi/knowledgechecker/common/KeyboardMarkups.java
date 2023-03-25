@@ -8,6 +8,7 @@ import ru.mephi.knowledgechecker.model.answer.VariableAnswer;
 import ru.mephi.knowledgechecker.model.course.Course;
 import ru.mephi.knowledgechecker.model.question.VariableQuestion;
 import ru.mephi.knowledgechecker.model.solving.SolvingType;
+import ru.mephi.knowledgechecker.model.test.VisibilityType;
 import ru.mephi.knowledgechecker.model.user.User;
 
 import java.util.ArrayList;
@@ -38,7 +39,7 @@ public class KeyboardMarkups {
         return wrapInlineKeyboardMarkup(markup);
     }
 
-    public static KeyboardMarkup getAddQuestionInlineKeyboardMarkup(String doneCallbackData) {
+    public static KeyboardMarkup getAddQuestionKeyboardMarkup(String doneCallbackData) {
         List<List<InlineKeyboardButton>> markup = new ArrayList<>();
         List<InlineKeyboardButton> menu = new ArrayList<>();
         menu.add(InlineKeyboardButton.builder()
@@ -57,7 +58,7 @@ public class KeyboardMarkups {
         return wrapInlineKeyboardMarkup(markup);
     }
 
-    public static KeyboardMarkup getAddWrongVariableAnswerInlineKeyboardMarkup() {
+    public static KeyboardMarkup getAddWrongVariableAnswerKeyboardMarkup() {
         List<List<InlineKeyboardButton>> markup = new ArrayList<>();
         List<InlineKeyboardButton> menu = new ArrayList<>();
         menu.add(InlineKeyboardButton.builder()
@@ -72,7 +73,36 @@ public class KeyboardMarkups {
         return wrapInlineKeyboardMarkup(markup);
     }
 
-    public static KeyboardMarkup getTestManageInlineKeyboardMarkup(boolean own, String backCallbackData) {
+    public static KeyboardMarkup getAdminCourseTestManageKeyboardMarkup(boolean own, String backCallbackData) {
+        List<List<InlineKeyboardButton>> markup = new ArrayList<>();
+        markup.add(List.of(InlineKeyboardButton.builder()
+                .text("⬅️")
+                .callbackData(backCallbackData)
+                .build()));
+        markup.add(List.of(InlineKeyboardButton.builder()
+                .text(MANAGE_VISIBILITY.getDescription())
+                .callbackData(MANAGE_VISIBILITY.name())
+                .build()));
+        markup.add(List.of(InlineKeyboardButton.builder()
+                .text(SOLVE_OWN_TEST.getDescription())
+                .callbackData(SOLVE_OWN_TEST.name())
+                .build()));
+        if (own) {
+            markup.add(List.of(
+                    InlineKeyboardButton.builder()
+                            .text(EDIT_TEST.getDescription())
+                            .callbackData(EDIT_TEST.name())
+                            .build(),
+                    InlineKeyboardButton.builder()
+                            .text(DELETE_TEST.getDescription())
+                            .callbackData(DELETE_TEST.name())
+                            .build()
+            ));
+        }
+        return wrapInlineKeyboardMarkup(markup);
+    }
+
+    public static KeyboardMarkup getTestManageKeyboardMarkup(boolean own, String backCallbackData) {
         List<List<InlineKeyboardButton>> markup = new ArrayList<>();
         markup.add(List.of(InlineKeyboardButton.builder()
                 .text("⬅️")
@@ -101,11 +131,11 @@ public class KeyboardMarkups {
         return wrapInlineKeyboardMarkup(markup);
     }
 
-    public static KeyboardMarkup getCourseTestManageInlineKeyboardMarkup(Course course) {
+    public static KeyboardMarkup getCourseTestManageKeyboardMarkup(String backCallback) {
         List<List<InlineKeyboardButton>> markup = new ArrayList<>();
         markup.add(List.of(InlineKeyboardButton.builder()
                 .text("⬅️")
-                .callbackData(STUDIED_COURSE_PREFIX + COLON + course.getId())
+                .callbackData(backCallback)
                 .build()));
         markup.add(List.of(InlineKeyboardButton.builder()
                 .text("Пройти")
@@ -155,7 +185,7 @@ public class KeyboardMarkups {
         return wrapReplyKeyboardMarkup(markup, "Выберите правильный ответ");
     }
 
-    public static KeyboardMarkup getPublicTestMenuInlineKeyboardMarkup(Page<String> publicTestsPage) {
+    public static KeyboardMarkup getPublicTestMenuKeyboardMarkup(Page<String> publicTestsPage) {
         List<List<InlineKeyboardButton>> markup = new ArrayList<>();
         markup.add(List.of(InlineKeyboardButton.builder()
                 .text(TO_MAIN_MENU.getDescription())
@@ -172,11 +202,11 @@ public class KeyboardMarkups {
                 .build());
         markup.add(menu);
 
-        return getTestListInlineKeyboardMarkup(markup, publicTestsPage,
+        return getTestListKeyboardMarkup(markup, publicTestsPage,
                 PUBLIC_TEST_PREFIX, CREATED_TESTS_PAGE_PREFIX);
     }
 
-    public static KeyboardMarkup getTestSearchResultsInlineKeyboardMarkup(Page<String> publicTestsPage) {
+    public static KeyboardMarkup getTestSearchResultsKeyboardMarkup(Page<String> publicTestsPage) {
         List<List<InlineKeyboardButton>> markup = new ArrayList<>();
         List<InlineKeyboardButton> back = List.of(InlineKeyboardButton.builder()
                 .text("⬅️")
@@ -184,22 +214,51 @@ public class KeyboardMarkups {
                 .build());
         markup.add(back);
 
-        return getTestListInlineKeyboardMarkup(markup, publicTestsPage,
+        return getTestListKeyboardMarkup(markup, publicTestsPage,
                 PUBLIC_TEST_PREFIX, SEARCH_TESTS_PAGE_PREFIX);
     }
 
-    public static KeyboardMarkup getManageStudiedCourseMarkup(Page<String> testsOfCoursePage) {
+    public static KeyboardMarkup getManageStudiedCourseMarkup(long trainCount, long estimatedCount) {
         List<List<InlineKeyboardButton>> markup = new ArrayList<>();
         markup.add(List.of(
                 InlineKeyboardButton.builder()
                         .text("⬅️")
                         .callbackData(TO_COURSES_LIST.name())
                         .build()));
-        return getTestListInlineKeyboardMarkup(markup, testsOfCoursePage,
-                COURSE_PRIVATE_TEST_PREFIX, COURSE_PRIVATE_TESTS_PAGE_PREFIX);
+        markup.add(List.of(
+                InlineKeyboardButton.builder()
+                        .text(TO_TRAIN_TESTS.getDescription() + " (" + trainCount + ")")
+                        .callbackData(TO_TRAIN_TESTS.name())
+                        .build()));
+        markup.add(List.of(
+                InlineKeyboardButton.builder()
+                        .text(TO_ESTIMATED_TESTS.getDescription() + " (" + estimatedCount + ")")
+                        .callbackData(TO_ESTIMATED_TESTS.name())
+                        .build()));
+
+        return wrapInlineKeyboardMarkup(markup);
     }
 
-    public static KeyboardMarkup getPrivateTestListInlineKeyboardMarkup(Page<String> privateTestsPage, Long courseId) {
+    public static KeyboardMarkup getStudiedPrivateTestListKeyboardMarkup(Page<String> testsOfCoursePage, Long courseId,
+                                                                         VisibilityType visibilityType) {
+        List<List<InlineKeyboardButton>> markup = new ArrayList<>();
+        List<InlineKeyboardButton> menu = new ArrayList<>();
+        menu.add(InlineKeyboardButton.builder()
+                .text("⬅️")
+                .callbackData(STUDIED_COURSE_PREFIX + COLON + courseId)
+                .build());
+        markup.add(menu);
+
+        if (visibilityType.equals(VisibilityType.ESTIMATED)) {
+            return getTestListKeyboardMarkup(markup, testsOfCoursePage,
+                    ESTIMATED_PRIVATE_TEST_PREFIX, ESTIMATED_PRIVATE_TESTS_PAGE_PREFIX);
+        } else {
+            return getTestListKeyboardMarkup(markup, testsOfCoursePage,
+                    TRAIN_PRIVATE_TEST_PREFIX, TRAIN_PRIVATE_TESTS_PAGE_PREFIX);
+        }
+    }
+
+    public static KeyboardMarkup getOwnPrivateTestListKeyboardMarkup(Page<String> privateTestsPage, Long courseId) {
         List<List<InlineKeyboardButton>> markup = new ArrayList<>();
         List<InlineKeyboardButton> menu = new ArrayList<>();
         menu.add(InlineKeyboardButton.builder()
@@ -212,14 +271,14 @@ public class KeyboardMarkups {
                 .build());
         markup.add(menu);
 
-        return getTestListInlineKeyboardMarkup(markup, privateTestsPage,
+        return getTestListKeyboardMarkup(markup, privateTestsPage,
                 OWN_PRIVATE_TEST_PREFIX, OWN_PRIVATE_TESTS_PAGE_PREFIX);
     }
 
-    public static KeyboardMarkup getTestListInlineKeyboardMarkup(List<List<InlineKeyboardButton>> markup,
-                                                                 Page<String> testsPage,
-                                                                 String testPublicityPrefix,
-                                                                 String pagePrefix) {
+    public static KeyboardMarkup getTestListKeyboardMarkup(List<List<InlineKeyboardButton>> markup,
+                                                           Page<String> testsPage,
+                                                           String testPublicityPrefix,
+                                                           String pagePrefix) {
         for (String test: testsPage.getContent()) {
             List<InlineKeyboardButton> testList = new ArrayList<>();
             testList.add(InlineKeyboardButton.builder()
@@ -236,7 +295,7 @@ public class KeyboardMarkups {
         return wrapInlineKeyboardMarkup(markup);
     }
 
-    public static KeyboardMarkup getOwnCoursesInlineKeyboardMarkup(Page<Course> coursesPage) {
+    public static KeyboardMarkup getOwnCoursesKeyboardMarkup(Page<Course> coursesPage) {
         List<List<InlineKeyboardButton>> markup = new ArrayList<>();
         List<InlineKeyboardButton> menu = new ArrayList<>();
         menu.add(InlineKeyboardButton.builder()
@@ -249,22 +308,22 @@ public class KeyboardMarkups {
                 .build());
         markup.add(menu);
 
-        return getCourseListInlineKeyboardMarkup(markup, coursesPage,
+        return getCourseListKeyboardMarkup(markup, coursesPage,
                 OWN_COURSE_PREFIX, OWN_COURSE_PAGE_PREFIX);
     }
 
-    public static KeyboardMarkup getCourseSearchResultsInlineKeyboardMarkup(Page<Course> courseTitlesPage) {
-        return getForeignCoursesInlineKeyboardMarkup(courseTitlesPage,
+    public static KeyboardMarkup getCourseSearchResultsKeyboardMarkup(Page<Course> courseTitlesPage) {
+        return getForeignCoursesKeyboardMarkup(courseTitlesPage,
                 SEARCH_COURSE_PREFIX, SEARCH_COURSES_PAGE_PREFIX);
     }
 
-    public static KeyboardMarkup getOutputCourseQueriesInlineKeyboardMarkup(Page<Course> courseTitlesPage) {
-        return getForeignCoursesInlineKeyboardMarkup(courseTitlesPage,
+    public static KeyboardMarkup getOutputCourseQueriesKeyboardMarkup(Page<Course> courseTitlesPage) {
+        return getForeignCoursesKeyboardMarkup(courseTitlesPage,
                 OUTPUT_QUERIES_PREFIX, OUTPUT_QUERIES_PAGE_PREFIX);
     }
 
-    public static KeyboardMarkup getForeignCoursesInlineKeyboardMarkup(Page<Course> courseTitlesPage,
-                                                                       String coursePrefix, String pagePrefix) {
+    public static KeyboardMarkup getForeignCoursesKeyboardMarkup(Page<Course> courseTitlesPage,
+                                                                 String coursePrefix, String pagePrefix) {
         List<List<InlineKeyboardButton>> markup = new ArrayList<>();
         List<InlineKeyboardButton> back = List.of(InlineKeyboardButton.builder()
                 .text("⬅️")
@@ -272,11 +331,11 @@ public class KeyboardMarkups {
                 .build());
         markup.add(back);
 
-        return getCourseListInlineKeyboardMarkup(markup, courseTitlesPage,
+        return getCourseListKeyboardMarkup(markup, courseTitlesPage,
                 coursePrefix, pagePrefix);
     }
 
-    public static KeyboardMarkup getStudiedCoursesInlineKeyboardMarkup(Page<Course> studiedCoursesPage) {
+    public static KeyboardMarkup getStudiedCoursesKeyboardMarkup(Page<Course> studiedCoursesPage) {
         List<List<InlineKeyboardButton>> markup = new ArrayList<>();
         markup.add(List.of(InlineKeyboardButton.builder()
                 .text(TO_MAIN_MENU.getDescription())
@@ -293,14 +352,14 @@ public class KeyboardMarkups {
                 .build());
         markup.add(menu);
 
-        return getCourseListInlineKeyboardMarkup(markup, studiedCoursesPage,
+        return getCourseListKeyboardMarkup(markup, studiedCoursesPage,
                 STUDIED_COURSE_PREFIX, STUDIED_COURSE_PAGE_PREFIX);
     }
 
-    private static KeyboardMarkup getCourseListInlineKeyboardMarkup(List<List<InlineKeyboardButton>> markup,
-                                                                    Page<Course> coursesPage,
-                                                                    String coursePrefix,
-                                                                    String pagePrefix) {
+    private static KeyboardMarkup getCourseListKeyboardMarkup(List<List<InlineKeyboardButton>> markup,
+                                                              Page<Course> coursesPage,
+                                                              String coursePrefix,
+                                                              String pagePrefix) {
         for (Course course: coursesPage.getContent()) {
             List<InlineKeyboardButton> courseList = new ArrayList<>();
             courseList.add(InlineKeyboardButton.builder()
@@ -317,32 +376,32 @@ public class KeyboardMarkups {
         return wrapInlineKeyboardMarkup(markup);
     }
 
-    public static KeyboardMarkup getStudentsListInlineKeyboardMarkup(Page<User> studentsPage, Long courseId) {
-        return getUsersInlineKeyboardMarkup(studentsPage, courseId,
+    public static KeyboardMarkup getStudentsListKeyboardMarkup(Page<User> studentsPage, Long courseId) {
+        return getUsersKeyboardMarkup(studentsPage, courseId,
                 STUDENT_PREFIX, STUDENT_PAGE_PREFIX);
     }
 
-    public static KeyboardMarkup getPotentialStudentsInlineKeyboardMarkup(Page<User> queriedPeoplePage, Long courseId) {
-        return getUsersInlineKeyboardMarkup(queriedPeoplePage, courseId,
+    public static KeyboardMarkup getPotentialStudentsKeyboardMarkup(Page<User> queriedPeoplePage, Long courseId) {
+        return getUsersKeyboardMarkup(queriedPeoplePage, courseId,
                 INPUT_QUERIES_PREFIX, INPUT_QUERIES_PAGE_PREFIX);
     }
 
-    public static KeyboardMarkup getUsersInlineKeyboardMarkup(Page<User> usersPage, Long courseId,
-                                                              String userPrefix, String pagePrefix) {
+    public static KeyboardMarkup getUsersKeyboardMarkup(Page<User> usersPage, Long courseId,
+                                                        String userPrefix, String pagePrefix) {
         List<List<InlineKeyboardButton>> markup = new ArrayList<>();
         markup.add(List.of(InlineKeyboardButton.builder()
                 .text("⬅️")
                 .callbackData(OWN_COURSE_PREFIX + COLON + courseId)
                 .build()));
 
-        return getUserListInlineKeyboardMarkup(markup, usersPage,
+        return getUserListKeyboardMarkup(markup, usersPage,
                 userPrefix, pagePrefix);
     }
 
-    public static KeyboardMarkup getUserListInlineKeyboardMarkup(List<List<InlineKeyboardButton>> markup,
-                                                                 Page<User> queriedPeople,
-                                                                 String userPrefix,
-                                                                 String pagePrefix) {
+    public static KeyboardMarkup getUserListKeyboardMarkup(List<List<InlineKeyboardButton>> markup,
+                                                           Page<User> queriedPeople,
+                                                           String userPrefix,
+                                                           String pagePrefix) {
         for (User user : queriedPeople.getContent()) {
             List<InlineKeyboardButton> testList = new ArrayList<>();
             testList.add(InlineKeyboardButton.builder()

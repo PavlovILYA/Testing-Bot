@@ -4,9 +4,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
+import ru.mephi.knowledgechecker.common.CallbackDataType;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
+import ru.mephi.knowledgechecker.dto.telegram.outcome.keyboard.KeyboardMarkup;
 import ru.mephi.knowledgechecker.model.course.Course;
 import ru.mephi.knowledgechecker.model.test.Test;
+import ru.mephi.knowledgechecker.model.test.VisibilityType;
 import ru.mephi.knowledgechecker.model.user.CurrentData;
 import ru.mephi.knowledgechecker.service.TestService;
 import ru.mephi.knowledgechecker.state.impl.menu.TestListState;
@@ -14,8 +17,7 @@ import ru.mephi.knowledgechecker.strategy.StrategyProcessException;
 import ru.mephi.knowledgechecker.strategy.impl.AbstractCallbackQueryStrategy;
 
 import static ru.mephi.knowledgechecker.common.CallbackDataType.*;
-import static ru.mephi.knowledgechecker.common.KeyboardMarkups.getPrivateTestListInlineKeyboardMarkup;
-import static ru.mephi.knowledgechecker.common.KeyboardMarkups.getPublicTestMenuInlineKeyboardMarkup;
+import static ru.mephi.knowledgechecker.common.KeyboardMarkups.*;
 import static ru.mephi.knowledgechecker.common.MenuTitleType.MANAGE_COURSE;
 import static ru.mephi.knowledgechecker.common.MenuTitleType.PUBLIC_TEST_LIST;
 
@@ -40,6 +42,10 @@ public class ToTestListStrategy extends AbstractCallbackQueryStrategy {
                         update.getCallbackQuery().getData().equals(DELETE_TEST.name())
                         ||
                         update.getCallbackQuery().getData().equals(TO_PRIVATE_TEST_LIST.name())
+                        ||
+                        update.getCallbackQuery().getData().equals(TO_TRAIN_TESTS.name())
+                        ||
+                        update.getCallbackQuery().getData().equals(TO_ESTIMATED_TESTS.name())
                 );
     }
 
@@ -62,12 +68,37 @@ public class ToTestListStrategy extends AbstractCallbackQueryStrategy {
         data.setState(nextState);
         if (data.getCourse() == null) {
             Page<String> publicTests = testService.getCreatedTests(data.getUser().getId());
-            sendMenuAndSave(data, PUBLIC_TEST_LIST.getTitle(), getPublicTestMenuInlineKeyboardMarkup(publicTests));
+            sendMenuAndSave(data, PUBLIC_TEST_LIST.getTitle(), getPublicTestMenuKeyboardMarkup(publicTests));
         } else {
             Course course = data.getCourse();
-            String message = MANAGE_COURSE.getTitle() + course.getTitle() + " – ТЕСТЫ";
-            Page<String> privateTestsPage = testService.getTestsByCourse(course);
-            sendMenuAndSave(data, message, getPrivateTestListInlineKeyboardMarkup(privateTestsPage, course.getId()));
+            String message;
+            KeyboardMarkup markup;
+            switch (CallbackDataType.valueOf(update.getCallbackQuery().getData())) {
+                case DELETE_TEST:
+                case TO_PRIVATE_TEST_LIST:
+                    message = MANAGE_COURSE.getTitle() + course.getTitle() + " – ТЕСТЫ";
+                    Page<String> privateTestsPage = testService.getTestsByCourse(course);
+                    markup = getOwnPrivateTestListKeyboardMarkup(privateTestsPage, course.getId());
+                    break;
+                case TO_TRAIN_TESTS:
+                    message = MANAGE_COURSE.getTitle() + course.getTitle() + " – ТРЕНИРОВОЧНЫЕ ТЕСТЫ";
+                    Page<String> trainTestsPage = testService.getTestsByCourseAndVisibility(
+                            course, VisibilityType.TRAIN);
+                    markup = getStudiedPrivateTestListKeyboardMarkup(
+                            trainTestsPage, course.getId(), VisibilityType.TRAIN);
+                    break;
+                case TO_ESTIMATED_TESTS:
+                    message = MANAGE_COURSE.getTitle() + course.getTitle() + " – ТЕСТЫ НА ОЦЕНКУ";
+                    Page<String> estimatedTestsPage =
+                            testService.getTestsByCourseAndVisibility(course, VisibilityType.ESTIMATED);
+                    markup = getStudiedPrivateTestListKeyboardMarkup(
+                            estimatedTestsPage, course.getId(), VisibilityType.ESTIMATED);
+                    break;
+                default:
+                    return;
+            }
+
+            sendMenuAndSave(data, message, markup);
         }
     }
 }

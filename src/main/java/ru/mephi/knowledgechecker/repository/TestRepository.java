@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import ru.mephi.knowledgechecker.model.course.Course;
 import ru.mephi.knowledgechecker.model.test.Test;
+import ru.mephi.knowledgechecker.model.test.VisibilityType;
 
 public interface TestRepository extends JpaRepository<Test, Long> {
     Test findByUniqueTitle(String uniqueTitle);
@@ -22,4 +23,14 @@ public interface TestRepository extends JpaRepository<Test, Long> {
     @Query(value = "SELECT t.uniqueTitle FROM Test AS t" +
             "  WHERE t.course = :course")
     Page<String> getTestsByCourse(Course course, Pageable pageable);
+
+    @Query(value = "SELECT t.uniqueTitle FROM Test AS t" +
+            "  WHERE t.course = :course" +
+            "  AND t.visibility = :visibility")
+    Page<String> getTestsByCourseAndVisibility(Course course, VisibilityType visibility, Pageable pageable);
+
+    @Query(value = "SELECT COUNT(t) FROM Test AS t" +
+            "  WHERE t.course = :course" +
+            "  AND t.visibility = :visibility")
+    long getTestCount(Course course, VisibilityType visibility);
 }

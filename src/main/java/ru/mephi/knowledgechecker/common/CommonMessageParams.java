@@ -10,8 +10,8 @@ import java.util.List;
 
 import static ru.mephi.knowledgechecker.common.CallbackDataType.TO_PRIVATE_TEST_LIST;
 import static ru.mephi.knowledgechecker.common.CallbackDataType.TO_PUBLIC_TEST_LIST;
-import static ru.mephi.knowledgechecker.common.KeyboardMarkups.getAddQuestionInlineKeyboardMarkup;
-import static ru.mephi.knowledgechecker.common.KeyboardMarkups.getAddWrongVariableAnswerInlineKeyboardMarkup;
+import static ru.mephi.knowledgechecker.common.KeyboardMarkups.getAddQuestionKeyboardMarkup;
+import static ru.mephi.knowledgechecker.common.KeyboardMarkups.getAddWrongVariableAnswerKeyboardMarkup;
 import static ru.mephi.knowledgechecker.common.ParamsWrapper.wrapMessageParams;
 
 public class CommonMessageParams {
@@ -29,7 +29,7 @@ public class CommonMessageParams {
         return  wrapMessageParams(userId, boldMessage + italicMessage,
                 List.of(new MessageEntity(TextType.BOLD, 0, boldMessage.length()),
                         new MessageEntity(TextType.ITALIC, boldMessage.length(), italicMessage.length())),
-                getAddQuestionInlineKeyboardMarkup(doneCallbackData));
+                getAddQuestionKeyboardMarkup(doneCallbackData));
     }
 
     public static SendMessageParams addingWrongAnswerParams(VariableQuestion question, Long userId) {
@@ -40,7 +40,7 @@ public class CommonMessageParams {
                 List.of(new MessageEntity(TextType.BOLD, 0, boldMessage.length()),
                         new MessageEntity(TextType.UNDERLINE, 11, 9),
                         new MessageEntity(TextType.ITALIC, boldMessage.length(), italicMessage.length())),
-                getAddWrongVariableAnswerInlineKeyboardMarkup());
+                getAddWrongVariableAnswerKeyboardMarkup());
     }
 
     public static SendMessageParams askSearchQueryParams(Long userId) {

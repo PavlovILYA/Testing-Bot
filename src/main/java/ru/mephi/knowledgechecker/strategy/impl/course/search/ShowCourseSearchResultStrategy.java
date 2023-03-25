@@ -54,11 +54,11 @@ public class ShowCourseSearchResultStrategy extends AbstractMessageStrategy {
 
         data.setState(coursesListState);
         Page<Course> studiedCourses = courseService.getCoursesByParticipantId(data.getUser().getId(), true);
-        sendMenuAndSave(data, COURSES_LIST.getTitle(), getStudiedCoursesInlineKeyboardMarkup(studiedCourses));
+        sendMenuAndSave(data, COURSES_LIST.getTitle(), getStudiedCoursesKeyboardMarkup(studiedCourses));
     }
 
     private void sendResults(CurrentData data, Page<Course> coursesPage) {
         data.setState(nextState);
-        sendMenuAndSave(data, COURSE_SEARCH_RESULT.getTitle(), getCourseSearchResultsInlineKeyboardMarkup(coursesPage));
+        sendMenuAndSave(data, COURSE_SEARCH_RESULT.getTitle(), getCourseSearchResultsKeyboardMarkup(coursesPage));
     }
 }

@@ -6,6 +6,9 @@ import ru.mephi.knowledgechecker.strategy.impl.course.manage.ManageCourseStrateg
 import ru.mephi.knowledgechecker.strategy.impl.menu.ToAdminMenuStrategy;
 import ru.mephi.knowledgechecker.strategy.impl.menu.ToTestListStrategy;
 import ru.mephi.knowledgechecker.strategy.impl.test.edit.EditTestStrategy;
+import ru.mephi.knowledgechecker.strategy.impl.test.manage.ManageTestStrategy;
+import ru.mephi.knowledgechecker.strategy.impl.test.manage.ManageTestVisibilityStrategy;
+import ru.mephi.knowledgechecker.strategy.impl.test.solve.ChooseSolvingTypeStrategy;
 import ru.mephi.knowledgechecker.strategy.impl.test.solve.StartSolvingTestStrategy;
 
 @Component
@@ -14,11 +17,17 @@ public class ManageTestState extends AbstractBotState {
                            ToTestListStrategy toTestListStrategy,
                            EditTestStrategy editTestStrategy,
                            ToAdminMenuStrategy adminMenuStrategy,
-                           ManageCourseStrategy manageCourseStrategy) {
+                           ManageCourseStrategy manageCourseStrategy,
+                           ManageTestVisibilityStrategy manageTestVisibilityStrategy,
+                           ChooseSolvingTypeStrategy chooseSolvingTypeStrategy,
+                           ManageTestStrategy manageTestStrategy) {
         availableStrategies.add(startSolvingTestStrategy);
         availableStrategies.add(toTestListStrategy);
         availableStrategies.add(editTestStrategy);
         availableStrategies.add(adminMenuStrategy);
         availableStrategies.add(manageCourseStrategy);
+        availableStrategies.add(manageTestVisibilityStrategy);
+        availableStrategies.add(chooseSolvingTypeStrategy);
+        availableStrategies.add(manageTestStrategy);
     }
 }

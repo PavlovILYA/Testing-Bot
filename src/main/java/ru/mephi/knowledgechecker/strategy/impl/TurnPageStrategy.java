@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.keyboard.KeyboardMarkup;
 import ru.mephi.knowledgechecker.model.course.Course;
+import ru.mephi.knowledgechecker.model.test.VisibilityType;
 import ru.mephi.knowledgechecker.model.user.CurrentData;
 import ru.mephi.knowledgechecker.model.user.User;
 import ru.mephi.knowledgechecker.service.CourseService;
@@ -48,7 +49,8 @@ public class TurnPageStrategy extends AbstractCallbackQueryStrategy {
                 || prefix.equals(INPUT_QUERIES_PAGE_PREFIX)
                 || prefix.equals(STUDENT_PAGE_PREFIX)
                 || prefix.equals(STUDIED_COURSE_PAGE_PREFIX)
-                || prefix.equals(COURSE_PRIVATE_TESTS_PAGE_PREFIX);
+                || prefix.equals(ESTIMATED_PRIVATE_TESTS_PAGE_PREFIX)
+                || prefix.equals(TRAIN_PRIVATE_TESTS_PAGE_PREFIX);
     }
 
     @Override
@@ -62,58 +64,68 @@ public class TurnPageStrategy extends AbstractCallbackQueryStrategy {
             case CREATED_TESTS_PAGE_PREFIX:
                 message = PUBLIC_TEST_LIST.getTitle();
                 Page<String> publicTests = testService.getCreatedTests(data.getUser().getId(), pageNumber);
-                markup = getPublicTestMenuInlineKeyboardMarkup(publicTests);
+                markup = getPublicTestMenuKeyboardMarkup(publicTests);
                 break;
             case SEARCH_TESTS_PAGE_PREFIX:
                 message = TEST_SEARCH_RESULT.getTitle();
                 Page<String> testTitlesPage = testService.findTests(data.getSearchKeyWords(),
                         data.getUser().getId(), pageNumber);
-                markup = getTestSearchResultsInlineKeyboardMarkup(testTitlesPage);
+                markup = getTestSearchResultsKeyboardMarkup(testTitlesPage);
                 break;
             case OWN_PRIVATE_TESTS_PAGE_PREFIX:
                 message = MANAGE_COURSE.getTitle() + data.getCourse().getTitle();
                 Page<String> privateTestsPage = testService.getTestsByCourse(data.getCourse(), pageNumber);
-                markup = getPrivateTestListInlineKeyboardMarkup(privateTestsPage, data.getCourse().getId());
+                markup = getOwnPrivateTestListKeyboardMarkup(privateTestsPage, data.getCourse().getId());
                 break;
-            case COURSE_PRIVATE_TESTS_PAGE_PREFIX:
-                message = MANAGE_COURSE.getTitle() + data.getCourse().getTitle();
-                Page<String> testsOfCoursePage = testService.getTestsByCourse(data.getCourse(), pageNumber);
-                markup = getManageStudiedCourseMarkup(testsOfCoursePage);
+            case ESTIMATED_PRIVATE_TESTS_PAGE_PREFIX:
+                message = MANAGE_COURSE.getTitle() + data.getCourse().getTitle() + " – ТЕСТЫ НА ОЦЕНКУ";
+                Page<String> estimatedTestsPage =
+                        testService.getTestsByCourseAndVisibility(
+                                data.getCourse(), VisibilityType.ESTIMATED, pageNumber);
+                markup = getStudiedPrivateTestListKeyboardMarkup(
+                        estimatedTestsPage, data.getCourse().getId(), VisibilityType.ESTIMATED);
+                break;
+            case TRAIN_PRIVATE_TESTS_PAGE_PREFIX:
+                message = MANAGE_COURSE.getTitle() + data.getCourse().getTitle() + " – ТРЕНИРОВОЧНЫЕ ТЕСТЫ";
+                Page<String> trainTestsPage = testService.getTestsByCourseAndVisibility(
+                        data.getCourse(), VisibilityType.TRAIN, pageNumber);
+                markup = getStudiedPrivateTestListKeyboardMarkup(
+                        trainTestsPage, data.getCourse().getId(), VisibilityType.TRAIN);
                 break;
             case OWN_COURSE_PAGE_PREFIX:
                 message = ADMIN_MENU.getTitle();
                 Page<Course> ownCoursesPage = courseService.getCoursesByCreatorId(data.getUser().getId(), pageNumber);
-                markup = getOwnCoursesInlineKeyboardMarkup(ownCoursesPage);
+                markup = getOwnCoursesKeyboardMarkup(ownCoursesPage);
                 break;
             case SEARCH_COURSES_PAGE_PREFIX:
                 message = COURSE_SEARCH_RESULT.getTitle();
                 Page<Course> coursesPage = courseService.findCourses(data.getSearchKeyWords(),
                         data.getUser().getId(), pageNumber);
-                markup = getCourseSearchResultsInlineKeyboardMarkup(coursesPage);
+                markup = getCourseSearchResultsKeyboardMarkup(coursesPage);
                 break;
             case STUDIED_COURSE_PAGE_PREFIX:
                 message = COURSES_LIST.getTitle();
                 Page<Course> studiedCoursesPage = courseService.getCoursesByParticipantId(data.getUser().getId(),
                         true, pageNumber);
-                markup = getStudiedCoursesInlineKeyboardMarkup(studiedCoursesPage);
+                markup = getStudiedCoursesKeyboardMarkup(studiedCoursesPage);
                 break;
             case OUTPUT_QUERIES_PAGE_PREFIX:
                 message = OUTPUT_COURSE_QUERIES.getTitle();
                 Page<Course> outputQueriesPage = courseService.getCoursesByParticipantId(data.getUser().getId(),
                         false, pageNumber);
-                markup = getOutputCourseQueriesInlineKeyboardMarkup(outputQueriesPage);
+                markup = getOutputCourseQueriesKeyboardMarkup(outputQueriesPage);
                 break;
             case INPUT_QUERIES_PAGE_PREFIX:
                 message = OUTPUT_COURSE_QUERIES.getTitle();
                 Page<User> queriedPeoplePage = userService.getParticipantsByCourseId(
                         data.getCourse().getId(), false, pageNumber);
-                markup = getStudentsListInlineKeyboardMarkup(queriedPeoplePage, data.getCourse().getId());
+                markup = getStudentsListKeyboardMarkup(queriedPeoplePage, data.getCourse().getId());
                 break;
             case STUDENT_PAGE_PREFIX:
                 message = STUDENTS.getTitle();
                 Page<User> studentsPage = userService.getParticipantsByCourseId(
                         data.getCourse().getId(), true, pageNumber);
-                markup = getPotentialStudentsInlineKeyboardMarkup(studentsPage, data.getCourse().getId());
+                markup = getPotentialStudentsKeyboardMarkup(studentsPage, data.getCourse().getId());
                 break;
             default:
                 return;

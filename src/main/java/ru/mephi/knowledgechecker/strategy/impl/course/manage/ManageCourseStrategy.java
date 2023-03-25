@@ -1,12 +1,12 @@
 package ru.mephi.knowledgechecker.strategy.impl.course.manage;
 
 import org.springframework.context.annotation.Lazy;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.keyboard.KeyboardMarkup;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.keyboard.inline.InlineKeyboardButton;
 import ru.mephi.knowledgechecker.model.course.Course;
+import ru.mephi.knowledgechecker.model.test.VisibilityType;
 import ru.mephi.knowledgechecker.model.user.CurrentData;
 import ru.mephi.knowledgechecker.service.CourseService;
 import ru.mephi.knowledgechecker.service.TestService;
@@ -75,8 +75,9 @@ public class ManageCourseStrategy extends AbstractCallbackQueryStrategy {
                 break;
             case STUDIED_COURSE_PREFIX:
                 message = MANAGE_COURSE.getTitle() + course.getTitle();
-                Page<String> testsOfCoursePage = testService.getTestsByCourse(course);
-                markup = getManageStudiedCourseMarkup(testsOfCoursePage);
+                long trainCount = testService.getTestCount(course, VisibilityType.TRAIN);
+                long estimatedCount = testService.getTestCount(course, VisibilityType.ESTIMATED);
+                markup = getManageStudiedCourseMarkup(trainCount, estimatedCount);
                 break;
             default:
                 return;

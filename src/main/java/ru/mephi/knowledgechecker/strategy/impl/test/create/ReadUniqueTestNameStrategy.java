@@ -11,6 +11,7 @@ import ru.mephi.knowledgechecker.dto.telegram.outcome.params.SendMessageParams;
 import ru.mephi.knowledgechecker.model.course.Course;
 import ru.mephi.knowledgechecker.model.test.Test;
 import ru.mephi.knowledgechecker.model.test.TestType;
+import ru.mephi.knowledgechecker.model.test.VisibilityType;
 import ru.mephi.knowledgechecker.model.user.CurrentData;
 import ru.mephi.knowledgechecker.service.TestService;
 import ru.mephi.knowledgechecker.state.impl.test.create.TestInfoReadingState;
@@ -54,15 +55,18 @@ public class ReadUniqueTestNameStrategy extends AbstractMessageStrategy {
 
         Course course = null;
         TestType publicity = TestType.PUBLIC;
+        VisibilityType visibilityType = VisibilityType.TRAIN;
         if (data.getCourse() != null) {
             course = data.getCourse();
             publicity = TestType.PRIVATE;
+            visibilityType = VisibilityType.INVISIBLE;
         }
         Test test = Test.builder()
                 .uniqueTitle(uniqueTestName)
                 .creator(data.getUser())
                 .testType(publicity)
                 .course(course)
+                .visibility(visibilityType)
                 .build();
         test = testService.save(test);
         log.info("Unique test title: {}, userId: {}", test.getUniqueTitle(), data.getUser().getId());

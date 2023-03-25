@@ -8,6 +8,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.mephi.knowledgechecker.model.course.Course;
 import ru.mephi.knowledgechecker.model.test.Test;
+import ru.mephi.knowledgechecker.model.test.VisibilityType;
 import ru.mephi.knowledgechecker.repository.TestRepository;
 
 import static ru.mephi.knowledgechecker.common.Constants.PAGE_SIZE;
@@ -60,5 +61,18 @@ public class TestService {
     public Page<String> getTestsByCourse(Course course, int from) {
         return testRepository.getTestsByCourse(course,
                 PageRequest.of(from, PAGE_SIZE, Sort.by("uniqueTitle")));
+    }
+
+    public Page<String> getTestsByCourseAndVisibility(Course course, VisibilityType visibilityType) {
+        return getTestsByCourseAndVisibility(course, visibilityType, 0);
+    }
+
+    public Page<String> getTestsByCourseAndVisibility(Course course, VisibilityType visibilityType, int from) {
+        return testRepository.getTestsByCourseAndVisibility(course, visibilityType,
+                PageRequest.of(from, PAGE_SIZE, Sort.by("uniqueTitle")));
+    }
+
+    public long getTestCount(Course course, VisibilityType visibilityType) {
+        return testRepository.getTestCount(course, visibilityType);
     }
 }

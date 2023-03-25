@@ -14,8 +14,8 @@ import ru.mephi.knowledgechecker.strategy.impl.AbstractMessageStrategy;
 
 import static ru.mephi.knowledgechecker.common.CommonMessageParams.nothingIsFoundParams;
 import static ru.mephi.knowledgechecker.common.Constants.SEMICOLON;
-import static ru.mephi.knowledgechecker.common.KeyboardMarkups.getPublicTestMenuInlineKeyboardMarkup;
-import static ru.mephi.knowledgechecker.common.KeyboardMarkups.getTestSearchResultsInlineKeyboardMarkup;
+import static ru.mephi.knowledgechecker.common.KeyboardMarkups.getPublicTestMenuKeyboardMarkup;
+import static ru.mephi.knowledgechecker.common.KeyboardMarkups.getTestSearchResultsKeyboardMarkup;
 import static ru.mephi.knowledgechecker.common.MenuTitleType.PUBLIC_TEST_LIST;
 import static ru.mephi.knowledgechecker.common.MenuTitleType.TEST_SEARCH_RESULT;
 
@@ -55,11 +55,11 @@ public class ShowTestSearchResultStrategy extends AbstractMessageStrategy {
 
         Page<String> publicTests = testService.getCreatedTests(data.getUser().getId());
         data.setState(testListState);
-        sendMenuAndSave(data, PUBLIC_TEST_LIST.getTitle(), getPublicTestMenuInlineKeyboardMarkup(publicTests));
+        sendMenuAndSave(data, PUBLIC_TEST_LIST.getTitle(), getPublicTestMenuKeyboardMarkup(publicTests));
     }
 
     private void sendResults(CurrentData data, Page<String> testTitlesPage) {
         data.setState(nextState);
-        sendMenuAndSave(data, TEST_SEARCH_RESULT.getTitle(), getTestSearchResultsInlineKeyboardMarkup(testTitlesPage));
+        sendMenuAndSave(data, TEST_SEARCH_RESULT.getTitle(), getTestSearchResultsKeyboardMarkup(testTitlesPage));
     }
 }
