@@ -17,4 +17,6 @@ public class OpenAnswerKey implements Serializable {
     private Long questionId;
     @Column(table = "open_answers", name = "user_id")
     private Long userId;
+    @Column(table = "open_answers", name = "solving_id")
+    private Long solvingId;
 }

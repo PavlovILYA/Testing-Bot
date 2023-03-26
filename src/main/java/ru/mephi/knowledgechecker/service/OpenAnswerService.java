@@ -7,18 +7,17 @@ import ru.mephi.knowledgechecker.model.answer.OpenAnswer;
 import ru.mephi.knowledgechecker.model.answer.OpenAnswerKey;
 import ru.mephi.knowledgechecker.repository.OpenAnswerRepository;
 
-import java.util.List;
-
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class OpenAnswerService {
     private final OpenAnswerRepository openAnswerRepository;
 
-    public OpenAnswer get(Long userId, Long questionId) {
+    public OpenAnswer get(Long userId, Long questionId, Long solvingId) {
         OpenAnswerKey key = OpenAnswerKey.builder()
                 .questionId(questionId)
                 .userId(userId)
+                .solvingId(solvingId)
                 .build();
         OpenAnswer answer = openAnswerRepository.findById(key).orElse(null);
         log.info("Get answer: {}", answer);
@@ -29,16 +28,5 @@ public class OpenAnswerService {
         answer = openAnswerRepository.save(answer);
         log.info("Saved answer: {}", answer);
         return answer;
-    }
-
-    public void removeByUserIdAndQuestionIds(Long userId, List<Long> questionIds) {
-        log.info("Delete answers of user {} for questions: {}", userId, questionIds);
-        for (Long questionId : questionIds) {
-            OpenAnswerKey key = OpenAnswerKey.builder()
-                    .questionId(questionId)
-                    .userId(userId)
-                    .build();
-            openAnswerRepository.deleteById(key);
-        }
     }
 }

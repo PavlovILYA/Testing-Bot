@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.mephi.knowledgechecker.model.test.Test;
+import ru.mephi.knowledgechecker.model.test.VisibilityType;
 import ru.mephi.knowledgechecker.model.user.User;
 
 import javax.persistence.*;
@@ -34,4 +35,6 @@ public class Solving {
     private LocalDateTime startedAt;
     @Enumerated(EnumType.STRING)
     private SolvingType type;
+    @Enumerated(EnumType.STRING)
+    private VisibilityType visibility;
 }

@@ -98,9 +98,11 @@ CREATE TABLE IF NOT EXISTS open_answers (
     image_id BIGINT, -- from tg
     audio_id BIGINT, -- from tg
     file_id BIGINT,  -- from tg
-    PRIMARY KEY (question_id, user_id),
+    solving_id BIGINT,
+    PRIMARY KEY (question_id, user_id, solving_id),
     FOREIGN KEY (question_id) REFERENCES open_questions(id) ON DELETE CASCADE,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (solving_id) REFERENCES solving(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS users_tests ( -- сохраненные тесты,
@@ -122,10 +124,11 @@ CREATE TABLE IF NOT EXISTS solving (
     variable_answer_results VARCHAR(1000),
     started_at TIMESTAMP,
     type VARCHAR(50),
+    visibility VARCHAR(255),
     PRIMARY KEY (id),
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (test_id) REFERENCES tests(id) ON DELETE CASCADE,
-    UNIQUE (user_id, test_id)
+    UNIQUE (user_id, test_id, visibility)
 );
 
 CREATE INDEX IF NOT EXISTS solving_user_id

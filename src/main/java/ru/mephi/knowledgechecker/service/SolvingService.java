@@ -8,6 +8,7 @@ import ru.mephi.knowledgechecker.model.question.VariableQuestion;
 import ru.mephi.knowledgechecker.model.solving.Solving;
 import ru.mephi.knowledgechecker.model.solving.SolvingType;
 import ru.mephi.knowledgechecker.model.test.Test;
+import ru.mephi.knowledgechecker.model.test.VisibilityType;
 import ru.mephi.knowledgechecker.model.user.User;
 import ru.mephi.knowledgechecker.repository.SolvingRepository;
 
@@ -26,8 +27,8 @@ import static ru.mephi.knowledgechecker.common.Constants.SEMICOLON;
 public class SolvingService {
     private final SolvingRepository solvingRepository;
 
-    public Solving getByUserId(Long userId) {
-        Solving solving = solvingRepository.findByUserId(userId);
+    public Solving get(Long userId, Long testId, VisibilityType visibility) {
+        Solving solving = solvingRepository.findByUserIdAndTestIdAndVisibility(userId, testId, visibility);
         log.info("Get solving: {}", solving);
         return solving;
     }
@@ -57,7 +58,12 @@ public class SolvingService {
         String variableQuestionIds = getRandomQuestionIds(test.getVariableQuestions().stream()
                 .map(VariableQuestion::getId), variableAmount, allVariableAmount);
 
-        Solving solving = Solving.builder()
+        Solving solving = solvingRepository.findByUserIdAndTestIdAndVisibility(user.getId(), test.getId(), test.getVisibility());
+
+        if (solving != null) {
+            solvingRepository.delete(solving);
+        }
+        solving = Solving.builder()
                 .user(user)
                 .test(test)
                 .openQuestionIds(openQuestionIds)
@@ -67,6 +73,7 @@ public class SolvingService {
                 .variableAnswerResults("")
                 .startedAt(LocalDateTime.now())
                 .type(solvingType)
+                .visibility(test.getVisibility())
                 .build();
 
         solving = solvingRepository.save(solving);

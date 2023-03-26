@@ -15,6 +15,7 @@ import ru.mephi.knowledgechecker.model.question.OpenQuestion;
 import ru.mephi.knowledgechecker.model.question.VariableQuestion;
 import ru.mephi.knowledgechecker.model.solving.Solving;
 import ru.mephi.knowledgechecker.model.solving.SolvingType;
+import ru.mephi.knowledgechecker.model.test.VisibilityType;
 import ru.mephi.knowledgechecker.model.user.CurrentData;
 import ru.mephi.knowledgechecker.service.OpenAnswerService;
 import ru.mephi.knowledgechecker.service.OpenQuestionService;
@@ -70,7 +71,8 @@ public class ShowQuestionStrategy extends AbstractMessageStrategy {
 
     @Override
     public void process(CurrentData data, Update update) throws StrategyProcessException {
-        Solving solving = solvingService.getByUserId(data.getUser().getId());
+        Solving solving = solvingService.get(
+                data.getUser().getId(), data.getTest().getId(), data.getTest().getVisibility());
         String answerText = update.getMessage().getText();
         saveAnswer(solving, data, answerText);
         sendQuestion(solving, data, update);
@@ -144,6 +146,7 @@ public class ShowQuestionStrategy extends AbstractMessageStrategy {
                 .id(OpenAnswerKey.builder()
                         .questionId(question.getId())
                         .userId(solving.getUser().getId())
+                        .solvingId(solving.getId())
                         .build())
                 .user(solving.getUser())
                 .question(question)
@@ -171,6 +174,7 @@ public class ShowQuestionStrategy extends AbstractMessageStrategy {
         if (variableQuestionIds.size() == variableAnswerIds.size()) {
             if (openQuestionIds.size() == openAnswerIds.size()) {
                 data.setPreviousQuestionType(null);
+                data.setTest(null);
                 data.setState(nextState);
                 saveToContext(data);
                 generateReport(solving, data, update);
@@ -279,7 +283,7 @@ public class ShowQuestionStrategy extends AbstractMessageStrategy {
         List<Long> answersIds = parseIds(solving.getOpenAnswerIds());
         for (int i = 0; i < questionIds.size(); i++) {
             OpenQuestion question = openQuestionService.get(questionIds.get(i));
-            OpenAnswer answer = openAnswerService.get(solving.getUser().getId(), answersIds.get(i));
+            OpenAnswer answer = openAnswerService.get(solving.getUser().getId(), answersIds.get(i), solving.getId());
             String boldMessage1 = "❓ Открытый вопрос:\n";
             String boldMessage2 = "\n☑️ Ваш ответ:\n";
             String boldMessage3 = "\n️✅ Правильный ответ:\n";
@@ -306,12 +310,12 @@ public class ShowQuestionStrategy extends AbstractMessageStrategy {
     }
 
     private void clearSolving(Solving solving) {
-        List<Long> answersIds = parseIds(solving.getOpenAnswerIds());
-        openAnswerService.removeByUserIdAndQuestionIds(solving.getUser().getId(), answersIds);
-        solvingService.remove(solving);
+        if (solving.getVisibility() != VisibilityType.ESTIMATED) {
+            solvingService.remove(solving);
+        }
     }
 
-    private List<Long> parseIds(String string) {
+    public static List<Long> parseIds(String string) {
         try {
             return Arrays.stream(string.split(SEMICOLON))
                     .map(Long::parseLong)
