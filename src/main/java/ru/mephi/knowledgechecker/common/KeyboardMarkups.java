@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.keyboard.KeyboardMarkup;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.keyboard.inline.InlineKeyboardButton;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.keyboard.reply.KeyboardButton;
+import ru.mephi.knowledgechecker.model.answer.MarkType;
 import ru.mephi.knowledgechecker.model.answer.VariableAnswer;
 import ru.mephi.knowledgechecker.model.course.Course;
 import ru.mephi.knowledgechecker.model.question.VariableQuestion;
@@ -73,7 +74,9 @@ public class KeyboardMarkups {
         return wrapInlineKeyboardMarkup(markup);
     }
 
-    public static KeyboardMarkup getAdminCourseTestManageKeyboardMarkup(boolean own, String backCallbackData) {
+    public static KeyboardMarkup getAdminCourseTestManageKeyboardMarkup(boolean own,
+                                                                        String backCallbackData,
+                                                                        long uncheckedWorkCount) {
         List<List<InlineKeyboardButton>> markup = new ArrayList<>();
         markup.add(List.of(InlineKeyboardButton.builder()
                 .text("⬅️")
@@ -86,6 +89,14 @@ public class KeyboardMarkups {
         markup.add(List.of(InlineKeyboardButton.builder()
                 .text(SOLVE_OWN_TEST.getDescription())
                 .callbackData(SOLVE_OWN_TEST.name())
+                .build()));
+        markup.add(List.of(InlineKeyboardButton.builder()
+                .text(SHOW_WORKS_FOR_CHECK.getDescription() + " (" + uncheckedWorkCount + ")")
+                .callbackData(SHOW_WORKS_FOR_CHECK.name())
+                .build()));
+        markup.add(List.of(InlineKeyboardButton.builder()
+                .text(SHOW_READY_RESULTS.getDescription())
+                .callbackData(SHOW_READY_RESULTS.name())
                 .build()));
         if (own) {
             markup.add(List.of(
@@ -183,6 +194,33 @@ public class KeyboardMarkups {
         }
 
         return wrapReplyKeyboardMarkup(markup, "Выберите правильный ответ");
+    }
+
+    public static KeyboardMarkup getCheckOpenAnswerKeyboardMarkup() {
+        List<List<KeyboardButton>> markup = new ArrayList<>();
+        markup.add(List.of(
+                KeyboardButton.builder()
+                        .text(MarkType.MARK_0.getDescription())
+                        .build(),
+                KeyboardButton.builder()
+                        .text(MarkType.MARK_1.getDescription())
+                        .build()));
+        markup.add(List.of(
+                KeyboardButton.builder()
+                        .text(MarkType.MARK_2.getDescription())
+                        .build(),
+                KeyboardButton.builder()
+                        .text(MarkType.MARK_3.getDescription())
+                        .build()));
+        markup.add(List.of(
+                KeyboardButton.builder()
+                        .text(MarkType.MARK_4.getDescription())
+                        .build(),
+                KeyboardButton.builder()
+                        .text(MarkType.MARK_5.getDescription())
+                        .build()));
+
+        return wrapReplyKeyboardMarkup(markup, "Оцените ответ");
     }
 
     public static KeyboardMarkup getPublicTestMenuKeyboardMarkup(Page<String> publicTestsPage) {
@@ -377,21 +415,30 @@ public class KeyboardMarkups {
     }
 
     public static KeyboardMarkup getStudentsListKeyboardMarkup(Page<User> studentsPage, Long courseId) {
-        return getUsersKeyboardMarkup(studentsPage, courseId,
-                STUDENT_PREFIX, STUDENT_PAGE_PREFIX);
+        return getUsersKeyboardMarkup(studentsPage,
+                STUDENT_PREFIX, STUDENT_PAGE_PREFIX,
+                OWN_COURSE_PREFIX + COLON + courseId);
     }
 
     public static KeyboardMarkup getPotentialStudentsKeyboardMarkup(Page<User> queriedPeoplePage, Long courseId) {
-        return getUsersKeyboardMarkup(queriedPeoplePage, courseId,
-                INPUT_QUERIES_PREFIX, INPUT_QUERIES_PAGE_PREFIX);
+        return getUsersKeyboardMarkup(queriedPeoplePage,
+                INPUT_QUERIES_PREFIX, INPUT_QUERIES_PAGE_PREFIX,
+                OWN_COURSE_PREFIX + COLON + courseId);
     }
 
-    public static KeyboardMarkup getUsersKeyboardMarkup(Page<User> usersPage, Long courseId,
-                                                        String userPrefix, String pagePrefix) {
+    public static KeyboardMarkup getStudentsForCheckKeyboardMarkup(Page<User> forCheckPage, String testUniqueTitle) {
+        return getUsersKeyboardMarkup(forCheckPage,
+                FOR_CHECK_PREFIX, FOR_CHECK_PAGE_PREFIX,
+                OWN_PRIVATE_TEST_PREFIX + COLON + testUniqueTitle);
+    }
+
+    public static KeyboardMarkup getUsersKeyboardMarkup(Page<User> usersPage,
+                                                        String userPrefix, String pagePrefix,
+                                                        String backCallback) {
         List<List<InlineKeyboardButton>> markup = new ArrayList<>();
         markup.add(List.of(InlineKeyboardButton.builder()
                 .text("⬅️")
-                .callbackData(OWN_COURSE_PREFIX + COLON + courseId)
+                .callbackData(backCallback)
                 .build()));
 
         return getUserListKeyboardMarkup(markup, usersPage,

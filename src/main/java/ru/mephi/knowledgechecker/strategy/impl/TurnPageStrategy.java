@@ -50,7 +50,8 @@ public class TurnPageStrategy extends AbstractCallbackQueryStrategy {
                 || prefix.equals(STUDENT_PAGE_PREFIX)
                 || prefix.equals(STUDIED_COURSE_PAGE_PREFIX)
                 || prefix.equals(ESTIMATED_PRIVATE_TESTS_PAGE_PREFIX)
-                || prefix.equals(TRAIN_PRIVATE_TESTS_PAGE_PREFIX);
+                || prefix.equals(TRAIN_PRIVATE_TESTS_PAGE_PREFIX)
+                || prefix.equals(FOR_CHECK_PAGE_PREFIX);
     }
 
     @Override
@@ -126,6 +127,11 @@ public class TurnPageStrategy extends AbstractCallbackQueryStrategy {
                 Page<User> studentsPage = userService.getParticipantsByCourseId(
                         data.getCourse().getId(), true, pageNumber);
                 markup = getPotentialStudentsKeyboardMarkup(studentsPage, data.getCourse().getId());
+                break;
+            case FOR_CHECK_PAGE_PREFIX:
+                Page<User> usersForCheckPage = userService.getStudentsForCheck(data.getTest().getId(), pageNumber);
+                message = MANAGE_TEST.getTitle() + " - работы для проверки";
+                markup = getStudentsForCheckKeyboardMarkup(usersForCheckPage, data.getTest().getUniqueTitle());
                 break;
             default:
                 return;

@@ -7,6 +7,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.mephi.knowledgechecker.dto.telegram.income.UserDto;
+import ru.mephi.knowledgechecker.model.test.VisibilityType;
 import ru.mephi.knowledgechecker.model.user.User;
 import ru.mephi.knowledgechecker.model.user.mapper.UserMapper;
 import ru.mephi.knowledgechecker.repository.UserRepository;
@@ -44,5 +45,14 @@ public class UserService {
 
     public Page<User> getParticipantsByCourseId(Long courseId, boolean approved) {
         return getParticipantsByCourseId(courseId, approved, 0);
+    }
+
+    public Page<User> getStudentsForCheck(Long testId, int from) {
+        return userRepository.findStudentsForCheck(testId, VisibilityType.ESTIMATED,
+                PageRequest.of(from, PAGE_SIZE, Sort.by("user.username")));
+    }
+
+    public Page<User> getStudentsForCheck(Long testId) {
+        return getStudentsForCheck(testId, 0);
     }
 }

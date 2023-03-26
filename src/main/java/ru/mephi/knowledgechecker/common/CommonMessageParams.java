@@ -1,8 +1,11 @@
 package ru.mephi.knowledgechecker.common;
 
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageEntity;
+import ru.mephi.knowledgechecker.dto.telegram.outcome.keyboard.KeyboardMarkup;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.params.SendMessageParams;
+import ru.mephi.knowledgechecker.model.answer.OpenAnswer;
 import ru.mephi.knowledgechecker.model.course.Course;
+import ru.mephi.knowledgechecker.model.question.OpenQuestion;
 import ru.mephi.knowledgechecker.model.question.VariableQuestion;
 import ru.mephi.knowledgechecker.model.test.Test;
 
@@ -59,5 +62,28 @@ public class CommonMessageParams {
         return wrapMessageParams(userId, message,
                 List.of(new MessageEntity(TextType.BOLD, 0, message.length())),
                 null);
+    }
+
+    public static SendMessageParams getOpenAnswerParams(OpenQuestion question, OpenAnswer answer, Long userId,
+                                                        String boldMessage1, String boldMessage2, String boldMessage3,
+                                                        KeyboardMarkup markup) {
+        String message = boldMessage1 + question.getText() + boldMessage2 + answer.getText()
+                + boldMessage3 + question.getCorrectAnswer();
+        return wrapMessageParams(userId, message,
+                List.of(new MessageEntity(TextType.BOLD, 0, boldMessage1.length()),
+                        new MessageEntity(TextType.CODE, boldMessage1.length(), question.getText().length()),
+                        new MessageEntity(TextType.BOLD,
+                                boldMessage1.length() + question.getText().length(),
+                                boldMessage2.length()),
+                        new MessageEntity(TextType.CODE,
+                                boldMessage1.length() + question.getText().length() + boldMessage2.length(),
+                                answer.getText().length()),
+                        new MessageEntity(TextType.BOLD,
+                                message.length() - boldMessage3.length() - question.getCorrectAnswer().length(),
+                                boldMessage3.length()),
+                        new MessageEntity(TextType.SPOILER,
+                                message.length() - question.getCorrectAnswer().length(),
+                                question.getCorrectAnswer().length())),
+                markup);
     }
 }

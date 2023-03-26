@@ -68,17 +68,23 @@ public class SolvingService {
                 .test(test)
                 .openQuestionIds(openQuestionIds)
                 .openAnswerIds("")
+                .openAnswerResults("")
                 .variableQuestionIds(variableQuestionIds)
                 .variableAnswerIds("")
                 .variableAnswerResults("")
                 .startedAt(LocalDateTime.now())
                 .type(solvingType)
                 .visibility(test.getVisibility())
+                .checked(false)
                 .build();
 
         solving = solvingRepository.save(solving);
         log.info("Generated test: {}", solving);
         return solving;
+    }
+
+    public long getUncheckedWorksCount(Long testId) {
+        return solvingRepository.getUncheckedWorksCount(testId, VisibilityType.ESTIMATED);
     }
 
     private String getRandomQuestionIds(Stream<Long> idStream, int amount, int allAmount) {

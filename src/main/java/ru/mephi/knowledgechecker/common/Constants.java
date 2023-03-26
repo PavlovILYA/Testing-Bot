@@ -10,6 +10,7 @@ public class Constants {
     public static final String STUDIED_COURSE_PREFIX = "lc";
     public static final String OUTPUT_QUERIES_PREFIX = "oq";
     public static final String INPUT_QUERIES_PREFIX = "iq";
+    public static final String FOR_CHECK_PREFIX = "fc";
     public static final String STUDENT_PREFIX = "s";
     public static final String COLON = ":";
     public static final String SEMICOLON = ";";
@@ -26,5 +27,6 @@ public class Constants {
     public static final String ESTIMATED_PRIVATE_TESTS_PAGE_PREFIX = "ep";
     public static final String TRAIN_PRIVATE_TESTS_PAGE_PREFIX = "tp";
     public static final String INPUT_QUERIES_PAGE_PREFIX = "iqp";
+    public static final String FOR_CHECK_PAGE_PREFIX = "fp";
     public static final String STUDENT_PAGE_PREFIX = "sp";
 }

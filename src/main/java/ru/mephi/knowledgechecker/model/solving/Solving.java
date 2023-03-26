@@ -29,6 +29,7 @@ public class Solving {
     private Test test;
     private String openQuestionIds;
     private String openAnswerIds;
+    private String openAnswerResults;
     private String variableQuestionIds;
     private String variableAnswerIds;
     private String variableAnswerResults;
@@ -37,4 +38,5 @@ public class Solving {
     private SolvingType type;
     @Enumerated(EnumType.STRING)
     private VisibilityType visibility;
+    private boolean checked;
 }

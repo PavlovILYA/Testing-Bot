@@ -2,7 +2,6 @@ package ru.mephi.knowledgechecker.strategy.impl.test.solve;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import ru.mephi.knowledgechecker.model.question.QuestionType;
 import ru.mephi.knowledgechecker.common.TextType;
 import ru.mephi.knowledgechecker.dto.telegram.income.Update;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.MessageEntity;
@@ -12,6 +11,7 @@ import ru.mephi.knowledgechecker.model.answer.OpenAnswer;
 import ru.mephi.knowledgechecker.model.answer.OpenAnswerKey;
 import ru.mephi.knowledgechecker.model.answer.VariableAnswer;
 import ru.mephi.knowledgechecker.model.question.OpenQuestion;
+import ru.mephi.knowledgechecker.model.question.QuestionType;
 import ru.mephi.knowledgechecker.model.question.VariableQuestion;
 import ru.mephi.knowledgechecker.model.solving.Solving;
 import ru.mephi.knowledgechecker.model.solving.SolvingType;
@@ -28,13 +28,12 @@ import ru.mephi.knowledgechecker.strategy.impl.menu.ToMainMenuStrategy;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
-import static ru.mephi.knowledgechecker.common.Constants.SEMICOLON;
+import static ru.mephi.knowledgechecker.common.CommonMessageParams.getOpenAnswerParams;
+import static ru.mephi.knowledgechecker.common.IdsUtils.concatIt;
+import static ru.mephi.knowledgechecker.common.IdsUtils.parseIds;
 import static ru.mephi.knowledgechecker.common.KeyboardMarkups.getVariableAnswerKeyboardMarkup;
 import static ru.mephi.knowledgechecker.common.ParamsWrapper.wrapMessageParams;
 
@@ -123,13 +122,6 @@ public class ShowQuestionStrategy extends AbstractMessageStrategy {
 
         solving.setVariableAnswerIds(concatIt(solving.getVariableAnswerIds(), answer.getId()));
         solvingService.save(solving);
-    }
-
-    private String concatIt(String previously, Long nextOne) {
-        if (previously.length() == 0) {
-            return nextOne.toString();
-        }
-        return previously + SEMICOLON + nextOne;
     }
 
     private void saveOpenAnswer(Solving solving, String answerText) {
@@ -230,7 +222,8 @@ public class ShowQuestionStrategy extends AbstractMessageStrategy {
 
     private void generateReport(Solving solving, CurrentData data, Update update) {
         sendFinishCongrats(solving);
-        if (solving.getType() == SolvingType.REPORT_GENERATING_AT_THE_END) {
+        if (solving.getType() == SolvingType.REPORT_GENERATING_AT_THE_END
+                && solving.getVisibility() != VisibilityType.ESTIMATED) { // todo (отображать в любом случае для автора)
             sendVariableResults(solving);
             sendOpenResults(solving);
         }
@@ -287,41 +280,14 @@ public class ShowQuestionStrategy extends AbstractMessageStrategy {
             String boldMessage1 = "❓ Открытый вопрос:\n";
             String boldMessage2 = "\n☑️ Ваш ответ:\n";
             String boldMessage3 = "\n️✅ Правильный ответ:\n";
-            String message = boldMessage1 + question.getText() + boldMessage2 + answer.getText()
-                    + boldMessage3 + question.getCorrectAnswer();
-            SendMessageParams params = wrapMessageParams(solving.getUser().getId(), message,
-                    List.of(new MessageEntity(TextType.BOLD, 0, boldMessage1.length()),
-                            new MessageEntity(TextType.CODE, boldMessage1.length(), question.getText().length()),
-                            new MessageEntity(TextType.BOLD,
-                                    boldMessage1.length() + question.getText().length(),
-                                    boldMessage2.length()),
-                            new MessageEntity(TextType.CODE,
-                                    boldMessage1.length() + question.getText().length() + boldMessage2.length(),
-                                    answer.getText().length()),
-                            new MessageEntity(TextType.BOLD,
-                                    message.length() - boldMessage3.length() - question.getCorrectAnswer().length(),
-                                    boldMessage3.length()),
-                            new MessageEntity(TextType.SPOILER,
-                                    message.length() - question.getCorrectAnswer().length(),
-                                    question.getCorrectAnswer().length())),
-                    null);
-            telegramApiClient.sendMessage(params);
+            telegramApiClient.sendMessage(getOpenAnswerParams(question, answer, solving.getUser().getId(),
+                    boldMessage1, boldMessage2, boldMessage3, null));
         }
     }
 
     private void clearSolving(Solving solving) {
         if (solving.getVisibility() != VisibilityType.ESTIMATED) {
             solvingService.remove(solving);
-        }
-    }
-
-    public static List<Long> parseIds(String string) {
-        try {
-            return Arrays.stream(string.split(SEMICOLON))
-                    .map(Long::parseLong)
-                    .collect(Collectors.toList());
-        } catch (NumberFormatException e) {
-            return new ArrayList<>();
         }
     }
 }

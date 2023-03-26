@@ -119,12 +119,14 @@ CREATE TABLE IF NOT EXISTS solving (
     test_id BIGINT,                  -- и создать отдельный микросервис для работы со статистикой
     open_question_ids VARCHAR(1000), -- (который хранит информацию из других источников, например!)
     open_answer_ids VARCHAR(1000),
+    open_answer_results VARCHAR(1000),
     variable_question_ids VARCHAR(1000),
     variable_answer_ids VARCHAR(1000),
     variable_answer_results VARCHAR(1000),
     started_at TIMESTAMP,
     type VARCHAR(50),
     visibility VARCHAR(255),
+    checked BOOLEAN DEFAULT FALSE,
     PRIMARY KEY (id),
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (test_id) REFERENCES tests(id) ON DELETE CASCADE,

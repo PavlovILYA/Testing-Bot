@@ -8,6 +8,7 @@ import ru.mephi.knowledgechecker.model.test.Test;
 import ru.mephi.knowledgechecker.model.test.TestType;
 import ru.mephi.knowledgechecker.model.test.VisibilityType;
 import ru.mephi.knowledgechecker.model.user.CurrentData;
+import ru.mephi.knowledgechecker.service.SolvingService;
 import ru.mephi.knowledgechecker.service.TestService;
 import ru.mephi.knowledgechecker.state.impl.test.manage.ManageTestState;
 import ru.mephi.knowledgechecker.strategy.StrategyProcessException;
@@ -21,10 +22,13 @@ import static ru.mephi.knowledgechecker.common.MenuTitleType.MANAGE_TEST;
 @Component
 public class ManageTestStrategy extends AbstractCallbackQueryStrategy {
     private final TestService testService;
+    private final SolvingService solvingService;
 
     public ManageTestStrategy(TestService testService,
+                              SolvingService solvingService,
                               @Lazy ManageTestState manageTestState) {
         this.testService = testService;
+        this.solvingService = solvingService;
         this.nextState = manageTestState;
     }
 
@@ -86,7 +90,8 @@ public class ManageTestStrategy extends AbstractCallbackQueryStrategy {
             case OWN_PRIVATE_TEST_PREFIX:
                 own = test.getCreator().getId().equals(data.getUser().getId());
                 backCallbackData = TO_PRIVATE_TEST_LIST.name();
-                markup = getAdminCourseTestManageKeyboardMarkup(own, backCallbackData);
+                long uncheckedWorkCount = solvingService.getUncheckedWorksCount(test.getId());
+                markup = getAdminCourseTestManageKeyboardMarkup(own, backCallbackData, uncheckedWorkCount);
                 break;
             case ESTIMATED_PRIVATE_TEST_PREFIX:
                 backCallbackData = TO_ESTIMATED_TESTS.name();

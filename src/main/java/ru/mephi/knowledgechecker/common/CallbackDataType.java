@@ -22,6 +22,8 @@ public enum CallbackDataType {
     ACADEMIC_PERFORMANCE("Успеваемость"),
     SOLVE_OWN_TEST("Попробовать пройти"),
     MANAGE_VISIBILITY("Настроить видимость"),
+    SHOW_READY_RESULTS("Результаты"),
+    SHOW_WORKS_FOR_CHECK("Проверить работы"),
     TO_TRAIN_TESTS("Тренировочные тесты"),
     TO_ESTIMATED_TESTS("Тесты на оценку"),
     NEXT("⏩️"),
