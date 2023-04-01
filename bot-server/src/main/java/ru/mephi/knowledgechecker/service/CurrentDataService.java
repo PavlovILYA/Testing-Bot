@@ -8,7 +8,7 @@ import ru.mephi.knowledgechecker.model.user.User;
 import ru.mephi.knowledgechecker.repository.CurrentDataRepository;
 import ru.mephi.knowledgechecker.state.impl.InitialState;
 
-import static ru.mephi.knowledgechecker.model.user.mapper.UserMapper.mapStateToBeanName;
+import static ru.mephi.knowledgechecker.dto.telegram.income.mapper.UserMapper.mapStateToBeanName;
 
 @Slf4j
 @Service

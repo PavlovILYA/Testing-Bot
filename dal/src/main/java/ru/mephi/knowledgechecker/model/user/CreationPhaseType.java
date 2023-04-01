@@ -1,4 +1,4 @@
-package ru.mephi.knowledgechecker.common;
+package ru.mephi.knowledgechecker.model.user;
 
 public enum CreationPhaseType {
     TITLE,

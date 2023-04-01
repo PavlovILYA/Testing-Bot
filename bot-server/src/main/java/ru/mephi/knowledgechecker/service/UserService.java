@@ -7,9 +7,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.mephi.knowledgechecker.dto.telegram.income.UserDto;
+import ru.mephi.knowledgechecker.dto.telegram.income.mapper.UserMapper;
 import ru.mephi.knowledgechecker.model.test.VisibilityType;
 import ru.mephi.knowledgechecker.model.user.User;
-import ru.mephi.knowledgechecker.model.user.mapper.UserMapper;
 import ru.mephi.knowledgechecker.repository.UserRepository;
 
 import static ru.mephi.knowledgechecker.common.Constants.PAGE_SIZE;

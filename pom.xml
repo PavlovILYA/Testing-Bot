@@ -5,6 +5,7 @@
 	<modules>
 		<module>bot-server</module>
 		<module>gift-parser</module>
+		<module>dal</module>
 	</modules>
 
 	<parent>

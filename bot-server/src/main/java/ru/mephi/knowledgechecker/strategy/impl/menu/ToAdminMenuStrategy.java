@@ -16,7 +16,7 @@ import ru.mephi.knowledgechecker.strategy.impl.AbstractActionStrategy;
 import static ru.mephi.knowledgechecker.common.CallbackDataType.TO_ADMIN_MENU;
 import static ru.mephi.knowledgechecker.common.KeyboardMarkups.getOwnCoursesKeyboardMarkup;
 import static ru.mephi.knowledgechecker.common.MenuTitleType.ADMIN_MENU;
-import static ru.mephi.knowledgechecker.model.user.mapper.UserMapper.mapStateToBeanName;
+import static ru.mephi.knowledgechecker.dto.telegram.income.mapper.UserMapper.mapStateToBeanName;
 
 @Slf4j
 @Component

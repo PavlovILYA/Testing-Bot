@@ -6,14 +6,10 @@
 		<groupId>ru.mephi</groupId>
 		<artifactId>knowledge-checker</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
-<!--		<relativePath/> &lt;!&ndash; lookup parent from repository &ndash;&gt;-->
 	</parent>
 
-	<!-- <groupId>ru.mephi</groupId> -->
 	<artifactId>gift-parser</artifactId>
-	<!-- <version>0.0.1-SNAPSHOT</version> -->
 	<name>GiftParser</name>
-	<!-- <description>Demo project for Spring Boot</description> -->
 
 	<properties>
 		<maven.compiler.source>11</maven.compiler.source>

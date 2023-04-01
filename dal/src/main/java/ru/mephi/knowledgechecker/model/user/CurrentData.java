@@ -4,17 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.mephi.knowledgechecker.common.CreationPhaseType;
 import ru.mephi.knowledgechecker.model.course.Course;
 import ru.mephi.knowledgechecker.model.question.OpenQuestion;
 import ru.mephi.knowledgechecker.model.question.QuestionType;
 import ru.mephi.knowledgechecker.model.question.VariableQuestion;
 import ru.mephi.knowledgechecker.model.test.Test;
-import ru.mephi.knowledgechecker.state.BotState;
 
 import javax.persistence.*;
-
-import static ru.mephi.knowledgechecker.model.user.mapper.UserMapper.mapStateToBeanName;
 
 @Data
 @Entity
@@ -55,7 +51,12 @@ public class CurrentData {
     @JoinColumn(name = "student_id", referencedColumnName = "id")
     private User student;
 
-    public void setState(BotState state) {
+    public void setState(Object state) {
         this.state = mapStateToBeanName(state.getClass());
+    }
+
+    private String mapStateToBeanName(Class stateClass) {
+        String className = stateClass.getSimpleName().split("\\$")[0];
+        return className.substring(0, 1).toLowerCase() + className.substring(1);
     }
 }

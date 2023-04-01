@@ -1,4 +1,4 @@
-package ru.mephi.knowledgechecker.model.user.mapper;
+package ru.mephi.knowledgechecker.dto.telegram.income.mapper;
 
 import ru.mephi.knowledgechecker.dto.telegram.income.UserDto;
 import ru.mephi.knowledgechecker.model.user.User;
