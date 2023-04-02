@@ -7,6 +7,7 @@ import ru.mephi.knowledgechecker.strategy.impl.menu.ToAdminMenuStrategy;
 import ru.mephi.knowledgechecker.strategy.impl.menu.ToTestListStrategy;
 import ru.mephi.knowledgechecker.strategy.impl.test.check.ShowWorksForCheckStrategy;
 import ru.mephi.knowledgechecker.strategy.impl.test.edit.EditTestStrategy;
+import ru.mephi.knowledgechecker.strategy.impl.test.manage.ExportTestStrategy;
 import ru.mephi.knowledgechecker.strategy.impl.test.manage.ManageTestStrategy;
 import ru.mephi.knowledgechecker.strategy.impl.test.manage.ManageTestVisibilityStrategy;
 import ru.mephi.knowledgechecker.strategy.impl.test.solve.ChooseSolvingTypeStrategy;
@@ -22,7 +23,8 @@ public class ManageTestState extends AbstractBotState {
                            ManageTestVisibilityStrategy manageTestVisibilityStrategy,
                            ChooseSolvingTypeStrategy chooseSolvingTypeStrategy,
                            ManageTestStrategy manageTestStrategy,
-                           ShowWorksForCheckStrategy showWorksForCheckStrategy) {
+                           ShowWorksForCheckStrategy showWorksForCheckStrategy,
+                           ExportTestStrategy exportTestStrategy) {
         availableStrategies.add(startSolvingTestStrategy);
         availableStrategies.add(toTestListStrategy);
         availableStrategies.add(editTestStrategy);
@@ -32,5 +34,6 @@ public class ManageTestState extends AbstractBotState {
         availableStrategies.add(chooseSolvingTypeStrategy);
         availableStrategies.add(manageTestStrategy);
         availableStrategies.add(showWorksForCheckStrategy);
+        availableStrategies.add(exportTestStrategy);
     }
 }

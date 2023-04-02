@@ -1,4 +1,4 @@
-package ru.mephi.giftparser;
+package ru.mephi.knowledgechecker;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

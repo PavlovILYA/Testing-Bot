@@ -3,12 +3,17 @@ package ru.mephi.knowledgechecker.httpclient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+import ru.mephi.knowledgechecker.dto.telegram.income.Message;
 import ru.mephi.knowledgechecker.dto.telegram.income.Response;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.params.*;
+
+import java.io.File;
 
 @Slf4j
 @Service
@@ -59,5 +64,23 @@ public class TelegramApiClient {
         } catch (HttpClientErrorException e) {
             log.warn("ERROR: {}", e.getMessage());
         }
+    }
+
+    public void sendDocument(Long userId, File file) {
+        LinkedMultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
+        params.add("chat_id", userId);
+        params.add("document", new FileSystemResource(file));
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+        HttpEntity<LinkedMultiValueMap<String, Object>> requestEntity =
+                new HttpEntity<>(params, headers);
+
+        ResponseEntity<Message> responseEntity = restTemplate.exchange(
+                telegramApi + "/sendDocument",
+                HttpMethod.POST,
+                requestEntity,
+                Message.class);
     }
 }

@@ -8,8 +8,12 @@ import ru.mephi.knowledgechecker.model.course.Course;
 import ru.mephi.knowledgechecker.model.test.Test;
 import ru.mephi.knowledgechecker.model.test.VisibilityType;
 
+import java.util.Optional;
+
 public interface TestRepository extends JpaRepository<Test, Long> {
     Test findByUniqueTitle(String uniqueTitle);
+
+    Optional<Test> findByIdAndCreatorId(Long testId, Long creatorId);
 
     @Query(value = "SELECT t.unique_title FROM tests AS t" +
             "  WHERE t.creator_id <> :userId AND " +

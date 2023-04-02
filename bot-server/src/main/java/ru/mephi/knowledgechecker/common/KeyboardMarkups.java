@@ -99,16 +99,7 @@ public class KeyboardMarkups {
                 .callbackData(SHOW_READY_RESULTS.name())
                 .build()));
         if (own) {
-            markup.add(List.of(
-                    InlineKeyboardButton.builder()
-                            .text(EDIT_TEST.getDescription())
-                            .callbackData(EDIT_TEST.name())
-                            .build(),
-                    InlineKeyboardButton.builder()
-                            .text(DELETE_TEST.getDescription())
-                            .callbackData(DELETE_TEST.name())
-                            .build()
-            ));
+            setOwnSettings(markup, backCallbackData);
         }
         return wrapInlineKeyboardMarkup(markup);
     }
@@ -128,18 +119,26 @@ public class KeyboardMarkups {
                 .callbackData(SolvingType.REPORT_GENERATING_AT_THE_END.name())
                 .build()));
         if (own) {
-            markup.add(List.of(
-                    InlineKeyboardButton.builder()
-                            .text(EDIT_TEST.getDescription())
-                            .callbackData(EDIT_TEST.name())
-                            .build(),
-                    InlineKeyboardButton.builder()
-                            .text(DELETE_TEST.getDescription())
-                            .callbackData(DELETE_TEST.name())
-                            .build()
-            ));
+            setOwnSettings(markup, backCallbackData);
         }
         return wrapInlineKeyboardMarkup(markup);
+    }
+
+    private static void setOwnSettings(List<List<InlineKeyboardButton>> markup, String backCallbackData) {
+        markup.add(List.of(InlineKeyboardButton.builder()
+                .text(EXPORT.getDescription())
+                .callbackData(backCallbackData + COLON + EXPORT.name())
+                .build()));
+        markup.add(List.of(
+                InlineKeyboardButton.builder()
+                        .text(EDIT_TEST.getDescription())
+                        .callbackData(EDIT_TEST.name())
+                        .build(),
+                InlineKeyboardButton.builder()
+                        .text(DELETE_TEST.getDescription())
+                        .callbackData(DELETE_TEST.name())
+                        .build()
+        ));
     }
 
     public static KeyboardMarkup getCourseTestManageKeyboardMarkup(String backCallback) {

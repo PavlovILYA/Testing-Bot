@@ -18,4 +18,5 @@ public class Message {
     private String text;
     private Chat chat;
     private List<MessageEntity> entities;
+    private Document document;
 }

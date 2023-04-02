@@ -32,7 +32,8 @@ public enum CallbackDataType {
     EDIT_TEST("✏️"),
     ACCEPT_INPUT_QUERY("✅"),
     REJECT_INPUT_QUERY("⛔️"),
-    BLOCK_STUDENT("❌");
+    BLOCK_STUDENT("❌"),
+    EXPORT("Экспортировать");
 
     private final String description;
 
