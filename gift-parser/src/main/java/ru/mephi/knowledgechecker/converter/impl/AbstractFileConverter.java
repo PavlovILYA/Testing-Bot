@@ -15,20 +15,35 @@ public abstract class AbstractFileConverter implements FileConverter {
     @Override
     public File convertToFile(Test test) throws IOException {
         StringBuilder builder = new StringBuilder();
+        convertTestTitle(builder, test.getUniqueTitle());
         convertVariableQuestions(builder, test.getVariableQuestions());
         convertOpenQuestions(builder, test.getOpenQuestions());
 
-        File tmpFile = File.createTempFile(test.getUniqueTitle() + "__", ".gift");
+        File tmpFile = File.createTempFile(test.getUniqueTitle() + "__", getSuffix());
         try (FileWriter writer = new FileWriter(tmpFile, false)) {
             writer.write(builder.toString());
             writer.flush();
-        } catch (IOException ex) {
-            throw new FileParsingException(ex.getMessage());
+        } catch (IOException e) {
+            throw new FileParsingException(e.getMessage());
         }
         return tmpFile;
     }
 
+    @Override
+    public Long parseFile(Long userId, File file) {
+        if (!file.getName().endsWith(getSuffix())) {
+            throw new FileParsingException("Invalid file format!");
+        }
+        return parseFileContent(userId, file);
+    }
+
+    protected abstract String getSuffix();
+
     protected abstract void convertVariableQuestions(StringBuilder builder, List<VariableQuestion> variableQuestions);
 
     protected abstract void convertOpenQuestions(StringBuilder builder, List<OpenQuestion> openQuestions);
+
+    protected abstract void convertTestTitle(StringBuilder builder, String title);
+
+    protected abstract Long parseFileContent(Long userId, File file);
 }
