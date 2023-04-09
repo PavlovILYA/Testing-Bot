@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
-import ru.mephi.knowledgechecker.dto.webhook.WebHookCreateDto;
+import ru.mephi.knowledgechecker.dto.telegram.webhook.WebHookCreateDto;
 
 import javax.annotation.PostConstruct;
 

@@ -8,5 +8,5 @@ import java.io.IOException;
 public interface FileConverter {
     File convertToFile(Test test) throws IOException;
 
-    Long parseFile(Long userId, File file);
+    int parseFileContent(Test test, String fileContent);
 }

@@ -29,14 +29,6 @@ public abstract class AbstractFileConverter implements FileConverter {
         return tmpFile;
     }
 
-    @Override
-    public Long parseFile(Long userId, File file) {
-        if (!file.getName().endsWith(getSuffix())) {
-            throw new FileParsingException("Invalid file format!");
-        }
-        return parseFileContent(userId, file);
-    }
-
     protected abstract String getSuffix();
 
     protected abstract void convertVariableQuestions(StringBuilder builder, List<VariableQuestion> variableQuestions);
@@ -44,6 +36,4 @@ public abstract class AbstractFileConverter implements FileConverter {
     protected abstract void convertOpenQuestions(StringBuilder builder, List<OpenQuestion> openQuestions);
 
     protected abstract void convertTestTitle(StringBuilder builder, String title);
-
-    protected abstract Long parseFileContent(Long userId, File file);
 }

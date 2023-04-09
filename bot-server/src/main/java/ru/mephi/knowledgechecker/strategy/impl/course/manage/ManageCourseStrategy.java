@@ -52,7 +52,7 @@ public class ManageCourseStrategy extends AbstractCallbackQueryStrategy {
 
     @Override
     public void process(CurrentData data, Update update) throws StrategyProcessException {
-        // test to null?
+        // todo test to null?
         String coursePrefix = update.getCallbackQuery().getData().split(COLON)[0];
         Long courseId = Long.parseLong(update.getCallbackQuery().getData().split(COLON)[1]);
         Course course = courseService.getById(courseId);

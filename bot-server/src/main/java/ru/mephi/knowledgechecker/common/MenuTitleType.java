@@ -15,7 +15,8 @@ public enum MenuTitleType {
     MANAGE_TEST("" + MENU_LINE + "\n📃\nТЕСТ: "),
     MANAGE_COURSE("" + MENU_LINE + "\n📃\nКУРС: "),
     QUERY_TO_COURSE("" + MENU_LINE + "\n🕐\nЗАЯВКА НА КУРС: "),
-    STUDENT("" + MENU_LINE + "\n🕐\nСТУДЕНТ: ");
+    STUDENT("" + MENU_LINE + "\n🕐\nСТУДЕНТ: "),
+    TEST_CREATING_TYPE(MENU_LINE + "\n🖌️\nВЫБЕРИТЕ ТИП СОЗДАНИЯ ТЕСТА");
 
     private final String title;
 

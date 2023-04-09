@@ -2,6 +2,7 @@ package ru.mephi.knowledgechecker.httpclient;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.engine.jdbc.StreamUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.*;
@@ -9,11 +10,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
-import ru.mephi.knowledgechecker.dto.telegram.income.Message;
+import ru.mephi.knowledgechecker.dto.telegram.income.FileDto;
+import ru.mephi.knowledgechecker.dto.telegram.income.FileResponse;
 import ru.mephi.knowledgechecker.dto.telegram.income.Response;
 import ru.mephi.knowledgechecker.dto.telegram.outcome.params.*;
 
 import java.io.File;
+import java.io.FileOutputStream;
 
 @Slf4j
 @Service
@@ -22,6 +25,8 @@ public class TelegramApiClient {
     private final RestTemplate restTemplate;
     @Value(("${telegram.api}"))
     private String telegramApi;
+    @Value(("${telegram.file.api}"))
+    private String telegramFileApi;
 
     public Long sendMessage(SendMessageParams params) {
         log.info("[To Telegram API] send message: {}", params);
@@ -77,10 +82,35 @@ public class TelegramApiClient {
         HttpEntity<LinkedMultiValueMap<String, Object>> requestEntity =
                 new HttpEntity<>(params, headers);
 
-        ResponseEntity<Message> responseEntity = restTemplate.exchange(
+        ResponseEntity<Response> responseEntity = restTemplate.exchange(
                 telegramApi + "/sendDocument",
                 HttpMethod.POST,
                 requestEntity,
-                Message.class);
+                Response.class);
+    }
+
+    public FileDto getFileDto(String fileId) {
+        LinkedMultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
+        params.add("file_id", fileId);
+        HttpEntity<LinkedMultiValueMap<String, Object>> requestEntity =
+                new HttpEntity<>(params);
+        log.info("[To Telegram API] get file: {}", fileId);
+        ResponseEntity<FileResponse> responseEntity = restTemplate.exchange(
+                telegramApi + "/getFile",
+                HttpMethod.POST,
+                requestEntity,
+                FileResponse.class);
+        log.info("Response from TG: {}", responseEntity.getBody().getResult());
+        return responseEntity.getBody().getResult();
+    }
+
+    public File downloadFile(String fileName, String filePath) {
+        log.info("[To Telegram API] download file: {}", filePath);
+        return restTemplate.execute(telegramFileApi + "/" + filePath, HttpMethod.GET, null, clientHttpResponse -> {
+            File ret = new File(fileName);
+            ret.createNewFile();
+            StreamUtils.copy(clientHttpResponse.getBody(), new FileOutputStream(ret));
+            return ret;
+        });
     }
 }

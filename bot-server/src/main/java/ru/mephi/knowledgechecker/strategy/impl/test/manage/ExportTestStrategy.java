@@ -42,7 +42,7 @@ public class ExportTestStrategy extends AbstractCallbackQueryStrategy {
 
     @Override
     public void process(CurrentData data, Update update) throws StrategyProcessException {
-        File file = parserApiClient.getFile(data.getUser().getId(), data.getTest());
+        File file = parserApiClient.exportTest(data.getUser().getId(), data.getTest());
         deleteMenu(data);
         telegramApiClient.sendDocument(data.getUser().getId(), file);
         file.delete();
